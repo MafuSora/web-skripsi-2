@@ -1,0 +1,87 @@
+{%extends 'navbar_superuser.html' %}
+{% block title %}List Data Jadwal Semester{% endblock %}
+
+{% load static %}
+{% load crispy_forms_tags%}
+
+{% block content %}
+
+<div class="container">
+  <h2>Tabel Data Jadwal Semester</h2>
+  <!-- {%if user_info.2.name == "Mahasiswa" or user_info.2.name == "Admin" %}
+  <div class="container-fluid text-end">
+    <a class="btn btn-success text-white my-3" href="/usulantopikcreate">Tambah Usulan Topik</a>
+    <a class="btn btn-success text-white my-3" href="/evaluasitopikget">Hasil Review Topik</a>
+  </div>
+  {%endif%} -->
+  <div class="container-fluid text-end">
+    <a class="btn btn-success text-white my-3" href="/jadwalsemestercreate">Tambah Jadwal Semester</a>
+  </div>
+  <table id="table-paginate" class="table table-striped table-bordered table-paginate" cellspacing="0" width="100%">
+    <thead>
+      <tr>
+        <th>ID Jadwal Semester</th>
+        <th>Nama Semester</th>
+        <th>Tanggal Awal Semester</th>
+        <th>Tanggal Akhir Semester</th>
+       
+        <th>Operation</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+      {%for item in jadwal_semesters%}
+      <tr>
+
+        <td>{{item.id_jadwal_semester}}</td>
+        <td>{{item.nama_semester}}</td>
+        <td>{{item.tanggal_awal_semester| date:"l, d F Y"}}</td>
+        <td>{{item.tanggal_akhir_semester| date:"l, d F Y"}}</td>
+        <td>    
+            <a class="btn btn-warning text-black m-1" type="button"
+              href="{% url 'jadwal_semester_update' item.id_jadwal_semester %}">UPDATE</a>
+
+            <a class="btn btn-danger m-1" type="button" data-bs-toggle="modal"
+              data-bs-target="#staticBackdrop{{item.id_jadwal_semester}}">DELETE</a>
+            <!-- Modal -->
+            <div class="modal fade" id="staticBackdrop{{item.id_jadwal_semester}}" data-bs-backdrop="static" data-bs-keyboard="false"
+              tabindex="-1" aria-labelledby="staticBackdropLabel{{item.id_jadwal_semester}}" aria-hidden="true" name="{{item.id_jadwal_semester}}">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel{{item.id_jadwal_semester}">Apakah
+                      anda yakin akan
+                      menghapus
+                      {{item.nama_semester}} ?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    Data tidak akan dikembalikan ketika telah menekan tombol "Ya"
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
+                    <a type="button" class="btn btn-danger" href="{% url 'jadwal_semester_delete' item.id_jadwal_semester %}">Ya</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+      </form>
+    </td>
+        
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr>
+        <th>ID Jadwal Semester</th>
+        <th>Nama Semester</th>
+        <th>Tanggal Awal Semester</th>
+        <th>Tanggal Akhir Semester</th>
+       
+        <th>Operation</th>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+{% endblock %}

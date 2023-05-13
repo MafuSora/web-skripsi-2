@@ -1,0 +1,127 @@
+{%extends 'navbar_superuser.html' %}
+{% block title %}Tabel Data Progress Mahasiswa{% endblock %}
+
+{% load static %}
+{% load crispy_forms_tags%}
+
+{% block content %}
+
+<div class="container">
+  <h2>Tabel Progress Mahasiswa</h2>
+  <table id="table-paginate" class="table table-striped table-bordered table-paginate" cellspacing="0" width="100%">
+    <thead>
+      <tr>
+        <th>NIM</th>
+        <th>Nama</th>
+        <th>Progress</th>
+        <th>Status Bimbingan</th>
+        <th>Update Terakhir (Dalam Hari)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {%for item in proposals%}
+      <tr>
+
+        <td>{{item.nim}}</td>
+        <td>{{item.Nama}}</td>
+        <td>{{item.NamaTahap}}</td>
+        <td>{{item.status}}</td>
+        {%if item.Tanggal_Update_Terakhir.days >= 180 %}
+        <td class="text-light bg-danger">{{item.Tanggal_Update_Terakhir.days}}</td>
+        {%elif item.Tanggal_Update_Terakhir.days > 90 %}
+        <td class="text-black bg-warning">{{item.Tanggal_Update_Terakhir.days}}</td>
+        {%else%}
+        <td>{{item.Tanggal_Update_Terakhir.days}}</td>
+        {%endif%}
+      </tr>
+      {% endfor %}
+
+      {%for item3 in evaluasitopiks%}
+      <tr>
+
+        <td>{{item3.id_usulan_topik.nim.nim}}</td>
+        <td>{{item3.id_usulan_topik.nim.id_user.first_name}}</td>
+        <td>Usulan Topik</td>
+        <td>{{item3.status_topik}}</td>
+        {%if item3.Tanggal_Update_Terakhir.days >= 180 %}
+        <td class="text-light bg-danger">{{item3.Tanggal_Update_Terakhir.days}}</td>
+        {%elif item3.Tanggal_Update_Terakhir.days > 90 %}
+        <td class="text-black bg-warning">{{item3.Tanggal_Update_Terakhir.days}}</td>
+        {%else%}
+        <td>{{item3.Tanggal_Update_Terakhir.days}}</td>
+        {%endif%}
+
+      </tr>
+      {% endfor %}
+      {%for item2 in mahasiswa_topik%}
+      <tr>
+
+        <td>{{item2.nim}}</td>
+        <td>{{item2.id_user.first_name}}</td>
+        <td>Usulan Topik</td>
+        <td>Belum Membuat</td>
+        {%if item2.Tanggal_Update_Terakhir.days >= 180 %}
+        <td class="text-light bg-danger">{{item2.Tanggal_Update_Terakhir.days}}</td>
+        {%elif item2.Tanggal_Update_Terakhir.days > 90 %}
+        <td class="text-black bg-warning">{{item2.Tanggal_Update_Terakhir.days}}</td>
+        {%else%}
+        <td>{{item2.Tanggal_Update_Terakhir.days}}</td>
+        {%endif%}
+        
+      </tr>
+      {% endfor %}
+      {%for item2 in usulantopiks%}
+      <tr>
+
+        <td>{{item2.nim.nim}}</td>
+        <td>{{item2.nim.id_user.first_name}}</td>
+        <td>Usulan Topik</td>
+        <td>Belum Membuat</td>
+        {%if item2.Tanggal_Update_Terakhir.days >= 180 %}
+        <td class="text-light bg-danger">{{item2.Tanggal_Update_Terakhir.days}}</td>
+        {%elif item2.Tanggal_Update_Terakhir.days > 90 %}
+        <td class="text-black bg-warning">{{item2.Tanggal_Update_Terakhir.days}}</td>
+        {%else%}
+        <td>{{item2.Tanggal_Update_Terakhir.days}}</td>
+        {%endif%}
+        
+      </tr>
+      {% endfor %}
+      {%for item2 in proposal_upload%}
+      <tr>
+
+        <td>{{item2.nim.nim}}</td>
+        <td>{{item2.nim.id_user.first_name}}</td>
+        <td>{{item2.nama_tahap}}</td>
+        <td>Belum Diperiksa Dosen</td>
+        {%if item2.Tanggal_Update_Terakhir.days >= 180 %}
+        <td class="text-light bg-danger">{{item2.Tanggal_Update_Terakhir.days}}</td>
+        {%elif item2.Tanggal_Update_Terakhir.days > 90 %}
+        <td class="text-black bg-warning">{{item2.Tanggal_Update_Terakhir.days}}</td>
+        {%else%}
+        <td>{{item2.Tanggal_Update_Terakhir.days}}</td>
+        {%endif%}
+        
+      </tr>
+      {% endfor %}
+
+    </tbody>
+    <tfoot>
+      <tr>
+        <th>NIM</th>
+        <th>Nama</th>
+        <th>Progress</th>
+        <th>Status Bimbingan</th>
+        <th>Tanggal Update Terakhir</th>
+      </tr>
+    </tfoot>
+  </table>
+  <h4><b>Keterangan :</b></h4>
+  <ul>
+    <li>Kuning : Tidak Terdapat Progress Selama 3 Bulan</li>
+    <li>Merah : Tidak Terdapat Progress Selama 6 Bulan</li>
+  </ul>
+</div>
+
+
+{% endblock %}

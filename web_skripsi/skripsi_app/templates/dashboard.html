@@ -1,0 +1,1287 @@
+{%extends 'navbar_superuser.html' %}
+{% block title %}Halaman Awal{% endblock %}
+
+{% load static %}
+{% load crispy_forms_tags%}
+
+
+{% block content %}
+
+<!-- <h1>Home</h1> -->
+<div class="container-fluid">
+
+  <!-- Page Heading -->
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+      <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+      {% comment %} <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+        class="fas fa-download fa-sm text-white-50"></i> Generate Report</a> {% endcomment %}
+        {%if user_info.2.name == 'Admin' or user_info.2.name == "Properta" %}
+    
+        <h1 class="h3 mb-0 text-gray-800">Dashboard Admin</h1>
+        {% endif %}
+       
+        {% if user_info.2.name == 'Manajemen Departemen'%}
+        <h1 class="h3 mb-0 text-gray-800">Dashboard Manajemen Departemen</h1>
+        {% endif %}
+        {% if user_info.2.name == 'Kompartemen' %}
+        <h1 class="h3 mb-0 text-gray-800">Dashboard Kompartemen</h1>
+        {% endif %}
+        {% if user_info.2.name == 'Dosen'  %}
+        <h1 class="h3 mb-0 text-gray-800">Dashboard Dosen</h1>
+        {% endif %}
+        {% if user_info.2.name == 'Mahasiswa'  %}
+        <h1 class="h3 mb-0 text-gray-800">Dashboard Mahasiswa</h1>
+        {% endif %}
+    </div>
+    
+    <!-- Content Row -->
+    
+    <div class="row">
+    {% if user_info.2.name == 'Manajemen Departemen' or user_info.2.name == 'Admin' or user_info.2.name == "Properta" %}
+      <!-- Earnings (Monthly) Card Example -->
+      <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-primary shadow h-100 pt-2">
+              <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                          <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Mahasiswa Peserta Skripsi</div>
+                          <div class="h5 mb-0 font-weight-bold text-start text-gray-800">{{total_mahasiswa}}</div>
+                      </div>
+                      <div class="col-auto">
+                          <i class="fas fa-user fa-2x text-gray-300"></i>
+                      </div>
+                  </div>
+              </div>
+              <div class="card-footer text-muted text-center align-items-center mt-3">
+                <div class="col">
+                    <a href="{% url 'mahasiswa_jumlah_get' %}" class="text-primary">
+                        Menuju Progress <i class="fas fa-arrow-right ml-1"></i>
+                      </a>
+                </div>
+            </div>
+          </div>
+      </div>
+{% endif %}
+{% if user_info.2.name == 'Manajemen Departemen' or user_info.2.name == 'Admin' or user_info.2.name == "Properta" %}
+      <!-- Earnings (Monthly) Card Example -->
+      <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-success shadow h-100 pt-2">
+              <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                          <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                              Jumlah Mahasiswa Tidak Berprogres > 3 Bulan</div>
+                          <div class="h5 mb-0 font-weight-bold text-gray-800">{{jumlah_diatas_3_bulan}}</div>
+                      </div>
+                      <div class="col-auto">
+                          <i class="fas fa-user-xmark fa-2x text-gray-300"></i>
+                      </div>
+                  </div>
+              </div>
+              <div class="card-footer text-muted text-center align-items-center mt-3">
+                <div class="col">
+                    <a href="{% url 'mahasiswa_progress_by_bulan' %}" class="text-danger">
+                        Menuju Progress <i class="fas fa-arrow-right ml-1"></i>
+                      </a>
+                </div>
+            </div>
+          </div>
+      </div>
+{% endif %}
+{% if user_info.2.name == 'Manajemen Departemen'  or user_info.2.name == 'Dosen' or user_info.2.name == 'Kompartemen'  %}
+      <!-- Earnings (Monthly) Card Example -->
+      <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-success shadow h-100 pt-2">
+              <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                          <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                              Jumlah Mahasiswa Bimbingan Tidak Berprogres > 3 Bulan</div>
+                          <div class="h5 mb-0 font-weight-bold text-gray-800">{{jumlah_diatas_3_bulan_dosen}}</div>
+                      </div>
+                      <div class="col-auto">
+                          <i class="fas fa-user-xmark fa-2x text-gray-300"></i>
+                      </div>
+                  </div>
+              </div>
+              <div class="card-footer text-muted text-center align-items-center mt-3">
+                <div class="col">
+                    <a href="{% url 'mahasiswa_progress_by_bulan_dosen' %}" class="text-danger">
+                        Menuju Progress <i class="fas fa-arrow-right ml-1"></i>
+                      </a>
+                </div>
+            </div>
+          </div>
+      </div>
+      {% endif %}
+      <!-- Earnings (Monthly) Card Example -->
+      {% if user_info.2.name == 'Manajemen Departemen' or user_info.2.name == 'Admin' or user_info.2.name == "Properta" %}
+      <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-success shadow h-100 pt-2">
+              <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                          <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                              Jumlah Mahasiswa Siap Sempro : Belum Assign Jadwal</div>
+                          <div class="h5 mb-0 font-weight-bold text-gray-800">{{cek_jumlah_sempro_sum}}</div>
+                      </div>
+                      <div class="col-auto">
+                          <i class="fas fa-calendar-xmark fa-2x text-gray-300"></i>
+                      </div>
+                  </div>
+              </div>
+              <div class="card-footer text-muted text-center align-items-center mt-3">
+                <div class="col">
+                    <a href="{% url 'proposal_get_filter_sempro_jadwal' %}" class="text-danger">
+                        Menuju Tabulasi <i class="fas fa-arrow-right ml-1"></i>
+                      </a>
+                </div>
+            </div>
+          </div>
+      </div>
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 pt-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Jumlah Mahasiswa Siap Sempro : Belum Assign Dosen</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{cek_jumlah_sempro_dosen_sum}}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-users-gear fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer text-muted text-center align-items-center mt-3">
+              <div class="col">
+                  <a href="{% url 'proposal_get_filter_sempro' %}" class="text-primary">
+                      Menuju Tabulasi <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+              </div>
+          </div>
+        </div>
+    </div>
+      {% endif %}
+      {% if user_info.2.name == 'Manajemen Departemen' or user_info.2.name == 'Admin' or user_info.2.name == "Properta" %}
+      <!-- Earnings (Monthly) Card Example -->
+      <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-success shadow h-100 pt-2">
+              <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                          <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                              Jumlah Mahasiswa Siap Semhas : Belum Assign Jadwal</div>
+                          <div class="h5 mb-0 font-weight-bold text-gray-800">{{cek_jumlah_semhas_sum}}</div>
+                      </div>
+                      <div class="col-auto">
+                          <i class="fas fa-calendar-xmark fa-2x text-gray-300"></i>
+                      </div>
+                  </div>
+              </div>
+              <div class="card-footer text-muted text-center align-items-center mt-3">
+                <div class="col">
+                    <a href="{% url 'proposal_get_filter_semhas_jadwal' %}" class="text-danger">
+                        Menuju Tabulasi <i class="fas fa-arrow-right ml-1"></i>
+                      </a>
+                </div>
+            </div>
+          </div>
+      </div>
+      <!-- Earnings (Monthly) Card Example -->
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 pt-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Jumlah Mahasiswa Siap Semhas : Belum Assign Dosen</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{cek_jumlah_semhas_dosen_sum}}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-users-gear fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer text-muted text-center align-items-center mt-3">
+              <div class="col">
+                  <a href="{% url 'proposal_get_filter_semhas' %}" class="text-primary">
+                      Menuju Tabulasi <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+              </div>
+          </div>
+        </div>
+    </div>
+      {% endif %}
+      {% if user_info.2.name == 'Manajemen Departemen' or user_info.2.name == 'Admin' or user_info.2.name == "Properta" %}
+      <!-- Earnings (Monthly) Card Example -->
+      <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-success shadow h-100 pt-2">
+              <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                          <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                              Jumlah Mahasiswa Belum Assign Kompartemen</div>
+                          <div class="h5 mb-0 font-weight-bold text-gray-800">{{jumlah_mhs_belum_kompartemen}}</div>
+                      </div>
+                      <div class="col-auto">
+                          <i class="fas fa-users-gear fa-2x text-gray-300"></i>
+                      </div>
+                  </div>
+              </div>
+              <div class="card-footer text-muted text-center align-items-center mt-3">
+                <div class="col">
+                    <a href="{% url 'usulantopik_get_filter_dosen' %}" class="text-primary">
+                        Menuju Progress <i class="fas fa-arrow-right ml-1"></i>
+                      </a>
+                </div>
+            </div>
+          </div>
+      </div>
+      {% endif %}
+      {% if user_info.2.name == 'Manajemen Departemen' or user_info.2.name == 'Admin' or user_info.2.name == "Properta" %}
+      <!-- Earnings (Monthly) Card Example -->
+      <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-success shadow h-100 pt-2">
+              <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                          <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                              Jumlah Mahasiswa Belum Assign Pembimbing</div>
+                          <div class="h5 mb-0 font-weight-bold text-gray-800">{{jumlah_belum_pembimbing}}</div>
+                      </div>
+                      <div class="col-auto">
+                          <i class="fas fa-users-gear fa-2x text-gray-300"></i>
+                      </div>
+                  </div>
+              </div>
+              <div class="card-footer text-muted text-center align-items-center mt-3">
+                <div class="col">
+                    <a href="{% url 'usulantopik_get_filter_dosen_pembimbing' %}" class="text-primary">
+                        Menuju Progress <i class="fas fa-arrow-right ml-1"></i>
+                      </a>
+                </div>
+            </div>
+          </div>
+      </div>
+      {% endif %}
+      {% if user_info.2.name == 'Manajemen Departemen' or user_info.2.name == 'Dosen' or user_info.2.name == 'Kompartemen' or user_info.2.name == 'Admin' or user_info.2.name == "Properta" %}
+      <!-- Earnings (Monthly) Card Example -->
+      <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-success shadow h-100 pt-2">
+              <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                          <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                              Jumlah Penilaian Pembimbing yang Masih Kosong</div>
+                          <div class="h5 mb-0 font-weight-bold text-gray-800">{{jumlah_pembimbing}}</div>
+                      </div>
+                      <div class="col-auto">
+                          <i class="fas fa-file-circle-check fa-2x text-gray-300"></i>
+                      </div>
+                  </div>
+              </div>
+              <div class="card-footer text-muted text-center align-items-center mt-3">
+                <div class="col">
+                    <a href="{% url 'proposal_get_dosen_belum_dinilai' %}" class="text-danger">
+                        Menuju Penilaian <i class="fas fa-arrow-right ml-1"></i>
+                      </a>
+                </div>
+            </div>
+          </div>
+      </div>
+      <!-- Earnings (Monthly) Card Example -->
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                            Jumlah Penilaian Pembimbing yang Sebagian Selesai</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{jumlah_pembimbing_sebagian}}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-file-circle-check fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="card-footer text-muted text-center align-items-center mt-3">
+                <div class="col">
+                    <a href="{% url 'proposal_get_dosen_sudah_dinilai_sebagian' %}" class="text-danger">
+                        Menuju Penilaian <i class="fas fa-arrow-right ml-1"></i>
+                      </a>
+                </div>
+            </div>
+        </div>
+    </div>
+      {% endif %}
+      {% if user_info.2.name == 'Manajemen Departemen' or user_info.2.name == 'Dosen' or user_info.2.name == 'Kompartemen' or user_info.2.name == 'Admin' or user_info.2.name == "Properta" %}
+      <!-- Earnings (Monthly) Card Example -->
+      <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-success shadow h-100 pt-2">
+              <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                          <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                              Jumlah Penilaian Sempro Belum Selesai</div>
+                          <div class="h5 mb-0 font-weight-bold text-gray-800">{{jumlah_penguji_sempro}}</div>
+                      </div>
+                      <div class="col-auto">
+                          <i class="fas fa-clipboard-check fa-2x text-gray-300"></i>
+                      </div>
+                  </div>
+              </div>
+              <div class="card-footer text-muted text-center align-items-center mt-3">
+                <div class="col">
+                    <a href="{% url 'proposal_get_sempro_sudah_nilai' %}" class="text-success">
+                        Menuju Penilaian <i class="fas fa-arrow-right ml-1"></i>
+                      </a>
+                </div>
+            </div>
+          </div>
+      </div>
+      {% endif %}
+      {% if user_info.2.name == 'Manajemen Departemen' or user_info.2.name == 'Dosen' or user_info.2.name == 'Kompartemen' or user_info.2.name == 'Admin' or user_info.2.name == "Properta" %}
+      <!-- Earnings (Monthly) Card Example -->
+      <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-success shadow h-100 pt-2">
+              <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                          <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                              Jumlah  Penilaian semhas Belum Selesai</div>
+                          <div class="h5 mb-0 font-weight-bold text-gray-800">{{jumlah_penguji_semhas}}</div>
+                      </div>
+                      <div class="col-auto">
+                          <i class="fas fa-clipboard-check fa-2x text-gray-300"></i>
+                      </div>
+                  </div>
+              </div>
+              <div class="card-footer text-muted text-center align-items-center mt-3">
+                <div class="col">
+                    <a href="{% url 'proposal_get_semhas_sudah_dinilai' %}" class="text-success">
+                        Menuju Penilaian <i class="fas fa-arrow-right ml-1"></i>
+                      </a>
+                </div>
+            </div>
+          </div>
+      </div>
+      {% endif %}
+      {% if user_info.2.name == 'Manajemen Departemen' or user_info.2.name == 'Dosen' or user_info.2.name == 'Kompartemen' or user_info.2.name == 'Admin' or user_info.2.name == "Properta" %}
+      <!-- Earnings (Monthly) Card Example -->
+      <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-success shadow h-100 pt-2">
+              <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                          <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                              Jumlah Belum Periksa Proposal</div>
+                          <div class="h5 mb-0 font-weight-bold text-gray-800">{{jumlah_proposal}}</div>
+                      </div>
+                      <div class="col-auto">
+                          <i class="fas fa-file-signature fa-2x text-gray-300"></i>
+                      </div>
+                  </div>
+              </div>
+              <div class="card-footer text-muted text-center align-items-center mt-3">
+                <div class="col">
+                    <a href="{% url 'proposal_get_dosen_filter_acc' %}" class="text-primary">
+                        Menuju Proposal <i class="fas fa-arrow-right ml-1"></i>
+                      </a>
+                </div>
+              </div>
+          </div>
+      </div>
+      {% endif %}
+      {% if  user_info.2.name == 'Kompartemen' or user_info.2.name == 'Admin' or user_info.2.name == "Properta" %}
+      <!-- Earnings (Monthly) Card Example -->
+      <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-success shadow h-100 pt-2">
+              <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                          <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                              Jumlah Belum Periksa Evaluasi Topik</div>
+                          <div class="h5 mb-0 font-weight-bold text-gray-800">{{jumlah_belum_evaluasi_topik}}</div>
+                      </div>
+                      <div class="col-auto">
+                          <i class="fas fa-file-signature fa-2x text-gray-300"></i>
+                      </div>
+                  </div>
+              </div>
+              <div class="card-footer text-muted text-center align-items-center mt-3">
+                <div class="col">
+                    <a href="{% url 'usulantopik_get_filter_ACC' %}" class="text-primary">
+                        Menuju Tabulasi <i class="fas fa-arrow-right ml-1"></i>
+                      </a>
+                </div>
+            </div>
+          </div>
+      </div>
+      {% endif %}
+      {% if  user_info.2.name == 'Mahasiswa'  %}
+      <!-- Earnings (Monthly) Card Example -->
+      <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-success shadow h-100 pt-2">
+              <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                          <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                              Status Terakhir Topik</div>
+                            {%if last_topik.status_topik ==  None %}
+
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"> Belum Buat Topik  </div>
+                            {% else %}
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{last_topik.status_topik}}  </div>
+                            {% endif %}
+                      </div>
+                      <div class="col-auto">
+                          <i class="fas fa-clipboard-question fa-2x text-gray-300"></i>
+                      </div>
+                  </div>
+              </div>
+              <div class="card-footer text-muted text-center align-items-center mt-3">
+                <div class="col">
+                    <a href="{% url 'usulantopik_get' %}" class="text-success">
+                        Menuju Topik <i class="fas fa-arrow-right ml-1"></i>
+                      </a>
+                </div>
+            </div>
+          </div>
+      </div>
+      {% endif %}
+      {% if  user_info.2.name == 'Mahasiswa'  %}
+      <!-- Earnings (Monthly) Card Example -->
+      <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-success shadow h-100 pt-2">
+              <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                          <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                              Status Terakhir Bimbingan</div>
+                            {%if last_bimbingan is none%}
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">Belum Membuat Proposal </div>
+                            {% else %}
+                          <div class="h5 mb-0 font-weight-bold text-gray-800">{{last_bimbingan.status_bimbingan}} </div>
+                          {%endif%}
+                      </div>
+                      <div class="col-auto">
+                          <i class="fas fa-file-circle-question fa-2x text-gray-300"></i>
+                      </div>
+                  </div>
+              </div>
+              <div class="card-footer text-muted text-center align-items-center mt-3">
+                <div class="col">
+                    <a href="{% url 'proposal_get' %}" class="text-primary">
+                        Menuju Proposal <i class="fas fa-arrow-right ml-1"></i>
+                      </a>
+                </div>
+            </div>
+          </div>
+      </div>
+      {% endif %}
+      {% if  user_info.2.name == 'Mahasiswa'  %}
+      <!-- Earnings (Monthly) Card Example -->
+      <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-success shadow h-100 pt-2">
+              <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                          <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                              Update Terakhir Bimbingan</div>
+                          <div class="h5 mb-0 font-weight-bold text-gray-800">{{mahasiswa_last_update.0}} Hari Belum Bimbingan </div>
+                      </div>
+                      <div class="col-auto">
+                          <i class="fas fa-calendar-times fa-2x text-gray-300"></i>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+      {% endif %}
+
+      {% comment %} <!-- Earnings (Monthly) Card Example -->
+      <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-info shadow h-100 pt-2">
+              <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                          <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Tasks
+                          </div>
+                          <div class="row no-gutters align-items-center">
+                              <div class="col-auto">
+                                  <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">50%</div>
+                              </div>
+                              <div class="col">
+                                  <div class="progress progress-sm mr-2">
+                                      <div class="progress-bar bg-info" role="progressbar"
+                                          style="width: 50%" aria-valuenow="50" aria-valuemin="0"
+                                          aria-valuemax="100"></div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="col-auto">
+                          <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <!-- Pending Requests Card Example -->
+      <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-warning shadow h-100 pt-2">
+              <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                          <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                              Pending Requests</div>
+                          <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
+                      </div>
+                      <div class="col-auto">
+                          <i class="fas fa-comments fa-2x text-gray-300"></i>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div> {% endcomment %}
+
+  {% if  user_info.2.name == 'Manajemen Departemen' or user_info.2.name == 'Kompartemen' or user_info.2.name == 'Dosen' or user_info.2.name == 'Admin' or user_info.2.name == "Properta" %}
+  <div class="row">
+
+      <!-- Area Chart -->
+      <div class="col-xl-12 col-lg-12">
+          <div class="card shadow mb-4">
+              <!-- Card Header - Dropdown -->
+              <div
+                  class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <h6 class="m-0 font-weight-bold text-primary">Rata Rata Penyelesaian Skripsi</h6>
+              
+              </div>
+              <!-- Card Body -->
+              <div class="card-body">
+                <div class="table-responsive">
+                    <table id="table-paginate-waktu" class="table table-striped table-bordered table-paginate" cellspacing="0" width="100%">
+                        <thead hidden>
+                          <tr>
+                            <th>NIM</th>
+                            <th>Nama</th>
+                            <th>Waktu Awal</th>
+                            <th>Waktu Akhir</th>
+                            <th class="avg">Waktu Tempuh (Dalam Hari)</th>
+                            
+                            <!-- <th>waktu</th> -->
+                          </tr>
+                        </thead>
+                        <tbody hidden>
+                          {%for item in bimbingans_nim_tanggal%}
+                          {%for item2 in mahasiswa_topik_tanggal%}
+                          {% if forloop.counter == forloop.parentloop.counter  %}
+                          <tr>
+                    
+                            {% comment %} <td>{{item.NIM_mhs}}</td> {% endcomment %}
+                            <td>{{item2.nim.nim}}</td>
+                            <td>{{item2.nim.id_user.first_name}}</td>
+                            <td>{{item2.nim.semester_daftar_skripsi.tanggal_awal_semester}}</td>
+                            <td>{{item.TanggalUpdate}}</td>
+                            {% comment %} <td>{{item2.nim.semester_daftar_skripsi.tanggal_awal_semester-item.TanggalUpdate}}</td> {% endcomment %}
+                            
+                            <!-- <td></td> -->
+                            <td id="result{{forloop.counter}}" class="avg">
+                             
+                            </td>
+                            <script>
+                              {% comment %} var date = new Date(Number("{{item2.nim.semester_daftar_skripsi.tanggal_awal_semester|date:'y'}}"),Number("{{ item2.nim.semester_daftar_skripsi.tanggal_awal_semester|date:'m' }}"),Number("{{ item2.nim.semester_daftar_skripsi.tanggal_awal_semester|date:'d' }}"));
+                              var date1 = new Date("{{ item.TanggalUpdate|date:'y' }}","{{ item.TanggalUpdate|date:'m' }}","{{ item.TanggalUpdate|date:'d' }}");
+                              var result2 = document.getElementById("result{{forloop.counter}}");
+                              var day = new Date(date1.getTime() - date.getTime()); {% endcomment %}
+                    
+                              var date = new Date(Number("{{item2.nim.semester_daftar_skripsi.tanggal_awal_semester|date:'y'}}"),Number("{{ item2.nim.semester_daftar_skripsi.tanggal_awal_semester|date:'m' }}"),Number("{{ item2.nim.semester_daftar_skripsi.tanggal_awal_semester|date:'d' }}"));
+                              var date1 = new Date("{{ item.TanggalUpdate|date:'y' }}","{{ item.TanggalUpdate|date:'m' }}","{{ item.TanggalUpdate|date:'d' }}");
+                              var result2 = document.getElementById("result{{forloop.counter}}");
+                              var day = new Date(date1.getTime() - date.getTime());
+                              // date.setTime(day);
+                              result2.innerHTML += (day/(1000*3600*24))-1;
+                              // day.getUTCDate() - 1
+                              
+                            </script>
+                            
+                    
+                          </tr>
+                         
+                          {%endif%}
+                          
+                          {% endfor %}
+                          {% endfor %}
+                         
+                    
+                        </tbody>
+                        <tfoot>
+                          <tr >
+                            
+                            <!-- <th colspan="4" style="text-align:right" >Total:</th> -->
+                            <th colspan=2 style="text-align:right; border-top: 1px solid #DEE2E6;" >Average:</th>
+                            <th style="border-top: 1px solid #DEE2E6;"></th>
+                            <th style="border-top: 1px solid #DEE2E6;"></th>
+                            <th style="border-top: 1px solid #DEE2E6;"></th>
+                    
+                            <!-- <th></th> -->
+                          </tr>
+                          <!-- <tr>
+                            <th>NIM 1</th>
+                            <th>NIM 2</th>
+                            <th>Waktu Awal</th>
+                            <th>Waktu Akhir</th>
+                            <th>Waktu Tempuh</th>
+                          </tr> -->
+                        </tfoot>
+                      </table>
+              
+              </div>
+              </div>
+          </div>
+      </div>
+  </div>
+{% endif %}
+  <!-- Content Row -->
+  {% if  user_info.2.name == 'Manajemen Departemen' or user_info.2.name == 'Kompartemen' or user_info.2.name == 'Dosen' or user_info.2.name == 'Admin' or user_info.2.name == "Properta" %}
+  <div class="row">
+
+    <!-- Area Chart -->
+    <div class="col-xl-12 col-lg-12">
+        <div class="card shadow mb-4">
+            <!-- Card Header - Dropdown -->
+            <div
+                class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Rata Rata Penyelesaian Skripsi</h6>
+            
+            </div>
+            <!-- Card Body -->
+            <div class="card-body">
+                <div class="card chart-container">
+                    <canvas id="myChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+  <div class="row">
+
+      <!-- Area Chart -->
+      <div class="col-xl-6 col-lg-6">
+          <div class="card shadow mb-4">
+              <!-- Card Header - Dropdown -->
+              <div
+                  class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <h6 class="m-0 font-weight-bold text-primary">Earnings Overview</h6>
+              
+              </div>
+              <!-- Card Body -->
+              <div class="card-body">
+                {% comment %} <div class="card chart-container">
+                    <canvas id="myChart"></canvas>
+                </div> {% endcomment %}
+              </div>
+          </div>
+      </div>
+
+      <!-- Pie Chart -->
+      <div class="col-xl- col-lg-6">
+          <div class="card shadow mb-4">
+              <!-- Card Header - Dropdown -->
+              <div
+                  class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <h6 class="m-0 font-weight-bold text-primary">Persebaran Mahasiswa Peserta Skripsi</h6>
+                 
+              </div>
+              <!-- Card Body -->
+              <div class="card-body">
+                <div class="card chart-container">
+                  <canvas id="myChart1"></canvas>
+                </div>
+              </div>
+          </div>
+      </div>
+  </div>
+  {% endif %}
+    <!-- Content Row -->
+
+  <div class="row">
+
+      <!-- Area Chart -->
+      <div class="col-xl-12 col-lg-12">
+          <div class="card shadow mb-4">
+              <!-- Card Header - Dropdown -->
+              <div
+                  class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <h6 class="m-0 font-weight-bold text-primary">Jadwal Seminar</h6>
+              
+              </div>
+              <!-- Card Body -->
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table id="table-paginate2" class="table table-striped table-bordered table-paginate" cellspacing="0" width="100%">
+                    <thead>
+                      <tr>
+                        <th>ID Jadwal</th>
+                        <th>Mahasiswa</th>
+                        <th>Dosen Pembimbing 1</th>
+                        <th>Dosen Pembimbing 2</th>
+                        <th>Dosen Penguji 1</th>
+                        <th>Dosen Penguji 2</th>
+                        <th>Tahap Seminar</th>
+                        <th>Ruang Seminar</th>
+                        <th>Tanggal Seminar</th>
+                        <th>Waktu Seminar</th>
+                  
+                      </tr>
+                    </thead>
+                    <tbody>
+                      
+                      {%for item in jadwal_data%}
+                      <tr>
+                  
+                        <td>{{item.id_jadwal}}</td>
+                        <td>{{item.mahasiswa|cut:"1"|cut:"2"|cut:"3"|cut:"4"|cut:"5"|cut:"6"|cut:"7"|cut:"8"|cut:"9"|cut:"0"|cut:"-"}}</td>
+                        <td>{{item.dosen_pembimbing_1|cut:"1"|cut:"2"|cut:"3"|cut:"4"|cut:"5"|cut:"6"|cut:"7"|cut:"8"|cut:"9"|cut:"0"|cut:"-"}}</td>
+                        <td>{{item.dosen_pembimbing_2|cut:"1"|cut:"2"|cut:"3"|cut:"4"|cut:"5"|cut:"6"|cut:"7"|cut:"8"|cut:"9"|cut:"0"|cut:"-"}}</td>
+                        <td>{{item.dosen_penguji_1|cut:"1"|cut:"2"|cut:"3"|cut:"4"|cut:"5"|cut:"6"|cut:"7"|cut:"8"|cut:"9"|cut:"0"|cut:"-"}}</td>
+                        <td>{{item.dosen_penguji_2|cut:"1"|cut:"2"|cut:"3"|cut:"4"|cut:"5"|cut:"6"|cut:"7"|cut:"8"|cut:"9"|cut:"0"|cut:"-"}}</td>
+                        <td>{{item.tahap_seminar}}</td>
+                        <td>{{item.ruang_seminar}}</td>
+                        <td>{{item.tanggal_seminar| date:"l, d F Y"}}</td>
+                        <td>{{item.waktu_seminar| date:"H:i"}}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <th>ID Jadwal</th>
+                        <th>Mahasiswa</th>
+                        <th>Dosen Pembimbing 1</th>
+                        <th>Dosen Pembimbing 2</th>
+                        <th>Dosen Penguji 1</th>
+                        <th>Dosen Penguji 2</th>
+                        <th>Tahap Seminar</th>
+                        <th>Ruang Seminar</th>
+                        <th>Tanggal Seminar</th>
+                        <th>Waktu Seminar</th>
+                        
+                      </tr>
+                    </tfoot>
+                  </table>
+              
+              </div>
+              </div>
+          </div>
+      </div>
+  </div>
+    <!-- Content Row -->
+{% comment %} 
+  <!-- Content Row -->
+  <div class="row">
+
+      <!-- Content Column -->
+      <div class="col-xl-6 mb-4">
+
+          <!-- Project Card Example -->
+          <div class="card shadow mb-4">
+              <div class="card-header py-3">
+                  <h6 class="m-0 font-weight-bold text-primary">Projects</h6>
+              </div>
+              <div class="card-body">
+                  <h4 class="small font-weight-bold">Server Migration <span
+                          class="float-right">20%</span></h4>
+                  <div class="progress mb-4">
+                      <div class="progress-bar bg-danger" role="progressbar" style="width: 20%"
+                          aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                  <h4 class="small font-weight-bold">Sales Tracking <span
+                          class="float-right">40%</span></h4>
+                  <div class="progress mb-4">
+                      <div class="progress-bar bg-warning" role="progressbar" style="width: 40%"
+                          aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                  <h4 class="small font-weight-bold">Customer Database <span
+                          class="float-right">60%</span></h4>
+                  <div class="progress mb-4">
+                      <div class="progress-bar" role="progressbar" style="width: 60%"
+                          aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                  <h4 class="small font-weight-bold">Payout Details <span
+                          class="float-right">80%</span></h4>
+                  <div class="progress mb-4">
+                      <div class="progress-bar bg-info" role="progressbar" style="width: 80%"
+                          aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                  <h4 class="small font-weight-bold">Account Setup <span
+                          class="float-right">Complete!</span></h4>
+                  <div class="progress">
+                      <div class="progress-bar bg-success" role="progressbar" style="width: 100%"
+                          aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+              </div>
+          </div> {% endcomment %}
+
+          {% comment %} <!-- Color System -->
+          <div class="row">
+              <div class="col-lg-6 mb-4">
+                  <div class="card bg-primary text-white shadow">
+                      <div class="card-body">
+                          Primary
+                          <div class="text-white-50 small">#4e73df</div>
+                      </div>
+                  </div>
+              </div>
+              <div class="col-lg-6 mb-4">
+                  <div class="card bg-success text-white shadow">
+                      <div class="card-body">
+                          Success
+                          <div class="text-white-50 small">#1cc88a</div>
+                      </div>
+                  </div>
+              </div>
+              <div class="col-lg-6 mb-4">
+                  <div class="card bg-info text-white shadow">
+                      <div class="card-body">
+                          Info
+                          <div class="text-white-50 small">#36b9cc</div>
+                      </div>
+                  </div>
+              </div>
+              <div class="col-lg-6 mb-4">
+                  <div class="card bg-warning text-white shadow">
+                      <div class="card-body">
+                          Warning
+                          <div class="text-white-50 small">#f6c23e</div>
+                      </div>
+                  </div>
+              </div>
+              <div class="col-lg-6 mb-4">
+                  <div class="card bg-danger text-white shadow">
+                      <div class="card-body">
+                          Danger
+                          <div class="text-white-50 small">#e74a3b</div>
+                      </div>
+                  </div>
+              </div>
+              <div class="col-lg-6 mb-4">
+                  <div class="card bg-secondary text-white shadow">
+                      <div class="card-body">
+                          Secondary
+                          <div class="text-white-50 small">#858796</div>
+                      </div>
+                  </div>
+              </div>
+              <div class="col-lg-6 mb-4">
+                  <div class="card bg-light text-black shadow">
+                      <div class="card-body">
+                          Light
+                          <div class="text-black-50 small">#f8f9fc</div>
+                      </div>
+                  </div>
+              </div>
+              <div class="col-lg-6 mb-4">
+                  <div class="card bg-dark text-white shadow">
+                      <div class="card-body">
+                          Dark
+                          <div class="text-white-50 small">#5a5c69</div>
+                      </div>
+                  </div>
+              </div>
+          </div> {% endcomment %}
+
+      {% comment %} </div>
+
+      <div class="col-lg-6 mb-4">
+
+          <!-- Illustrations -->
+          <div class="card shadow mb-4">
+              <div class="card-header py-3">
+                  <h6 class="m-0 font-weight-bold text-primary">Jadwal Seminar</h6>
+              </div>
+              <div class="card-body">
+                  <div class="text-center">
+                      <img class="img-fluid px-3 px-sm-4 mt-3 mb-4" style="width: 25rem;"
+                          src="img/undraw_posting_photo.svg" alt="...">
+                  </div>
+                  <p>Add some quality, svg illustrations to your project courtesy of <a
+                          target="_blank" rel="nofollow" href="https://undraw.co/">unDraw</a>, a
+                      constantly updated collection of beautiful svg images that you can use
+                      completely free and without attribution!</p>
+                  <a target="_blank" rel="nofollow" href="https://undraw.co/">Browse Illustrations on
+                      unDraw &rarr;</a>
+              </div>
+          </div>
+
+          <!-- Approach -->
+          <div class="card shadow mb-4">
+              <div class="card-header py-3">
+                  <h6 class="m-0 font-weight-bold text-primary">Development Approach</h6>
+              </div>
+              <div class="card-body">
+                  <p>SB Admin 2 makes extensive use of Bootstrap 4 utility classes in order to reduce
+                      CSS bloat and poor page performance. Custom CSS classes are used to create
+                      custom components and custom utility classes.</p>
+                  <p class="mb-0">Before working with this theme, you should become familiar with the
+                      Bootstrap framework, especially the utility classes.</p>
+              </div>
+          </div> {% endcomment %}
+
+      {% comment %} </div> {% endcomment %}
+  {% comment %} </div> {% endcomment %}
+
+{% comment %} </div> {% endcomment %}
+<div class="container"><div class="container">
+
+</div>
+</div>
+
+<style>
+  .chart-container {
+    width: 100%;
+    height: 50%;
+    margin: auto;
+  }
+
+</style>
+
+
+{% comment %} <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js"></script> {% endcomment %}
+
+
+
+
+<script>
+  // setup 
+  const factoryProcess=[{% for item_list_progress in list_progress %} '{{ item_list_progress }}', {% endfor %}];
+ 
+  const dataPoints=[{% for item_list_progress_jumlah in list_progress_jumlah %} {{ item_list_progress_jumlah }}, {% endfor %}];
+
+    //totalsum
+    const reduceArray=((sum,datapoint)=>sum+datapoint);
+    const totalSum=dataPoints.reduce(reduceArray);
+    console.log("test",totalSum);
+  
+  
+    //cumulative
+    const cumulativeSum = (sum=>datapoint=>sum+=datapoint)(0);
+    const cumulativeDatapoints=dataPoints.map(cumulativeSum);
+    console.log("test1",cumulativeDatapoints);
+    //const percetagedataPoints=[18, 12, 6, 9, 12, 3, 9]
+  
+    //map array +cumulative sum
+    const percentageDatapoints = cumulativeDatapoints.map(value => {
+      const values=parseFloat(value/totalSum*100).toFixed(1);
+      return values;
+    });
+    console.log("test2",percentageDatapoints);
+
+  const data = {
+    labels: factoryProcess,
+    datasets: [
+        {
+            label: 'Errors in Percentage',
+            data: percentageDatapoints,
+            backgroundColor:
+              'rgba(255, 26, 104, 0.2)',
+            borderColor: 'rgba(255, 26, 104, 1)',
+            yAxisID:'percentageAxis',
+            
+          },{
+      label: 'Process Errors in Absolute',
+      data: dataPoints,
+      backgroundColor:
+        'rgba(255, 206, 86, 0.2)',
+      borderColor: 'rgba(255, 206, 86, 1)',
+      borderWidth: 1,
+      type:"bar",
+      barPercentage:1,
+      categoryPercentage:1,
+    },
+      ]
+  };
+
+  // config 
+  const config = {
+    type: 'line',
+    data,
+    options: {
+        plugins:{
+            tooltips:{
+                enabled:false
+            }
+        },
+        scales: {
+        x: {
+
+            title:{
+              display:true,
+              text:'Process'
+          }
+          },
+        y: {
+          beginAtZero: true,
+          grid:{display:false},
+          title:{
+            display:true,
+            text:'Errors in Absolute'
+        }
+        },
+        percentageAxis:{
+            type:'linear',
+            position:'right',
+            beginAtZero: true,
+            min:0,
+            max:100,
+            ticks:{callback:function(value,index,values){
+                return value+'%'
+            }},
+            title:{
+                display:true,
+                text:'cumulative percentage'
+            }
+        },
+      }
+    }
+  };
+
+  // render init block
+  const myChart = new Chart(
+    document.getElementById('myChart').getContext('2d'),
+    config
+  );
+
+  // Instantly assign Chart.js version
+  //const chartVersion = document.getElementById('chartVersion');
+  //chartVersion.innerText = Chart.version;
+</script>
+
+<script type="text/javascript">
+  const ctx2 = document.getElementById('myChart1').getContext('2d');
+  const myChart1 = new Chart(ctx2, {
+        type: 'pie',
+        data: {
+            labels: [{% for gender in list_angkatan_unique %} '{{ gender }}', {% endfor %}],
+            datasets: [{
+                label:'Gender',
+                
+                data: [{% for gender in list_jumlah_angkatan %} {{ gender }}, {% endfor %}],
+                backgroundColor:[
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 135, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(151, 102, 132, 1)',
+                'rgba(153, 79, 132, 1)',
+                'rgba(255, 159, 64, 1)',
+                'rgba(255, 90, 132, 1)',
+                'rgba(54, 162, 135, 1)',
+                'rgba(25, 206, 86, 1)',
+                'rgba(211, 192, 192, 1)',
+                'rgba(234, 102, 132, 1)',
+                'rgba(153, 99, 132, 1)',
+                'rgba(255, 159, 64, 1)',
+                'gree',
+                'yellow',
+                ],
+
+                borderColor: [
+                'rgba(54, 162, 135, 1)',
+                'rgba(25, 206, 86, 1)',
+                'rgba(211, 192, 192, 1)',
+                'rgba(234, 102, 132, 1)',
+                'rgba(153, 99, 132, 1)',
+                'rgba(255, 159, 64, 1)',
+
+                ],
+
+                borderWidth: 1
+            }]
+        },
+        plugins: [ChartDataLabels],
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                beginAtZero: true,
+              }
+            }]
+          },
+          tooltips: {
+              enabled: false
+          },
+          plugins: {
+              datalabels: {
+               
+                  formatter: (value, ctx2) => {
+                      //let sum = 0;
+                      //console.log(ctx2)
+                      //console.log(value)
+                      let sum = 0;
+                      let dataArr = ctx2.dataset.data;
+                      dataArr.map(data => {
+                        sum += data;
+                      });
+                      let percentage = (value * 100 / sum).toFixed(2) + "%";
+                      return percentage+"\n"+value+" Orang";
+                  },
+                  color: '#000',
+              }
+          }
+      }
+    });
+</script>     
+
+<script type="text/javascript" charset="utf-8">
+
+
+    $(document).ready(function () {
+  
+      
+      // $('#table-paginate-waktu').DataTable({
+      // fnFooterCallback: function ( nRow, aaData, iStart, iEnd, aiDisplay ) {
+      //     var TotalMarks = 0;
+      //     for ( var i=0 ; i<aaData.length ; i++ )
+      //     {
+      //         TotalMarks += aaData[i][2]*1;
+      //     }
+  
+      //     var nCells = nRow.getElementsByTagName('th');
+      //     nCells[0].innerHTML = TotalMarks/aaData.length;
+      // }
+      // });
+  
+        $('#table-paginate-waktu').DataTable({
+  
+          lengthChange: true,
+                      dom: 't',
+                      buttons: [
+              {
+                  extend: 'copyHtml5', 
+                  footer: true,
+                  exportOptions: {
+                      columns:  ':visible' 
+                  }
+              },
+              {
+                  extend: 'csvHtml5',
+                  footer: true,
+                  exportOptions: {
+                      columns:  ':visible' 
+                  }
+              },
+              {
+                  extend: 'excelHtml5',
+                  footer: true,
+                  exportOptions: {
+                      columns: ':visible'
+                  }
+              },
+              {
+                  extend: 'pdfHtml5',
+                  footer: true,
+                  orientation: 'landscape',
+                  pageSize: 'A4',
+                  exportOptions: {
+                      columns: ':visible'
+                  },
+          //         customize : function(doc){
+          //           var colCount = new Array();
+          //           $(tbl).find('tbody tr td').each(function(){
+          //               if($(this).attr('colspan')){
+          //                   for(var i=1;i<=$(this).attr('colspan');$i++){
+          //                       colCount.push('*');
+          //                   }
+          //               }else{ colCount.push('*'); }
+          //           });
+          //           doc.content[1].table.widths = colCount;
+          // }
+              },
+              'colvis'
+          ],
+          footerCallback: function(row, data, start, end, display) {
+               var api = this.api();
+   
+              // Remove the comma to get data for summation
+              var intVal = function ( i ) {
+                  return typeof i === 'string' ?
+                      i.replace(/,/g,'')*1 :
+                          typeof i === 'number' ?
+                                     i : 0;
+              };
+   
+                api.columns('.avg', {
+                  page: 'current'
+                }).every(function() {
+      
+              // var numerator =  api
+              //       .column("4", { page: 'current' })
+              //       .data()
+              //       .reduce(function (a, b) {
+              //           return intVal(a) + intVal(b);
+              //       }, 0);
+              var numerator = this
+                          .data()
+                          .reduce( function(a, b) {
+                            //console.log(a)
+                            //console.log(b)
+                                  return (intVal(a) + intVal(b));
+                          }, 0);
+      
+              var denominator = this.data().length;
+      
+              avg = numerator / denominator;
+              avg = avg.toFixed(2)
+              console.log(avg)
+              $(api.column("2").footer()).html(avg+" Hari \n\n");
+              $(api.column("3").footer()).html((avg/30).toFixed(2)+" Bulan\n\n" );
+              $(api.column("4").footer()).html((avg/365).toFixed(2)+" Tahun");
+  
+              // $(this.footer()).html(avg);
+      }); },
+      // footerCallback: function (row, data, start, end, display) {
+      //           var api = this.api();
+    
+      //           // Remove the formatting to get integer data for summation
+      //           var intVal = function (i) {
+      //               return typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 : typeof i === 'number' ? i : 0;
+      //           };
+    
+      //           // Total over all pages
+      //           total = api
+      //               .column("4")
+      //               .data()
+      //               .reduce(function (a, b) {
+      //                 console.log(a)
+      //                 console.log(b)
+      //                   return intVal(a) + intVal(b);
+      //               }, 0);
+    
+      //           // Total over this page
+      //           pageTotal = api
+      //               .column("0", { page: 'current' })
+      //               .data()
+      //               .reduce(function (a, b) {
+      //                   return intVal(a) + intVal(b);
+      //               }, 0);
+    
+      //           // Update footer
+      //           $(api.column("4").footer()).html( total);
+                
+      //       },
+        }).buttons().container()
+                      .appendTo( '#table-paginate_wrapper .col-md-6:eq(0)' );
+        
+        
+  
+   
+    });
+</script>
+
+
+{% endblock %}

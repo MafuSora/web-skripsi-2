@@ -1,0 +1,19 @@
+{% if messages != None %}
+{% for message in messages  %}
+<div class="position-fixed bottom-0 end-0 p-3" id="msg-notif">
+    <div class="alert {{message.tags}} m-2" id="msg-notif" role="alert">
+        <div class="d-flex justify-content-between align-items-center" style="">
+            <h3 class="alert-heading mb-0">Pemberitahuan !&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</h3>
+        </div>
+          <hr>
+          <h4 class="mb-0" style="font-weight: normal;">  {{message}}</h4>
+    </div>
+</div>
+{% comment %} <div class="position-fixed bottom-0 end-0 p-3">
+    <div class="alert alert-{{ msg.tags}} m-2" id="msg-notif" role="alert">
+        {{msg}}
+    </div>
+</div> {% endcomment %}
+
+{% endfor %}
+{% endif %}

@@ -1,0 +1,55 @@
+{%extends 'navbar_superuser.html' %}
+{% block title %}Update Data User{% endblock %}
+
+{% load static %}
+{% load crispy_forms_tags%}
+
+{% block content %}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <form method="post">
+    {% comment %} <div class="d-flex justify-content-center"> {% endcomment %}
+      <h1 class="h2 text-center">Create User Group Relation</h1>
+    {% comment %} </div> {% endcomment %}
+
+    {%csrf_token%}
+    <label>User ID</label>
+    <input class="form-control" type="text" placeholder="{{users.id}}" aria-label="readonly input example" readonly>
+    <label>Username</label>
+    <input class="form-control" type="text" value="{{users.first_name}}" aria-label="readonly input example" readonly>
+    <div class="my-3">
+      <label>Group ID</label><br/>
+    {%if groups_ada == None%}
+    <select class="form-select" name="name" required="" id="id_Group" style="user-select: auto;">
+      <option value="" selected="" style="user-select: auto;">---------</option>
+      {% for item in groups %}
+      <option value="{{item.name}}" style="user-select: auto;">{{item.name}}</option>
+      {%endfor%}
+    </select>
+    {% else %}
+    <select class="form-select" name="name" required="" id="id_Group" style="user-select: auto;">
+      <option value="{{groups_ada}}" style="user-select: auto;" selected>{{groups_ada}}
+      </option>
+      {% for item in groups %}
+      <option value="{{item.name}}" style="user-select: auto;">{{item.name}}</option>
+      {%endfor%}
+    </select>
+    {%endif%}
+
+    </div>
+    
+    <div class="row container-fluid">
+      <button type="submit" class="btn btn-primary btn-block mb-4">
+        Submit
+      </button>
+      <!-- <a type="button" class="btn btn-primary btn-block mb-4 btn-info text-white" href="/skripsi_app/usergroupget">
+        Kembali
+        Ke
+        Tabel User</a> -->
+    </div>
+
+
+  </form>
+</div>
+
+{% endblock %}

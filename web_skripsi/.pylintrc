@@ -1,0 +1,56 @@
+[MASTER]
+; init-hook='import sys; sys.path.insert(0, "d:/project web/web-skripsi-2")'
+init-hook='import sys; sys.path.append("d:/project web/web-skripsi-2")'
+
+[MESSAGES CONTROL]
+# Disable some messages that are not useful for Django projects
+disable = C0103, C0111, E1101, R0903
+
+[FORMAT]
+# Customize the output format
+max-line-length = 100
+
+[BASIC]
+# Enable some basic checks
+load-plugins = pylint_django
+
+[MESSAGES CONTROL]
+disable=C0114,C0115,C0116,C0301,C0325,C1001,E1101,R0903,R0904,W0611,W0613,W0622,W1508,W1514,W1601,W1623,W1701,W1702,W1703,W1704,W1705,W1706,W1707,W1710,W1801,W1911,W1919,W2910,W2911,W2931,W2932,W2933,W2934,W2935,W2936,W2937,W2938,W2939,W6016
+
+[TYPECHECK]
+generated-members=REQUEST,acl_users,aq_acquire,aq_base,aq_chain,aq_contains,aq_explicit,aq_getattr,aq_inContextOf,aq_inner,aq_is,aq_parent,aq_self,aq_setattr,aq_tag,base_category,base_hasBaseCategory,base_hasBaseInterfaces,base_hasLocalRole,base_hasPermission,base_hasRecursiveRole,base_has_role,base_isAnObjectManager,base_isUserManager,base_listFolderContents,base_manage_afterAdd,base_manage_afterClone,base_manage_afterCopy,base_manage_afterCreation,base_manage_beforeDelete,base_manage_beforeDeleteConfirmation,base_manage_beforeObjectDelete,base_manage_beforeRename,base_manage_doDelete,base_notifyModified,base_obliterate,base_reindexObject,base_setOwner,base_tag,batch,bcc,date,from_field,host,html,url
+
+[REPORTS]
+reports=no
+
+[DUMMY-ABSTRACT-CLASS]
+ignore-no-methods=yes
+
+[MASTER]
+ignore=migrations
+
+[BASIC]
+bad-names=my_var,my_var2
+
+[FORMAT]
+max-line-length=119
+
+[DESIGN]
+min-public-methods=0
+max-args=10
+
+[IMPORTS]
+ignore=CVS
+
+[SIMILARITIES]
+ignore-comments=yes
+ignore-docstrings=yes
+ignore-imports=yes
+min-similarity-lines=4
+
+[SPACING]
+spaces-around-operator=.,=,+=,-=,==,!=,>,<,>=,<=,in,and,or,not
+
+[VARIABLES]
+dummy-variables-rgx=_+$|(_[a-zA-Z0-9_]*[a-zA-Z0-9]+?$)|dummy|^ignored_|^unused_|^ignored[A-Z]|^dummy[A-Z]
+init-import=no

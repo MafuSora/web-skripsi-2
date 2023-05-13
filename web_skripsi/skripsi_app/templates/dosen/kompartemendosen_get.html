@@ -1,0 +1,89 @@
+{%extends 'navbar_superuser.html' %}
+{% block title %} Data Dosen Kompartemen{% endblock %}
+
+{% load static %}
+{% load crispy_forms_tags%}
+
+{% block content %}
+
+<div class="container">
+    <h2>Tabel Daftar Dosen Kompartemen</h2>
+    <div class="container-fluid text-end"><a class="btn btn-success text-white my-3"
+            href="/kompartemendosencreate">Tambah
+            Data Dosen Kompartemen</a></div>
+    <table id="table-paginate" class="table table-striped table-bordered table-paginate" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>NIP</th>
+                <th>Nama</th>
+                <th>Kompartemen</th>
+                <th class="col-md-2">Operation</th>
+            </tr>
+        </thead>
+        <tbody>
+            {%for item in kompartemendosens%}
+            <tr>
+
+                <td>{{item.id_dosen_kompartemen}}</td>
+                <td>{{item.nip.nip}}</td>
+                <td>{{item.nip.id_user.first_name}}</td>
+                <td>{{item.id_kompartemen}}</td>
+                <td>
+                    <form method="post">
+                        {% csrf_token %}
+                        {%if user_info.2.name == "Manajemen Departemen" or  user_info.2.name == "Admin" or user_info.2.name == "Properta"  %}
+                        <a class="btn btn-warning text-white m-1" type="button"
+                            href="{% url 'kompartemendosen_update' item.id_dosen_kompartemen %}">UPDATE</a>
+                        <a class="btn btn-danger m-1" type="button" data-bs-toggle="modal"
+                            data-bs-target="#staticBackdrop{{item.id_dosen_kompartemen}}">DELETE</a>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="staticBackdrop{{item.id_dosen_kompartemen}}" data-bs-backdrop="static"
+                            data-bs-keyboard="false" tabindex="-1"
+                            aria-labelledby="staticBackdropLabel{{item.id_dosen_kompartemen}}" aria-hidden="true"
+                            name="{{item.id_dosen_kompartemen}}">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="staticBackdropLabel{{item.id_dosen_kompartemen}}">Apakah
+                                            anda yakin akan
+                                            menghapus dosen kompartemen 
+                                            {{item.nip}} dengan kompartemen {{item.id_kompartemen}} ?</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Data tidak akan dikembalikan ketika telah menekan tombol "Ya"
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Tidak</button>
+                                        <a type="button" class="btn btn-danger"
+                                            href="{%url 'kompartemendosen_delete' item.id_dosen_kompartemen%}">Ya</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </td>
+                {% endif %}
+
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>ID</th>
+                <th>NIP</th>
+                <th>Nama</th>
+                <th>Kompartemen</th>
+                <th>Operation</th>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+
+
+{% endblock %}

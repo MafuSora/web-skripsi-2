@@ -1,0 +1,90 @@
+{%extends 'navbar_superuser.html' %}
+{% block title %}Tabel Data Progress Angkatan{% endblock %}
+
+{% load static %}
+{% load crispy_forms_tags%}
+
+{% block content %}
+
+<div class="container">
+  <h2>Tabel Progress Angkatan</h2>
+  <table id="table-paginate" class="table table-striped table-bordered table-paginate" cellspacing="0" width="100%">
+    <thead>
+      <tr>
+        <th>Angkatan</th>
+        <th>Progress</th>
+        <!-- <th>Status</th> -->
+        <th>Jumlah</th>
+      </tr>
+    </thead>
+    <tbody>
+      {%for item in proposals%}
+      <tr>
+
+        <td>20{{item.NIM_5}}</td>
+        <td>{{item.id_proposal__nama_tahap}} : {{item.status_bimbingan}}</td>
+        
+        <!-- <td></td> -->
+        <td>{{item.dcount}}</td>
+        
+
+      </tr>
+      {% endfor %}
+
+      {%for item3 in evaluasitopiks%}
+      <tr>
+
+        <td>20{{item3.NIM_5}}</td>
+        <td>Topik : {{item3.status_topik}}</td>
+        <!-- <td></td> -->
+        <td>{{item3.dcount}}</td>
+
+      </tr>
+      {% endfor %}
+      {%for item2 in mahasiswa_topik%}
+      <tr>
+
+        <td>20{{item2.NIM_5}}</td>
+        <td>Belum Membuat</td>
+        <!-- <td>Prog</td> -->
+        <td>{{item2.dcount}}</td>
+
+      </tr>
+      {% endfor %}
+      {%for item in proposal_upload%}
+      <tr>
+
+        <td>20{{item.NIM_5}}</td>
+        <td>{{item.nama_tahap}} : Belum Diperiksa Dosen</td>
+        <!-- <td>Prog</td> -->
+        <td>{{item.dcount}}</td>
+
+      </tr>
+      {% endfor %}
+      {%for item in usulantopiks%}
+      <tr>
+
+        <td>20{{item.NIM_5}}</td>
+        <td>Topik : Sudah Upload Topik </td>
+        <!-- <td>Prog</td> -->
+        <td>{{item.dcount}}</td>
+
+      </tr>
+      {% endfor %}
+
+    </tbody>
+    <tfoot>
+      <tr>
+        <th>Angkatan</th>
+        <th>Progress</th>
+        <!-- <th>Status</th> -->
+        <th>Jumlah</th>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+
+<script src="{% static 'js/dashboard.js' %}"></script>
+
+{% endblock %}

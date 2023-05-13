@@ -1,0 +1,92 @@
+{%extends 'navbar_superuser.html' %}
+{% block title %}Tabel Data SUB CPMK{% endblock %}
+
+{% load static %}
+{% load crispy_forms_tags%}
+
+{% block content %}
+
+<div class="container">
+  <h2>Tabel Daftar SUB CPMK</h2>
+  <div class="container-fluid text-end"><a class="btn btn-success text-white my-3"
+    href="/sub_cpmk_create">Tambah SUB
+    CPMK</a></div>
+  <table id="table-paginate" class="table table-striped table-bordered table-paginate" cellspacing="0" width="100%">
+    <thead>
+      <tr>
+        
+        <th>SUB CPMK</th>
+        <th>Keterangan SUB CPMK</th>
+        <th>CPMK</th>
+        <th>Keterangan CPMK</th>
+        <th>Bobot Persen Sempro</th>
+        <th>Bobot Persen Semhas</th>
+        <th>Bobot Persen Pembimbing</th>
+        <th>Operation</th>
+      </tr>
+    </thead>
+    <tbody>
+      {%for item in CPMK%}
+      <tr>
+
+        <td>{{item.id_sub_cpmk}}</td>
+        <td>{{item.keterangan_sub_cpmk}}</td>
+        <td>{{item.id_cpmk.id_cpmk}}</td>
+        <td>{{item.id_cpmk.keterangan_cpmk}}</td>
+        <td>{{item.bobot_persen_sempro}}</td>
+        <td>{{item.bobot_persen_semhas}}</td>
+        <td>{{item.bobot_persen_pembimbing}}</td>
+       
+        <td>
+          <form method="post">
+            {% csrf_token %}
+            <a class="btn btn-warning text-black m-1" type="button"
+              href="{% url 'Sub_CPMK_update' item.id_sub_cpmk %}">UPDATE</a>
+            <a class="btn btn-danger m-1" type="button" data-bs-toggle="modal"
+              data-bs-target="#staticBackdrop{{item.id_sub_cpmk}}">DELETE</a>
+
+            <!-- Modal -->
+            <div class="modal fade" id="staticBackdrop{{item.id_sub_cpmk}}" data-bs-backdrop="static" data-bs-keyboard="false"
+              tabindex="-1" aria-labelledby="staticBackdropLabel{{item.id_sub_cpmk}}" aria-hidden="true" name="{{item.id_sub_cpmk}}">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel{{item.id_sub_cpmk}}">Apakah
+                      anda yakin akan
+                      menghapus SUB CPMK
+                      {{item.id_sub_cpmk}} ?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    Data tidak akan dikembalikan ketika telah menekan tombol "Ya"
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
+                    <a type="button" class="btn btn-danger" href="{%url 'Sub_CPMK_delete' item.id_sub_cpmk%}">Ya</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </td>
+
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr>
+        <th>SUB CPMK</th>
+        <th>Keterangan SUB CPMK</th>
+        <th>CPMK</th>
+        <th>Keterangan CPMK</th>
+        <th>Bobot Persen Sempro</th>
+        <th>Bobot Persen Semhas</th>
+        <th>Bobot Persen Pembimbing</th>
+        <th>Operation</th>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,24 @@
+{%extends 'navbar_superuser.html' %}
+{% block title %}Tambah Data CPMK{% endblock %}
+
+{% load static %}
+{% load crispy_forms_tags%}
+
+{% block content %}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <form method="post" enctype="multipart/form-data">
+    <h1 class="h2">Tambah CPMK</h1>
+
+    {%csrf_token%}
+    {{forms|crispy}}
+    <div class="row container-fluid">
+      <button type="submit" class="btn btn-primary btn-block mb-4">
+        Submit
+      </button>
+
+    </div>
+  </form>
+</div>
+
+{% endblock %}

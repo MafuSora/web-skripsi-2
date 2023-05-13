@@ -1,0 +1,47 @@
+{%extends 'navbar_superuser.html' %}
+{% block title %}Tambah Bimbingan{% endblock %}
+
+{% load static %}
+{% load crispy_forms_tags%}
+
+{% block content %}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <form method="post" enctype="multipart/form-data">
+    <h1 class="h2">Pendaftaran Bimbingan</h1>
+
+    {%csrf_token%}
+
+    {{form|crispy}}
+    
+    {%if data != None %}
+    <p>Preview</p>
+        <div class="container-fluid mb-2" >
+            <div id="example1" style="height:700px;">
+                <script>
+                    PDFObject.embed("{{data.file_proposal.url}}", "#example1");
+                    if(PDFObject.supportsPDFs){
+                        console.log("Yay, this browser supports inline PDFs.");
+                    } else {
+                        console.log("Boo, inline PDFs are not supported by this browser");
+                    }
+                </script>
+            </div>
+        </div>
+    {%endif%}
+    <div class="row container-fluid">
+      <button type="submit" class="btn btn-primary btn-block mb-4">
+        Submit
+      </button>
+      <!-- <a type="button" class="btn btn-primary btn-block mb-4 btn-info text-white" href="/skripsi_app/mahasiswaget">
+        Kembali
+        Ke
+        Tabel Dosen</a> -->
+    </div>
+  </form>
+</div>
+
+
+
+
+{% endblock %}

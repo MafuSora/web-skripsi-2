@@ -1,0 +1,1367 @@
+{%extends 'base.html' %}
+{% block title %}Home Page{% endblock %}
+{% block navbar %}
+{% load static %}
+{% load crispy_forms_tags %}
+<style>
+    /* Gambar pada perangkat seluler */
+    @media (max-width: 576px) {
+    #logo-ti {
+      width: 250px;
+      height: auto;
+    }
+  }
+  
+  /* Gambar pada desktop */
+  @media (min-width: 576px) {
+    #logo-ti {
+      max-width: 320px;
+      height: 80px;
+    }
+  }
+</style>
+<link href="{% static 'css/navbar.css' %} " rel="stylesheet" />
+<!-- top navigation bar -->
+<!-- Modal -->
+<div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+        <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel2">Notifikasi</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="table-responsive">
+            <table  id="table-notifikasi" class="table table-striped table-bordered table-notifikasi" cellspacing="0" width="100%">
+                <thead>
+                  <tr>
+                    {% if user_info.2.name == "Mahasiswa" %}
+                    <!-- <a href="/mahasiswa_update/{{user_info.0}}" class="btn btn-danger text-center m-2">Change Photo</a>     -->
+                    <th>NIM</th>
+                    {%else%}
+                    <!-- <a href="/dosen_update/{{user_info.0}}" class="btn btn-danger text-center m-2">Change Photo</a> -->
+                    <th>NIP</th>
+                    {% endif %}
+                    <th>Pesan</th>
+                    <th>Tanggal Buat</th>
+                    <th>Hapus</th>
+                  </tr>
+                </thead>
+                <tbody>
+                    
+                    {%for item in user_info.3 %}
+                    <tr>
+                        {% if user_info.2.name == "Mahasiswa" %}
+                        <!-- <a href="/mahasiswa_update/{{user_info.0}}" class="btn btn-danger text-center m-2">Change Photo</a>     -->
+                        <td>{{item.nim|lower|cut:"a"|cut:"b"|cut:"c"|cut:"d"|cut:"e"|cut:"f"|cut:"g"|cut:"h"|cut:"i"|cut:"j"|cut:"k"|cut:"l"|cut:"m"|cut:"n"|cut:"o"|cut:"p"|cut:"q"|cut:"r"|cut:"s"|cut:"t"|cut:"u"|cut:"v"|cut:"w"|cut:"x"|cut:"y"|cut:"z"|cut:"-"}}</td>
+                        {%else%}
+                        <td>{{item.nip|lower|cut:"a"|cut:"b"|cut:"c"|cut:"d"|cut:"e"|cut:"f"|cut:"g"|cut:"h"|cut:"i"|cut:"j"|cut:"k"|cut:"l"|cut:"m"|cut:"n"|cut:"o"|cut:"p"|cut:"q"|cut:"r"|cut:"s"|cut:"t"|cut:"u"|cut:"v"|cut:"w"|cut:"x"|cut:"y"|cut:"z"|cut:"-"}}</td>
+                        <!-- <a href="/dosen_update/{{user_info.0}}" class="btn btn-danger text-center m-2">Change Photo</a> -->
+                        <!-- <td>NIP</td> -->
+                        {% endif %}
+                        <td>{{item.messages}} </td>
+                        
+                        <td>{{item.tanggal_buat}}</td>
+                        <td>
+                            <a class="btn btn-warning text-white m-1" type="button"
+                            href="{% url 'notifikasi_delete' item.id_notifikasi %}">DELETE</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        {% if user_info.2.name == "Mahasiswa" %}
+                        <!-- <a href="/mahasiswa_update/{{user_info.0}}" class="btn btn-danger text-center m-2">Change Photo</a>     -->
+                        <th>NIM</th>
+                        {%else%}
+                        <!-- <a href="/dosen_update/{{user_info.0}}" class="btn btn-danger text-center m-2">Change Photo</a> -->
+                        <th>NIP</th>
+                        {% endif %}
+                        <th>Pesan</th>
+                        <th>Tanggal Buat</th>
+                        <th>Hapus</th>
+                      </tr>
+                </tfoot>
+              </table>
+            </div>
+        </div>
+        <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+        </div>
+    </div>
+    </div>
+</div>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar"
+            aria-controls="offcanvasExample">
+            <span class="navbar-toggler-icon" data-bs-target="#sidebar"></span>
+        </button>
+        <a class="navbar-brand me-auto ms-lg-0 ms-3 text-uppercase fw-bold" href="/dashboard"><img
+            src="{% static 'img/ti_putih.png' %}" id="logo-ti"
+            alt="" width="350" height="80" class="d-inline-block align-text-top"
+           
+            alt="Cinque Terre"></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNavBar"
+            aria-controls="topNavBar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="topNavBar">
+            <form class="d-flex ms-auto my-3 my-lg-0">
+                <div class="input-group">
+                    <input class="form-control" type="search" placeholder="Search" aria-label="Search" />
+                    <button class="btn btn-primary" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </form>
+            <ul class="navbar-nav">
+               
+                    <!-- Button trigger modal -->
+                    <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                        Launch static backdrop modal
+                      </button> -->
+                    <a class="nav-link ms-2" data-bs-toggle="modal" data-bs-target="#exampleModal2">
+                        <i class="fas fa-bell fa-lg" data-count={{user_info.4}}></i>
+                    </a>
+                   <!-- Button trigger modal -->
+                    <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal2">
+                        Launch demo modal
+                    </button> -->
+                    
+                    
+                   
+                </li>
+            </ul>
+            {% comment %} <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle ms-2" href="#" role="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        <i class="bi bi-music-note"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end p-1" style="width: 20rem;">
+                        <iframe style="border-radius:12px"
+                            src="https://open.spotify.com/embed/playlist/4cNeMUwONR8JS2vnh5yPkk?utm_source=generator"
+                            width="100%" height="380" frameBorder="0" allowfullscreen=""
+                            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                            loading="lazy"></iframe>
+                    </div>
+                </li>
+            </ul> {% endcomment %}
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle ms-2" href="#" role="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        <i class="bi bi-person-fill"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <div class="container-fluid">
+                            <div class="card text-center mx-auto" style="width: 25rem; max-width: 40rem;">
+                                <div class="card-header text-center" style="background-image:url('https://w0.peakpx.com/wallpaper/465/996/HD-wallpaper-anime-street-japan-japanese-anime-orginal-scenery-street-night.jpg') ; width: 25rem; max-width: 40rem;height: 100%;">
+                                    {% if user_info.1 != "" %}
+                                    <span class="img-rounded-circle p-1"><img
+                                            src={{user_info.1}}
+                                            width="100" height="100"
+                                            class=" rounded-circle mx-auto d-block border-1 border-primary"
+                                            alt="Cinque Terre"></span>
+                                    {%else%}
+                                    <span class="img-rounded-circle p-1"><img
+                                            src="https://pluspng.com/img-png/user-png-icon-download-icons-logos-emojis-users-2240.png"
+                                            width="100" height="100"
+                                            class=" rounded-circle mx-auto d-block border-1 border-primary"
+                                            alt="Cinque Terre"></span>
+                                    {%endif%}
+                                </div>
+                                <div class="card-body text-center">
+                                    {% if user.is_authenticated %}
+                                    
+                                    <h5 class="card-title text-center">Hello, {{user.username}} !!</h5>
+                                    <p class="card-text">
+                                        Nomor Induk : {{user_info.0}} <br>
+                                        <!-- Your ID : {{user_info.1}} <br> -->
+                                        Akses Sebagai : {{user_info.2}}
+                                        
+                                        </p>
+                                    <div class="container-fluid">
+                                        <div class="container-fluid justify-content-between">
+                                            {% if user_info.2.name == "Mahasiswa" %}
+                                            <a href="/mahasiswa_update/{{user_info.0}}" class="btn btn-primary text-center m-2">Ganti Foto</a>    
+                                            {%else%}
+                                            <a href="/dosen_update/{{user_info.0}}" class="btn btn-primary text-center m-2">Ganti Foto</a>
+                                            {% endif %}
+                                            <a href="/user_update/{{user.id}}" class="btn btn-primary text-center">Ganti Profile</a>    
+                                        </div>
+                                        <a href="/password_change" class="btn btn-warning text-center m-2">Ganti Password</a>    
+                                    </div>
+                                    <a href="/logout" class="btn btn-danger text-center p-2">Log Out</a>
+                                    
+                                    {% endif %}
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<!-- top navigation bar -->
+<!-- offcanvas -->
+
+<div class="offcanvas offcanvas-start sidebar-nav bg-dark" tabindex="-1" id="sidebar">
+   
+    <div class="offcanvas-body p-0">
+        <nav class="navbar-dark">
+            <ul class="navbar-nav">
+                <li>
+                    <div class="text-muted small fw-bold text-uppercase px-3 py-2">
+                        <br>
+                        
+                    </div>
+                    <div class="text-muted small fw-bold text-uppercase px-3 py-2">
+                        Main
+                    </div>
+                </li>
+                <li>
+                    <a href="/dashboard"name="myrole" value="Dosen" class="nav-link px-3 active">
+                        <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="/jadwalget" class="nav-link px-3 active">
+                        <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                        <span>Jadwal Seminar</span>
+                    </a>
+                    
+                    <a href="/jadwalget/nomorinduk" class="nav-link px-3 active">
+                        <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                        <span>Jadwal Seminar Pribadi</span>
+                    </a>
+                    {% comment %} {%if user_info.2.name == 'Admin' or user_info.2.name == "Properta" %} {% endcomment %}
+                    {%if user_info.2.name == 'AA'  %}
+                    <a href="/login" class="nav-link px-3 active">
+                        <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                        <span>Login</span>
+                    </a>
+                    <a href="/register" class="nav-link px-3 active">
+                        <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                        <span>Register</span>
+                    </a>
+                    <form method="post">
+                    <a href="/changeuser/Admin" name="myrole" value="Admin" class="nav-link px-3 active">
+                        <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                        <span>Admin </span>
+                    </a>
+                    <a href="/changeuser/Properta" name="myrole" value="Admin" class="nav-link px-3 active">
+                        <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                        <span>Properta </span>
+                    </a>
+                    <a href="/changeuser/Mahasiswa" name="myrole" value="Mahasiswa" class="nav-link px-3 active">
+                        <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                        <span>Mahasiswa</span>
+                    </a>
+                    <a href="/changeuser/Kompartemen" name="myrole" value="Kompartemen"class="nav-link px-3 active">
+                        <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                        <span>Kompartemen</span>
+                    </a>
+                    <a href="/changeuser/Manajemen_Departemen" name="myrole" value="Manajemen Departemen" class="nav-link px-3 active">
+                        <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                        <span>Manajemen Departemen</span>
+
+                    </a>
+                    <a href="/changeuser/Dosen"name="myrole" value="Dosen" class="nav-link px-3 active">
+                        <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                        <span>Dosen</span>
+                    </a>
+                    
+                    {%endif%}
+                </form>
+                </li>
+                {%if user_info.2.name == 'Admin' or user_info.2.name == "Properta" %}
+                <!-- Divider -->
+                <li class="my-4">
+                    <hr class="dropdown-divider bg-light" />
+                </li>
+                <li>
+                    <div class="text-muted small fw-bold text-uppercase px-3 mb-3">
+                        Admin atau Properta
+                    </div>
+                </li>
+                <!-- User -->
+                <li>
+                    <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#layouts">
+                        <span class="me-2"><i class="bi bi-layout-split"></i></span>
+                        <span>User</span>
+                        <span class="ms-auto">
+                            <span class="right-icon">
+                                <i class="bi bi-chevron-down"></i>
+                            </span>
+                        </span>
+                    </a>
+                    <div class="collapse" id="layouts">
+                        <ul class="navbar-nav ps-3">
+                            <li>
+                                <a href="/userget" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel User</span>
+                                </a>
+                            </li>
+                            <!-- restrict admin -->
+                            {% comment %} <li>
+                                <a href="/usercreate" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tambah Data User</span>
+                                </a>
+                            </li> {% endcomment %}
+                            <!-- restrict only admin -->
+                            <li>
+                                <a href="/usergroupget" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel User Group</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                
+                
+                <!-- Dosen -->
+                <li>
+                    <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#layouts3">
+                        <span class="me-2"><i class="bi bi-layout-split"></i></span>
+                        <span>Dosen</span>
+                        <span class="ms-auto">
+                            <span class="right-icon">
+                                <i class="bi bi-chevron-down"></i>
+                            </span>
+                        </span>
+                    </a>
+                    <div class="collapse" id="layouts3">
+                        <ul class="navbar-nav ps-3">
+                            <li>
+                                <a href="/usercreate" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Registrasi Dosen</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/dosenget" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Dosen</span>
+                                </a>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </li>
+
+                <!-- Mahasiswa -->
+                <li>
+                    <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#layouts4">
+                        <span class="me-2"><i class="bi bi-layout-split"></i></span>
+                        <span>Mahasiswa</span>
+                        <span class="ms-auto">
+                            <span class="right-icon">
+                                <i class="bi bi-chevron-down"></i>
+                            </span>
+                        </span>
+                    </a>
+                    <div class="collapse" id="layouts4">
+                        <ul class="navbar-nav ps-3">
+                            <li>
+                                <a href="/usermahasiswacreate" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Registrasi Mahasiswa</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/mahasiswaget" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Mahasiswa</span>
+                                </a>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                    
+                </li>
+                <!-- Kompartemen -->
+                <li>
+                    <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#layouts5">
+                        <span class="me-2"><i class="bi bi-layout-split"></i></span>
+                        <span>Kompartemen Dan Dosen Kompartemen</span>
+                        <span class="ms-auto">
+                            <span class="right-icon">
+                                <i class="bi bi-chevron-down"></i>
+                            </span>
+                        </span>
+                    </a>
+                    <div class="collapse" id="layouts5">
+                        <ul class="navbar-nav ps-3">
+                            <li>
+                                <a href="/kompartemencreate" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tambah Kompartemen</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/kompartemenget" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Kompartemen</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/kompartemendosencreate" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tambah Dosen Kompartemen</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/kompartemendosenget" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Dosen Kompartemen</span>
+                                </a>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                    
+                </li>
+                <!-- Jadwal Seminar -->
+                <li>
+                    <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#layoutsSeminar">
+                        <span class="me-2"><i class="bi bi-layout-split"></i></span>
+                        <span>Jadwal Seminar</span>
+                        <span class="ms-auto">
+                            <span class="right-icon">
+                                <i class="bi bi-chevron-down"></i>
+                            </span>
+                        </span>
+                    </a>
+                    <div class="collapse" id="layoutsSeminar">
+                        <ul class="navbar-nav ps-3">
+                            <li>
+                                <a href="/jadwalcreate" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tambah Jadwal Seminar</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/jadwalget" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Jadwal Seminar</span>
+                                </a>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </li>
+                <!-- Jadwal semester -->
+                <li>
+                    <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#layoutsSemester">
+                        <span class="me-2"><i class="bi bi-layout-split"></i></span>
+                        <span>Jadwal Semester</span>
+                        <span class="ms-auto">
+                            <span class="right-icon">
+                                <i class="bi bi-chevron-down"></i>
+                            </span>
+                        </span>
+                    </a>
+                    <div class="collapse" id="layoutsSemester">
+                        <ul class="navbar-nav ps-3">
+                            <li>
+                                <a href="/jadwalsemestercreate" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tambah Jadwal Semester</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/jadwalsemesterget" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Jadwal Semester</span>
+                                </a>
+                            </li>
+                          
+                        </ul>
+                    </div>
+                </li>
+                <!-- CPMK -->
+                <li>
+                    <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#layoutsCPMK">
+                        <span class="me-2"><i class="bi bi-layout-split"></i></span>
+                        <span>CPMK</span>
+                        <span class="ms-auto">
+                            <span class="right-icon">
+                                <i class="bi bi-chevron-down"></i>
+                            </span>
+                        </span>
+                    </a>
+                    <div class="collapse" id="layoutsCPMK">
+                        <ul class="navbar-nav ps-3">
+                            <li>
+                                <a href="/cpmk_create" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tambah CPMK</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/cpmk_get" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel CPMK</span>
+                                </a>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </li>
+                <!-- SUB CPMK -->
+                <li>
+                    <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#layoutsSubCPMK">
+                        <span class="me-2"><i class="bi bi-layout-split"></i></span>
+                        <span> SUB CPMK</span>
+                        <span class="ms-auto">
+                            <span class="right-icon">
+                                <i class="bi bi-chevron-down"></i>
+                            </span>
+                        </span>
+                    </a>
+                    <div class="collapse" id="layoutsSubCPMK">
+                        <ul class="navbar-nav ps-3">
+                            <li>
+                                <a href="/sub_cpmk_create" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tambah Sub CPMK</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/sub_cpmk_get" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Sub CPMK</span>
+                                </a>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </li>
+
+                <!-- Usulan Topik -->
+                <li>
+                    <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#layouts6">
+                        <span class="me-2"><i class="bi bi-layout-split"></i></span>
+                        <span>Usulan Topik</span>
+                        <span class="ms-auto">
+                            <span class="right-icon">
+                                <i class="bi bi-chevron-down"></i>
+                            </span>
+                        </span>
+                    </a>
+                    <div class="collapse" id="layouts6">
+                        <ul class="navbar-nav ps-3">
+                            <li>
+                                <a href="/usulantopikcreatefull" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tambah Usulan Topik</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/usulantopikget" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Usulan Topik</span>
+                                </a>
+                            </li>
+                        </ul>
+
+                    </div>
+                    
+                </li>
+                <!-- Evaluasi Topik -->
+                <li>
+                    <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#evaltopikadmin">
+                        <span class="me-2"><i class="bi bi-layout-split"></i></span>
+                        <span>Evaluasi Topik</span>
+                        <span class="ms-auto">
+                            <span class="right-icon">
+                                <i class="bi bi-chevron-down"></i>
+                            </span>
+                        </span>
+                    </a>
+                    <div class="collapse" id="evaltopikadmin">
+                        <ul class="navbar-nav ps-3">
+                            <li>
+                                <a href="/evaluasitopikcreate" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tambah Evaluasi Topik</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/evaluasitopikget" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Evaluasi Topik</span>
+                                </a>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                    
+                </li>
+                <!--  Assign Dosen Pendamping -->
+                <li>
+                <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#layoutadminassignpendamping">
+                    <span class="me-2"><i class="bi bi-layout-split"></i></span>
+                    <span>Assign Role Dosen Pendamping</span>
+                    <span class="ms-auto">
+                        <span class="right-icon">
+                            <i class="bi bi-chevron-down"></i>
+                        </span>
+                    </span>
+                </a>
+                <div class="collapse" id="layoutadminassignpendamping">
+                    <ul class="navbar-nav ps-3">
+                        <li>
+                            <a href="/roledosencreate" class="nav-link px-3">
+                                <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                <span>Tambah Pasangan Dosen Pendamping </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/roledosenget" class="nav-link px-3">
+                                <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                <span>Tabel Pasangan Dosen Pendamping</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/roledosenget/pembimbing" class="nav-link px-3">
+                                <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                <span>Tabel Pasangan Dosen Pendamping Bimbingan</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/roledosenget/sempro" class="nav-link px-3">
+                                <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                <span>Tabel Pasangan Dosen Pendamping Sempro</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/roledosenget/semhas" class="nav-link px-3">
+                                <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                <span>Tabel Pasangan Dosen Pendamping Semhas</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+            </li>
+                 <!-- Proposal -->
+                 <li>
+                    <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#layoutsProposalAdmin">
+                        <span class="me-2"><i class="bi bi-layout-split"></i></span>
+                        <span>Berkas Skripsi</span>
+                        <span class="ms-auto">
+                            <span class="right-icon">
+                                <i class="bi bi-chevron-down"></i>
+                            </span>
+                        </span>
+                    </a>
+                    <div class="collapse" id="layoutsProposalAdmin">
+                        <ul class="navbar-nav ps-3">
+                            <li>
+                                <a href="/proposalcreatefull" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tambah Berkas Skripsi</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/proposalget" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Berkas Skripsi</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>      
+                </li>
+                 <!-- Bimbingan -->
+                 <li>
+                    <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#layoutsBimbinganAdmin">
+                        <span class="me-2"><i class="bi bi-layout-split"></i></span>
+                        <span>Bimbingan</span>
+                        <span class="ms-auto">
+                            <span class="right-icon">
+                                <i class="bi bi-chevron-down"></i>
+                            </span>
+                        </span>
+                    </a>
+                    <div class="collapse" id="layoutsBimbinganAdmin">
+                        <ul class="navbar-nav ps-3">
+                            <li>
+                                <a href="/bimbingancreate" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tambah Bimbingan</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/bimbinganget" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Bimbingan</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>      
+                </li>
+                 <!-- Proposal -->
+                 <li>
+                    <a href="/penilaian_list" class="nav-link px-3">
+                        <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                        <span>Tabel List Penilaian</span>
+                    </a>
+                </li>
+                 <li>
+                    <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#layoutsProposalPenilaianAdmin">
+                        <span class="me-2"><i class="bi bi-layout-split"></i></span>
+                        <span>Penilaian Berkas Skripsi</span>
+                        <span class="ms-auto">
+                            <span class="right-icon">
+                                <i class="bi bi-chevron-down"></i>
+                            </span>
+                        </span>
+                    </a>
+                    <div class="collapse" id="layoutsProposalPenilaianAdmin">
+                        <ul class="navbar-nav ps-3">
+                            <li>
+                                <a href="/proposalget/pembimbing" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Berkas Skripsi Pembimbing</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/proposalget/sempro" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Berkas Skripsi Penguji Semianar Proposal</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/proposalget/semhas" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Berkas Skripsi Penguji Seminar Hasil</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>      
+                </li>
+                {% comment %} Progress Mahasiswa {% endcomment %}
+                <li>
+                    <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#layoutsProgressMahasiswaAdmin">
+                        <span class="me-2"><i class="bi bi-layout-split"></i></span>
+                        <span>Progress Mahasiswa</span>
+                        <span class="ms-auto">
+                            <span class="right-icon">
+                                <i class="bi bi-chevron-down"></i>
+                            </span>
+                        </span>
+                    </a>
+                    <div class="collapse" id="layoutsProgressMahasiswaAdmin">
+                        <ul class="navbar-nav ps-3">
+                            <li>
+                                <a href="/listangkatan" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Progress Angkatan</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/mahasiswaprogress" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Progress Mahasiswa</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/mahasiswawaktu" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Progress Waktu Mahasiswa</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/mahasiswaprogressbulan" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Pelacak Waktu Progress Mahasiswa</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/listangkatan_onlytahun" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Angkatan Mahasiswa Ambil Skripsi</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>      
+                </li>
+                
+                {%endif%}
+                {% comment %} {%if user_info.2.name == 'Manajemen Departemen' or user_info.2.name == 'Admin' %} {% endcomment %}
+                {%if user_info.2.name == 'Manajemen Departemen' %}
+                <!-- if -->
+                <li class="my-4">
+                    <hr class="dropdown-divider bg-light" />
+                </li>
+                <li>
+                    <div class="text-muted small fw-bold text-uppercase px-3 mb-3">
+                        Manajemen Departemen
+                    </div>
+                </li>
+                <!-- Dosen Kompartemen -->
+                <li>
+                    <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#layoutsekdept1">
+                        <span class="me-2"><i class="bi bi-layout-split"></i></span>
+                        <span>Dosen Kompartemen</span>
+                        <span class="ms-auto">
+                            <span class="right-icon">
+                                <i class="bi bi-chevron-down"></i>
+                            </span>
+                        </span>
+                    </a>
+                    <div class="collapse" id="layoutsekdept1">
+                        <ul class="navbar-nav ps-3">
+                            <li>
+                                <a href="/kompartemendosencreate" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tambah Dosen Kompartemen</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/kompartemendosenget" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Dosen Kompartemen</span>
+                                </a>
+                            </li>
+
+                            
+                        </ul>
+                    </div>
+                </li>
+                <!-- Usulan Topik -->
+                <!-- <li>
+                    <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#layoutssekdepttopik">
+                                        <span class="me-2"><i class="bi bi-layout-split"></i></span>
+                                        <span>Usulan Topik</span>
+                                        <span class="ms-auto">
+                                            <span class="right-icon">
+                                                <i class="bi bi-chevron-down"></i>
+                                            </span>
+                                        </span>
+                                    </a>
+                                    <div class="collapse" id="layoutssekdepttopik">
+                                        <ul class="navbar-nav ps-3">
+                                            <li>
+                                                <a href="/usulantopikget" class="nav-link px-3">
+                                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                                    <span>Tabel Usulan Topik</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                
+                                    </div>
+                                    
+                </li> -->
+              
+        
+                <!-- Assign Dosen Kompartemen -->
+                <li>
+                    <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#layoutssekdeptassign">
+                        <span class="me-2"><i class="bi bi-layout-split"></i></span>
+                        <span>Assign Topik Mahasiswa dan Dosen Kompartemen</span>
+                        <span class="ms-auto">
+                            <span class="right-icon">
+                                <i class="bi bi-chevron-down"></i>
+                            </span>
+                        </span>
+                    </a>
+                    <div class="collapse" id="layoutssekdeptassign">
+                        <ul class="navbar-nav ps-3">
+                            <li>
+                                <a href="/usulantopik_get_filter_dosen" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Usulan Topik</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/evaluasitopikget" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Evaluasi Topik</span>
+                                </a>
+                            </li>
+                            <!-- <li>
+                                <a href="/evaluasitopikcreate" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tambah Evaluasi Topik</span>
+                                </a>
+                            </li> -->
+                        </ul>
+                    </div>
+                    
+                </li>
+                <li>
+                    <a href="/usulantopik_get_filter_dosen_pembimbing" class="nav-link px-3">
+                        <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                        <span>Tabel Berkas Skripsi Belum Assign Pembimbing</span>
+                    </a>
+                </li>
+                <!--  Assign Dosen Pendamping -->
+                <li>
+                    <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#layoutssekdeptassignpendamping">
+                        <span class="me-2"><i class="bi bi-layout-split"></i></span>
+                        <span>Assign Dosen Pendamping</span>
+                        <span class="ms-auto">
+                            <span class="right-icon">
+                                <i class="bi bi-chevron-down"></i>
+                            </span>
+                        </span>
+                    </a>
+                    <div class="collapse" id="layoutssekdeptassignpendamping">
+                        <ul class="navbar-nav ps-3">
+                            <li>
+                                <a href="/roledosenget" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Pasangan Dosen Pendamping</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/roledosenget/pembimbing" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Pasangan Dosen Pendamping Bimbingan</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/roledosenget/sempro" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Pasangan Dosen Pendamping Sempro</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/roledosenget/semhas" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tambah Pasangan Dosen Pendamping Semhas</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                </li>
+                <li>
+                    <a href="/penilaian_list" class="nav-link px-3">
+                        <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                        <span>Tabel List Penilaian</span>
+                    </a>
+                </li>
+
+                {%endif%}
+                <!-- Divider -->
+                {% comment %} {%if user_info.2.name == 'Kompartemen' or user_info.2.name == 'Admin'%} {% endcomment %}
+                {%if user_info.2.name == 'Kompartemen' %}
+                <!-- Kompartemen -->
+                <li class="my-4">
+                    <hr class="dropdown-divider bg-light" />
+                </li>
+                <li>
+                    <div class="text-muted small fw-bold text-uppercase px-3 mb-3">
+                        Kompartemen
+                    </div>
+                </li>
+                <!-- Evaluasi dan Usulan Topik -->
+                <li>
+                    <li>
+                        <a href="/usulantopik_get_filter_ACC/kompartemen" class="nav-link px-3">
+                            <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                            <span>Tabel Usulan Topik</span>
+                        </a>
+                    </li>
+                    <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#layouts7">
+                        <span class="me-2"><i class="bi bi-layout-split"></i></span>
+                        <span>Evaluasi Topik</span>
+                        <span class="ms-auto">
+                            <span class="right-icon">
+                                <i class="bi bi-chevron-down"></i>
+                            </span>
+                        </span>
+                    </a>
+                    <div class="collapse" id="layouts7">
+                        <ul class="navbar-nav ps-3">
+                            <li>
+                                <a href="/evaluasitopikgetrevise" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Evaluasi Topik</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                </li>
+               
+                 <!-- Role Dosen 2 -->
+                 <!-- <li>
+                    <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#layoutsdosen">
+                        <span class="me-2"><i class="bi bi-layout-split"></i></span>
+                        <span>Role Dosen</span>
+                        <span class="ms-auto">
+                            <span class="right-icon">
+                                <i class="bi bi-chevron-down"></i>
+                            </span>
+                        </span>
+                    </a>
+                    <div class="collapse" id="layoutsdosen">
+                        <ul class="navbar-nav ps-3">
+                            <li>
+                                <a href="/roledosenget/pembimbing" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Dosen Pembimbing</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/roledosenget/sempro" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Dosen Sempro</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/roledosenget/semhas" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Dosen Semhas</span>
+                                </a>
+                            </li>
+                            
+                        </ul>
+
+                    </div>
+                    
+                </li> -->
+                {%endif%}
+                {% comment %} {%if user_info.2.name == 'Dosen' or user_info.2.name == 'Kompartemen' or user_info.2.name == 'Admin' or user_info.2.name == 'Manajemen Departemen' %} {% endcomment %}
+                {%if user_info.2.name == 'Dosen' or user_info.2.name == 'Kompartemen' or user_info.2.name == 'Manajemen Departemen' %}
+                <!-- Dosen -->
+                <li class="my-4">
+                    <hr class="dropdown-divider bg-light" />
+                </li>
+                <li>
+                    <div class="text-muted small fw-bold text-uppercase px-3 mb-3">
+                        Dosen
+                    </div>
+                </li>
+
+                <li>
+                    <a href="/usulantopik_get_filter_ACC/dosen" class="nav-link px-3">
+                        <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                        <span>Tabel Usulan Topik</span>
+                    </a>
+                </li>
+                <!-- Role Dosen -->
+                {%if user_info.2.name == 'Manajemen Departemen' %}
+                <li>
+                    <a href="/roledosenget/sekdept" class="nav-link px-3">
+                        <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                        <span>Tabel Dosen Pendamping</span>
+                    </a>
+                </li>
+                {%else%}
+                <li>
+                    <a href="/roledosenget" class="nav-link px-3">
+                        <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                        <span>Tabel Dosen Pendamping</span>
+                    </a>
+                </li>   
+                {% endif %}
+                {% comment %} <li>
+                    <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#layoutsdosen">
+                        <span class="me-2"><i class="bi bi-layout-split"></i></span>
+                        <span>Role Dosen</span>
+                        <span class="ms-auto">
+                            <span class="right-icon">
+                                <i class="bi bi-chevron-down"></i>
+                            </span>
+                        </span>
+                    </a>
+                    <div class="collapse" id="layoutsdosen">
+                        <ul class="navbar-nav ps-3">
+                            <li>
+                                <a href="/roledosenget/pembimbing" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Dosen Pembimbing</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/roledosenget/sempro" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel  Dosen Sempro</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/roledosenget/semhas" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Dosen Semhas</span>
+                                </a>
+                            </li>
+                            
+                        </ul>
+
+                    </div>
+                    
+                </li> {% endcomment %}
+                <!-- Proposal -->
+                <li>
+                    <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#layoutsProposalDosen">
+                        <span class="me-2"><i class="bi bi-layout-split"></i></span>
+                        <span>Berkas Skripsi & Penilaian Mahasiswa</span>
+                        <span class="ms-auto">
+                            <span class="right-icon">
+                                <i class="bi bi-chevron-down"></i>
+                            </span>
+                        </span>
+                    </a>
+                    <div class="collapse" id="layoutsProposalDosen">
+                        <ul class="navbar-nav ps-3">
+                            <li>
+                                <a href="/proposalget/pembimbing" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Berkas Skripsi Pembimbing</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/proposalget/sempro" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Berkas Skripsi Penguji Seminar Proposal</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/proposalget/semhas" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Berkas Skripsi Penguji Seminar Hasil</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>      
+                </li>
+                {% comment %}  {% endcomment %}
+                <li>
+                    <a href="/bimbinganget" class="nav-link px-3">
+                        <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                        <span>Tabel Hasil Bimbingan</span>
+                    </a>
+                </li>
+                {% comment %} Progresss Mahasiswa {% endcomment %}
+                <li>
+                    <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#layoutsProgressMahasiswa">
+                        <span class="me-2"><i class="bi bi-layout-split"></i></span>
+                        <span>Progress Mahasiswa</span>
+                        <span class="ms-auto">
+                            <span class="right-icon">
+                                <i class="bi bi-chevron-down"></i>
+                            </span>
+                        </span>
+                    </a>
+                    <div class="collapse" id="layoutsProgressMahasiswa">
+                        <ul class="navbar-nav ps-3">
+                            <li>
+                                <a href="/listangkatan_onlytahun" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Persebaran Angkatan Aktif Skripsi</span>
+                                </a>
+                            </li>
+                            
+                            <li>
+                                <a href="/listangkatan" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Progress Angkatan</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/mahasiswaprogress" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Progress Mahasiswa</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/mahasiswaprogressbulan" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Pelacak Waktu Progress Mahasiswa</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/mahasiswawaktu" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Rata Rata Kelulusan Mahasiswa</span>
+                                </a>
+                            </li>
+                            
+                            
+                        </ul>
+                    </div>      
+                </li>
+
+                {%endif%}
+                {% comment %} {%if user_info.2.name == 'Mahasiswa' or user_info.2.name == 'Admin' %} {% endcomment %}
+                {%if user_info.2.name == 'Mahasiswa' %}
+                <!-- Mahasiswa -->
+                <li class="my-4">
+                    <hr class="dropdown-divider bg-light" />
+                </li>
+                <li>
+                    <div class="text-muted small fw-bold text-uppercase px-3 mb-3">
+                        Mahasiswa
+                    </div>
+                </li>
+                <!-- Usulan Topik -->
+                <li>
+                    <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#layoutstopikmhs">
+                        <span class="me-2"><i class="bi bi-layout-split"></i></span>
+                        <span>Usulan Topik</span>
+                        <span class="ms-auto">
+                            <span class="right-icon">
+                                <i class="bi bi-chevron-down"></i>
+                            </span>
+                        </span>
+                    </a>
+                    <div class="collapse" id="layoutstopikmhs">
+                        <ul class="navbar-nav ps-3">
+                            <li>
+                                <a href="/usulantopikcreate" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tambah Usulan Topik</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/usulantopikget" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Usulan Topik</span>
+                                </a>
+                            </li>
+                        </ul>
+                    
+                </li>
+                <li>
+                    <a href="/roledosenget" class="nav-link px-3">
+                        <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                        <span>Tabel Role Dosen</span>
+                    </a>
+                </li>
+                <!-- Proposal -->
+                <li>
+                    <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#layoutsBimbinagan">
+                        <span class="me-2"><i class="bi bi-layout-split"></i></span>
+                        <span>Berkas Skripsi</span>
+                        <span class="ms-auto">
+                            <span class="right-icon">
+                                <i class="bi bi-chevron-down"></i>
+                            </span>
+                        </span>
+                    </a>
+                    <div class="collapse" id="layoutsBimbinagan">
+                        <ul class="navbar-nav ps-3">
+                            <li>
+                                <a href="/proposalcreate" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tambah Berkas Skripsi</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/proposalget" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Berkas Skripsi</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>      
+                    
+                </li>
+                <li>
+                    <a href="/review_all" class="nav-link px-3">
+                        <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                        <span>List Review Seminar</span>
+                    </a>
+                </li>
+                <!-- Role Dosen -->
+                {% comment %} <li>
+                    <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#layoutsrolemhs">
+                        <span class="me-2"><i class="bi bi-layout-split"></i></span>
+                        <span>Role Dosen & Hasil Review Seminar</span>
+                        <span class="ms-auto">
+                            <span class="right-icon">
+                                <i class="bi bi-chevron-down"></i>
+                            </span>
+                        </span>
+                    </a>
+                    <div class="collapse" id="layoutsrolemhs">
+                        <ul class="navbar-nav ps-3">
+
+                            <li>
+                                <a href="/roledosenget" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Role Dosen</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/review_all" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>List Review Seminar</span>
+                                </a>
+                            </li>
+                        </ul>
+
+                    </div>
+                    
+                </li> {% endcomment %}
+             
+                {%endif%}
+               <br/>
+                <hr class="dropdown-divider bg-light" />
+                {% comment %} <li class="my-4">
+                </li>
+                <li>
+                    <div class="text-muted small fw-bold text-uppercase px-3 mb-3">
+                        Addons
+                    </div>
+                </li>
+                <li>
+                    <a href="#" class="nav-link px-3">
+                        <span class="me-2"><i class="bi bi-graph-up"></i></span>
+                        <span>Charts</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-link px-3">
+                        <span class="me-2"><i class="bi bi-table"></i></span>
+                        <span>Tables</span>
+                    </a>
+                </li> {% endcomment %}
+            </ul>
+        </nav>
+    </div>
+</div>
+<!-- offcanvas -->
+<main class="mt-5 pt-3">
+    <div class="container-fluid">
+        <br>
+        <br>
+        <br>
+        
+        {% block content %}
+        {% endblock %}
+    </div>
+</main>
+<style>
+    .fas[data-count]{
+        position:relative;
+    }
+    .fas[data-count]:after{
+        position: absolute;
+        right: -0.75em;
+        top: -.75em;
+        content: attr(data-count);
+        padding: .5em;
+        border-radius: 10em;
+        line-height: .9em;
+        color: white;
+        background: rgba(255,0,0,.75);
+        text-align: center;
+        min-width: 2em;
+        font: bold .4em sans-serif;
+    }
+</style>
+{% endblock %}

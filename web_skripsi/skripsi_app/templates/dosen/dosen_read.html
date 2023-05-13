@@ -1,0 +1,56 @@
+{%extends 'navbar_superuser.html' %}
+{% block title %}Tambah Data Mahasiswa{% endblock %}
+
+{% load static %}
+
+
+{% block content %}
+
+
+<div class="container-fluid">
+  <h1 class="h2"> User, {{dosens.nip}}</h1>
+  <div class="mb-3 row">
+    <label for="staticEmail" class="col-sm-2 col-form-label ">NIP</label>
+    <div class="col-sm-10">
+      <input class="form-control" type="text" value="{{dosens.nip}}" aria-label="Disabled input example" disabled
+        readonly>
+    </div>
+  </div>
+  <div class="mb-3 row">
+    <label for="staticEmail" class="col-lg-2 col-form-label">User</label>
+    <div class="col-sm-10">
+      <textarea class="form-control" disabled readonly>{{dosens.id_user}}</textarea>
+    </div>
+  </div>
+  <div class="mb-3 row">
+    <label for="staticEmail" class="col-lg-2 col-form-label">Nama</label>
+    <div class="col-sm-10">
+      <textarea class="form-control" disabled readonly>{{dosens.id_user.first_name}}</textarea>
+    </div>
+  </div>
+  <!-- <div class="mb-3 row">
+    <label for="staticEmail" class="col-lg-2 col-form-label">Kompartemen</label>
+    <div class="col-sm-10">
+      <textarea class="form-control" disabled readonly>{{dosens.id_kompartemen}}</textarea>
+    </div>
+  </div> -->
+  <div class="mb-3 row">
+    <label for="staticEmail" class="col-sm col-form-label">Photo</label>
+    <div class="col-sm-10">
+      {%if dosens.photo_file == "" %}
+      <h3>tidak ada gambar</h3>
+      {%else%}
+      <td><img class="my-2" src={{dosens.photo_file.url}} width="100px"></td>
+      {%endif%}
+    </div>
+
+
+    <!-- <a type="button" class="btn btn-md btn-info text-white" href="/skripsi_app/userget"> Kembali Ke Tabel User</a> -->
+
+
+  </div>
+</div>
+
+
+
+{% endblock %}

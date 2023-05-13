@@ -1,0 +1,10 @@
+         {{item2.Tanggal_Buat|timesince:item.TanggalUpdate }}
+ {{ item2.Tanggal_Buat|date:"D" }}
+          {{ item2.Tanggal_Buat|date:"d" }}
+          {{ item2.Tanggal_Buat|date:"m" }}
+          {{ item2.Tanggal_Buat|date:"Y" }}
+
+          {{ item.TanggalUpdate|date:"D" }}
+          {{ item.TanggalUpdate|date:"d" }}
+          {{ item.TanggalUpdate|date:"m" }}
+          {{ item.Tanggal_Buat|date:'Y' }}

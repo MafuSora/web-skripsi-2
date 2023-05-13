@@ -1,0 +1,83 @@
+{%extends 'navbar_superuser.html' %}
+{% block title %}Tabel Data User{% endblock %}
+
+{% load static %}
+{% load crispy_forms_tags%}
+
+{% block content %}
+
+<div class="container">
+    <h2>Tabel Daftar User</h2>
+    <br>
+    <table id="table-paginate" class="table table-striped table-bordered table-paginate" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Operation</th>
+            </tr>
+        </thead>
+        <tbody>
+            {%for item in users%}
+            <tr>
+
+                <td>{{item.id}}</td>
+                <td>{{item.username}}</td>
+                <td>{{item.first_name}}</td>
+                <td>{{item.email}}</td>
+                <td>
+                    <a class="btn btn-md w-100 text-white px-1 my-1" style='background-color:#0098AD;' type="button" href="{% url 'user_read' item.id %}">READ</a>
+                    <br>
+                    <a class="btn w-100 text-black px-1 my-1" style='background-color:#FFB92E;' type="button"
+                    href="{% url 'user_update' item.id %}">UPDATE</a>
+                    <br>
+                    <a class="btn btn-danger btn-md w-100 px-1 my-1" type="button" data-bs-toggle="modal"
+                    data-bs-target="#staticBackdrop{{item.id}}">DELETE</a>
+                    <br>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="staticBackdrop{{item.id}}" data-bs-backdrop="static"
+                        data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel{{item.id}}"
+                        aria-hidden="true" name="{{item.id}}">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="staticBackdropLabel{{item.id}}">Apakah anda yakin akan
+                                        menghapus
+                                        {{item.username}} atau {{item.first_name}} ?</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Data tidak akan dikembalikan ketika telah menekan tombol "Ya"
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Tidak</button>
+                                    <a type="button" class="btn btn-danger" href="{%url 'user_delete' item.id%}">Ya</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Operation</th>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+
+<script src="{% static 'js/dashboard.js' %}"></script>
+
+{% endblock %}

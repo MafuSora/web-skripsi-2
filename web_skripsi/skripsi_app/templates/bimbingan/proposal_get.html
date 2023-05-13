@@ -1,0 +1,314 @@
+{%extends 'navbar_superuser.html' %}
+{% block title %}Tabel Berkas Skripsi Mahasiswa{% endblock %}
+
+{% load static %}
+{% load crispy_forms_tags%}
+
+{% block content %}
+
+<div class="container">
+  {%if user_info.2.name == "Mahasiswa" %}
+  <h2>Tabel Berkas Skripsi Mahasiswa</h2>
+
+  {%elif role == "Dosen Pembimbing" %}
+  <h2>Tabel Berkas Skripsi Dosen Pembimbing</h2>
+  <div class="container-fluid text-start"><a class="btn btn-success text-white mb-2"
+    href="/proposalget/pembimbing">Tanpa Filter
+     </a></div>
+  <div class="container-fluid text-start">
+    <a class="btn btn-success text-white mb-2"
+    href="/proposalget/pembimbing/acc">Filter
+    Belum Diperiksa </a>
+    <a class="btn btn-success text-white mb-2"
+    href="/proposalget/pembimbing/sudah_diperiksa">Filter
+    Sudah Diperiksa </a>
+    <a class="btn btn-success text-white mb-2"
+    href="/proposalget/pembimbing/sudah_acc">Filter
+    ACC </a>
+    <a class="btn btn-success text-white mb-2"
+    href="/proposalget/pembimbing/revisi">Filter
+    Revisi </a>
+  </div>
+  <div class="container-fluid text-start"><a class="btn btn-success text-white mb-2"
+    href="/proposalget/pembimbing/nilai">Filter
+    Sudah ACC & Penilaian Belum Lengkap</a>
+    <a class="btn btn-success text-white mb-2"
+    href="/proposalget/pembimbing/nilai/belum">Filter
+    Penilaian Kosong</a>
+    <a class="btn btn-success text-white mb-2"
+    href="/proposalget/pembimbing/nilai/sebagian">Filter
+    Penilaian Sebagian Lengkap</a>
+    <a class="btn btn-success text-white mb-2"
+    href="/proposalget/pembimbing/lengkap_nilai">Filter
+    Penilaian Lengkap</a>
+  </div>
+  {%elif role == "Dosen Seminar Proposal" %}
+  <h2>Tabel Berkas Skripsi Dosen Seminar Proposal</h2>
+  <div class="container-fluid text-start">
+    <a class="btn btn-success text-white mb-2"
+    href="/proposalget/sempro">Tanpa Filter
+    </a>
+    <a class="btn btn-success text-white mb-2"
+    href="/proposalget/sempro/nilai">Filter
+    Belum Dinilai</a>
+  </div>
+  {%elif role == "Dosen Seminar Hasil" %}
+  <h2>Tabel Berkas Skripsi Dosen Seminar Hasil</h2>
+  
+  <div class="container-fluid text-start">
+    <a class="btn btn-success text-white mb-2"
+    href="/proposalget/semhas">Tanpa Filter
+    </a>
+    <a class="btn btn-success text-white mb-2"
+    href="/proposalget/semhas/nilai">Filter
+    Belum Dinilai</a>
+  </div>
+  {%else%}
+  <h2>Tabel Berkas Skripsi</h2>
+  <div class="container-fluid text-start"><a class="btn btn-success text-white mb-2"
+    href="/proposalget/">Tanpa Filter
+     </a></div>
+  <div class="container-fluid text-start">
+
+    <a class="btn btn-success text-white mb-2"
+    href="/proposalget_acc">Filter
+    Berkas Skripsi ACC</a>
+    <a class="btn btn-success text-white mb-2"
+    href="/proposalget_revisi">Filter
+    Berkas Skripsi Revisi</a>
+    <a class="btn btn-success text-white mb-2"
+    href="/proposalget_diperiksa">Filter
+    Berkas Skripsi Belum Diperiksa</a>
+  </div>
+
+  <div class="container-fluid text-start">
+    <a class="btn btn-success text-white mb-2"
+    href="/proposalget_nilai">Filter
+    Berkas Skripsi Sudah di Nilai</a>
+    <a class="btn btn-success text-white mb-2"
+    href="/proposalget_belum_nilai">Filter
+    Berkas Skripsi Belum di Nilai</a>
+  </div>
+  {%endif%}
+
+
+  {%if user_info.2.name == "Mahasiswa"  %}
+  <div class="container-fluid text-end"><a class="btn btn-success text-white my-3"
+    href="/proposalcreate">Tambah
+    Berkas Skripsi</a></div>
+  {%elif user_info.2.name == "Admin" or user_info.2.name == "Properta"%}
+
+  <div class="container-fluid text-start">
+    <a class="btn btn-success text-white my-1"
+    href="/proposalget5">Tabel Proposal ACC 5 tahun Ke Belakang
+    </a>
+    <a class="btn btn-success text-white my-1"
+    href="/proposalget5/sempro">Proposal Awal
+    </a>
+    <a class="btn btn-success text-white my-1"
+    href="/proposalget5/semhas">Laporan Akhir
+    </a>
+  </div>
+  <div class="container-fluid text-end"><a class="btn btn-success text-white my-3"
+    href="/proposalcreatefull">Tambah
+    Berkas Skripsi</a></div>
+  {%endif%}
+
+  <table id="table-paginate" class="table table-striped table-bordered table-paginate" cellspacing="0" width="100%">
+    <thead>
+      <tr>
+        <th>NIM</th>
+        <th>Nama</th>
+        <th>Nama Tahap</th>
+        <th>Judul Berkas Skripsi</th>
+        <th>Status</th>
+        <th>File</th>
+        <th>Keterangan</th>
+        {%if user_info.2.name != "Mahasiswa" %}
+        <th>Status Penilaian</th>
+        <th>Jumlah Bimbingan Untuk Seminar Proposal</th>
+        <th>Jumlah Bimbingan Untuk Seminar Hasil</th>
+        {% endif %}
+        <th>Tanggal Dibuat</th>
+        <th>Tanggal Diedit</th>
+        <th class="text-center">Operation</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+      {%for item in proposals%}
+      <tr>
+
+        <td>{{item.nim.nim}}</td>
+        <td>{{item.nim.id_user.first_name}}</td>
+        <td>{{item.nama_tahap}}</td>
+        <td>{{item.judul_proposal}}</td>
+        <td>{{item.status}}</td>
+        <td id="file-skripsi"><a href="{{item.file_proposal.url}}">File</a></td>
+        <!-- <td><embed src="{{item.File_Topik.url}}" width="500" height="375" type="application/pdf"></td> -->
+        <td>{{item.keterangan}}</td>
+        {%if user_info.2.name != "Mahasiswa" %}
+        <td>{{item.status_nilai}}
+          {%if item.tahap_penilaian != None %}:<br/> {%for item2 in item.tahap_penilaian%}{{forloop.counter}}. {{item2}}{%endfor%}{%endif%}</td>
+        <td>{{item.jumlah_sempro}}</td>
+        <td>{{item.jumlah_semhas}}</td>
+        {% endif %}
+        
+        <td>{{item.tanggal_buat|date:"Y-m-d,D H:i"}}</td>
+        <td>{{item.tanggal_update|date:"Y-m-d,D H:i"}}</td>
+        <td>
+          <div class="d-flex align-items-start ">
+            {% comment %} <div class="row"> {% endcomment %}
+              <div class="d-flex flex-column m-2">
+                <a class="btn btn-info w-100 text-black m-1 " type="button" href="{{item.file_topik.url}}">Download</a>
+                <a class="btn btn-success w-100 text-white m-1" type="button" href="{% url 'proposal_read' item.id_proposal %}">READ</a>  
+                
+                {%if user_info.2.name == "Manajemen Departemen" or user_info.2.name == "Kompartemen" or user_info.2.name == "Dosen" %}
+                {%if  role == "Dosen Seminar Hasil" %}
+                {%elif role == "Dosen Seminar Proposal" %}
+                {% else %}
+                <a class="btn btn-warning w-100 text-black m-1" type="button"
+                href="{% url 'bimbingan_get_id_proposal' item.id_proposal %}">Lihat List Review</a>
+                {% endif %}        
+                {% endif %}        
+                {%if user_info.2.name == "Mahasiswa" or user_info.2.name == "Admin" or user_info.2.name == "Properta"%}      
+
+                  <a class="btn btn-warning w-100 text-black m-1" type="button"
+                    href="{% url 'bimbingan_get_id_proposal' item.id_proposal %}">Lihat List Review</a>
+                  {%if item.status != "ACC" or user_info.2.name == "Admin" or user_info.2.name == "Properta" %}
+                    <a class="btn btn-warning w-100 text-black m-1" type="button"
+                      href="{% url 'proposal_update' item.id_proposal %}">UPDATE</a>
+                    <a class="btn btn-danger w-100 text-white m-1" type="button" data-bs-toggle="modal"
+                      data-bs-target="#staticBackdrop{{item.id_proposal}}">DELETE</a>
+                    <!-- Modal -->
+                    <div class="modal fade" id="staticBackdrop{{item.id_proposal}}" data-bs-backdrop="static" data-bs-keyboard="false"
+                      tabindex="-1" aria-labelledby="staticBackdropLabel{{item.nim}}" aria-hidden="true" name="{{item.id_proposal}}">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel{{item.id_proposal}">Apakah
+                              anda yakin akan
+                              menghapus
+                              {{item.Judul_Topik}} ?</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            Data tidak akan dikembalikan ketika telah menekan tombol "Ya"
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
+                            <a type="button" class="btn btn-danger" href="{%url 'proposal_delete' item.id_proposal%}">Ya</a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    {% comment %} {%if user_info.2.name == "Mahasiswa" %} {% endcomment %}
+                  {%endif%}
+                {%endif%}
+
+                {%if  user_info.2.name == "Admin"  %}
+                <a class="btn btn-secondary w-100 text-white m-1" type="button" href="{% url 'bimbingan_create_dosen' item.id_proposal %}">Buat Review</a>
+                {% endif %}
+                {%if role == "Pembimbing" or  role == "Dosen Pembimbing"  %}
+                  {%if item.status != "ACC"%}
+                    <a class="btn btn-secondary w-100 text-white m-1" type="button" href="{% url 'bimbingan_create_dosen' item.id_proposal %}">Buat Review</a>
+                  {%endif%}
+                {%endif%}
+              </div>
+              <div class="d-flex flex-column m-2">
+                {%if user_info.2.name == "Mahasiswa" %}
+                {%elif role == "Pembimbing" or  role == "Dosen Pembimbing"  %}
+                  {%if item.status != "ACC"%}
+                  {% comment %} <a class="btn btn-secondary w-100 text-white my-1" type="button" href="{% url 'bimbingan_create_dosen' item.id_proposal %}">Buat Review</a> {% endcomment %}
+                  {% comment %} {%elif  user_info.2.name == "Properta"or user_info.2.name == "Properta"or user_info.2.name == "Properta"%}
+                  <a class="btn btn-secondary w-100 text-white my-1" type="button" href="{% url 'bimbingan_create_dosen' item.id_proposal %}">Buat Review</a>
+                  <a class="btn btn-primary w-100 text-white my-1" type="button" href="{% url 'penilaian_bimbingan_dosen' item.id_proposal %}">Penilaian Bimbingan</a>{% endcomment %}
+                  {% comment %} <a class="btn btn-success m-1" type="button" href="{% url 'penilaian_sempro_dosen' item.id_proposal %}">Nilai Sempro</a> {% endcomment %}
+                  {% comment %} <a class="btn btn-success m-1" type="button" href="{% url 'penilaian_semhas_dosen' item.id_proposal %}">Nilai Semhas</a> {% endcomment %}
+                  {% comment %} <a class="btn btn-primary w-100 text-white my-1" type="button" href="{% url 'penilaian_sempro_dosen' item.id_proposal %}">Penilaian Sempro</a>
+                  <a class="btn btn-primary w-100 text-white my-1" type="button" href="{% url 'penilaian_semhas_dosen' item.id_proposal %}">Penilaian Semhas</a>  {% endcomment %}
+                  
+                  {%else%}
+                  <a class="btn btn-primary w-100 text-white m-1" type="button" href="{% url 'penilaian_bimbingan_dosen' item.id_proposal %}">Penilaian Bimbingan</a>
+                  <a class="btn btn-primary w-100 text-white m-1" type="button" href="{% url 'penilaian_sempro_dosen' item.id_proposal %}">Penilaian Sempro</a>
+                  <a class="btn btn-primary w-100 text-white m-1" type="button" href="{% url 'penilaian_semhas_dosen' item.id_proposal %}">Penilaian Semhas</a>
+                  {%endif%}
+                {%elif role == "Dosen Seminar Proposal"  %}
+                  <a class="btn btn-primary w-100 text-white m-1" type="button" href="{% url 'penilaian_sempro_dosen' item.id_proposal %}">Penilaian Sempro</a>
+                {%elif role == "Dosen Seminar Hasil" %}
+                  <a class="btn btn-primary w-100 text-white m-1" type="button" href="{% url 'penilaian_semhas_dosen' item.id_proposal %}">Penilaian Semhas</a>
+                {%endif%}
+              </div>
+              <div class="d-flex flex-column m-2">
+                {%if role == "Dosen Pembimbing" or  user_info.2.name == "Admin"  or user_info.2.name == "Properta"  %}
+                  {%if item.status == "ACC"%}
+                      <a class="btn btn-danger w-100 text-white my-1" type="button"
+                    href="{% url 'penilaian_bimbingan_nim' item.nim.nim %}">Review Nilai Bimbingan</a>
+                      <a class="btn btn-danger w-100 text-white my-1" type="button"
+                    href="{% url 'penilaian_sempro_nim'  item.nim.nim %}">Review Nilai Sempro</a>
+                      <a class="btn btn-danger w-100 text-white my-1" type="button"
+                    href="{% url 'penilaian_semhas_nim'  item.nim.nim %}">Review Nilai Semhas</a>
+                  {%endif%}
+                {%elif role == "Dosen Seminar Proposal"  %}
+                  <a class="btn btn-danger w-100 text-white my-1" type="button"
+                href="{% url 'penilaian_sempro_nim_filter'  item.nim.nim %}">Review Nilai Sempro</a>
+                {%elif role == "Dosen Seminar Hasil" %}
+                  <a class="btn btn-danger w-100 text-white my-1" type="button"
+                href="{% url 'penilaian_semhas_nim_filter'  item.nim.nim %}">Review Nilai Semhas</a>
+                {% comment %} {%elif role == "Dosen Seminar Hasil" %} {% endcomment %}
+                {%endif%}
+              </div>
+              <div class="d-flex flex-column m-2">
+                {%if role == "Dosen Pembimbing" or  user_info.2.name == "Admin"  or user_info.2.name == "Properta"  %}
+                  {%if item.status == "ACC"%}
+                  <a class="btn btn-warning w-100 text-dark my-1" type="button"
+                  href="{% url 'nilai_bimbingan_get' item.nim.nim %}">Lihat Nilai Kelulusan Bimbingan</a>
+                  <a class="btn btn-warning w-100 text-dark my-1" type="button"
+                  href="{% url 'nilai_sempro_get'  item.nim.nim %}">Lihat Nilai Kelulusan Sempro</a>
+                  <a class="btn btn-warning w-100 text-dark my-1" type="button"
+                  href="{% url 'nilai_semhas_get'  item.nim.nim %}">Lihat Nilai Kelulusan Semhas</a>
+                  {% comment %} {%elif role == "Dosen Seminar Proposal"  %}
+                  <a class="btn btn-warning w-100 text-dark my-1" type="button"
+                  href="{% url 'nilai_sempro_get'  item.nim.nim %}">Lihat Nilai Sempro</a>
+                  {%elif role == "Dosen Seminar Hasil" %}
+                  <a class="btn btn-warning w-100 text-dark my-1" type="button"
+                  href="{% url 'nilai_semhas_get'  item.nim.nim %}">Lihat Nilai Semhas</a> {% endcomment %}
+                  {% comment %} {%elif role == "Dosen Seminar Hasil" %} {% endcomment %}
+    
+                  {%endif%}
+                {%endif%}
+              </div>
+            {% comment %} </div> {% endcomment %}
+          </div>
+
+        </td>
+        
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr>
+        <th>NIM</th>
+        <th>Nama</th>
+        <th>Nama Tahap</th>
+        <th>Judul Berkas Skripsi</th>
+        <th>Status</th>
+        <th>File</th>
+        <th>Keterangan</th>
+        {%if user_info.2.name != "Mahasiswa" %}
+        <th>Status Penilaian</th>
+        <th>Jumlah Bimbingan Untuk Seminar Proposal</th>
+        <th>Jumlah Bimbingan Untuk Seminar Hasil</th>
+        {% endif %}
+        <th>Tanggal Dibuat</th>
+        <th>Tanggal Diedit</th>
+        <th>Operation</th>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+
+<!-- <script src="{% static 'js/dashboard.js' %}"></script> -->
+
+{% endblock %}

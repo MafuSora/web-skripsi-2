@@ -1,0 +1,190 @@
+{%extends 'navbar_superuser.html' %}
+{% block title %}Tabel Topik Mahasiswa{% endblock %}
+
+{% load static %}
+{% load crispy_forms_tags%}
+
+{% block content %}
+
+<div class="container">
+  <h2>Tabel Topik Mahasiswa</h2>
+  <div class=" d-flex justify-content-between ">
+  {%if user_info.2.name == "Mahasiswa"  %}
+    <div class="text-start px-2">
+
+      <a class="btn btn-primary w-100 text-white my-1" href="/usulantopikcreate">Tambah Usulan Topik</a>
+      <a class="btn btn-primary w-100 text-white my-1" href="/evaluasitopikget">Hasil Review Topik</a>
+    </div>
+  {%elif user_info.2.name == "Admin" or user_info.2.name == "Properta"%}
+  <div class="text-end">
+    <a class="btn btn-success w-100 text-white my-1" href="/usulantopikget">Topik Keseluruhan</a>
+    {%if user_info.2.name == "Manajemen Departemen" or user_info.2.name == "Admin" or user_info.2.name == "Admin" or user_info.2.name == "Properta"%}
+    <a class="btn btn-success w-100 text-white my-1" href="/usulantopik_get_filter_dosen">Topik Belum Assign Kompartemen</a>
+    <a class="btn btn-success w-100 text-white my-1" href="/usulantopik_get_filter_dosen_pembimbing">Topik Belum Assign Pembimbing</a>
+    <a class="btn btn-success w-100 text-white my-1" href="/usulantopik_get_filter_ACC">Topik Belum ACC</a>
+    <a class="btn btn-success w-100 text-white my-1" href="/usulantopikget1">Topik ACC 1 Tahun Terakhir</a>
+    {%endif%}
+  </div>
+  <div class="text-start px-2">
+
+    <a class="btn btn-primary w-100 text-white my-1" href="/usulantopikcreatefull">Tambah Usulan Topik</a>
+    <a class="btn btn-warning w-100 text-black my-1" href="/evaluasitopikget">Hasil Review Topik</a>
+  </div>
+  {% else%}
+  
+    <div class="text-start">
+
+      {%if user_info.2.name == "Manajemen Departemen" or user_info.2.name == "Admin" or user_info.2.name == "Properta"%}
+    
+      <a class="btn btn-primary w-100 text-white my-1" href="/usulantopikget">Topik Keseluruhan</a>
+      <a class="btn btn-primary w-100 text-white my-1" href="/usulantopik_get_filter_dosen">Topik Belum Assign Kompartemen</a>
+      <a class="btn btn-primary w-100 text-white my-1" href="/usulantopik_get_filter_dosen_pembimbing">Topik Belum Assign Pembimbing</a>
+      <a class="btn btn-primary w-100 text-white my-1" href="/usulantopik_get_filter_ACC">Topik Belum ACC</a>
+      <a class="btn btn-primary w-100 text-white my-1" href="/usulantopikget1">Topik ACC 1 Tahun Terakhir</a>
+      {%endif%}
+      
+      {%if user_info.2.name == "Kompartemen" %}
+      <a class="btn btn-primary w-100 text-white my-1" href="/usulantopik_get_filter/kompartemen">Tanpa Filter - Kompartemen</a>
+      <a class="btn btn-primary w-100 text-white my-1" href="/usulantopik_get_filter_ACC/kompartemen">Topik Filter Belum ACC - Kompartemen </a>
+      <a class="btn btn-primary w-100 text-white my-1" href="/usulantopik_get_filter_belum_ACC/kompartemen">Topik Filter Sudah Diperiksa - Kompartemen </a>
+      {%endif%}
+
+      {%if user_info.2.name == "Dosen" or user_info.2.name == "Manajemen Departemen" or user_info.2.name == "Kompartemen"%}
+      <a class="btn btn-primary w-100 text-white my-1" href="/usulantopik_get_filter/dosen">Tanpa Filter - Pembimbing</a>
+      <a class="btn btn-primary w-100 text-white my-1" href="/usulantopik_get_filter_ACC/dosen">Tabel Topik ACC - Pembimbing</a>
+      {%endif%}
+    </div>
+  {%endif%}
+</div>
+  <table id="table-paginate" class="table table-striped table-bordered table-paginate" cellspacing="0" width="100%">
+    <thead>
+      <tr>
+        <th>NIM</th>
+        <th>Nama</th>
+        <th>Permohonan Dosen 1</th>
+        <th>Permohonan Dosen 2</th>
+        <th>Judul</th>
+        <th>File</th>
+        <!-- <th>preview</th> -->
+        <th>Keterangan </th>
+        <th>Dosen Kompartemen</th>
+        <th>Status ACC</th>
+        <th>Keterangan Dosen</th>
+        <th>Tanggal Dibuat</th>
+        <th>Tanggal Diedit</th>
+        <th>Operation</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+      {%for item in usulantopiks%}
+      <tr>
+
+        <td>{{item.nim.nim}}</td>
+        <td>{{item.nim.id_user.first_name}}</td>
+        <td>{{item.permintaan_dosen_1.id_user.first_name}}</td>
+        <td>{{item.permintaan_dosen_2|cut:"1"|cut:"2"|cut:"3"|cut:"4"|cut:"5"|cut:"6"|cut:"7"|cut:"8"|cut:"9"|cut:"0"|cut:"-"}}</td>
+        <td>{{item.judul_topik}}</td>
+        {% comment %} <td>{{item.file_topik.url}}</td> {% endcomment %}
+        <td id="file-skripsi"><a href="{{item.file_topik.url}}">File</a></td>
+        <!-- <td><embed src="{{item.File_Topik.url}}" width="500" height="375" type="application/pdf"></td> -->
+        <td>{{item.keterangan}}</td>
+        <td>{{item.status_dosen_Kompartemen}}</td>
+        <td>{{item.status}}</td>
+        <td>{{item.keterangan_dosen}}</td>
+        <td>{{item.tanggal_buat |date:"Y-m-d,D H:i"}}</td>
+        <td>{{item.tanggal_update |date:"Y-m-d,D H:i"}}</td>
+        <td>
+          <form method="post">
+            {% csrf_token %}
+            
+            <a class="btn btn-info btn-md w-100 px-1 my-1" type="button" href="{{item.file_topik.url}}">DOWNLOAD</a>
+            <a class="btn btn-success btn-md w-100 px-1 my-1" type="button" href="{% url 'usulantopik_read' item.id_usulan_topik %}">READ</a>
+            {% comment %} <a class="btn btn-warning text-white m-1" type="button"
+              href="{% url 'evaluasitopik_update' item.id_usulan_topik %}">Buat Evaluasi Topik</a> {% endcomment %}
+            {%if user_info.2.name == "Mahasiswa" or user_info.2.name == "Admin" or user_info.2.name == "Dosen" or user_info.2.name == "Kompartemen" or user_info.2.name == "Manajemen Departemen"%}
+              {%if item.status_dosen_Kompartemen != "Belum Di Assign" %}
+            <a class="btn btn-warning btn-md w-100 px-1 my-1" type="button"
+              href="{% url 'evaluasitopik_get_id_usulan' item.id_usulan_topik %}">LIST EVALUASI TOPIK</a>
+              {% endif %}
+              {%if item.status != "ACC" or user_info.2.name == "Admin" %}
+              {%if user_info.2.name == "Mahasiswa" or user_info.2.name == "Admin"  %}
+            <a class="btn btn-warning btn-md w-100 px-1 my-1" type="button"
+              href="{% url 'usulantopik_update' item.id_usulan_topik %}">UPDATE</a>
+            <a class="btn btn-danger btn-md w-100 px-1 my-1" type="button" data-bs-toggle="modal"
+              data-bs-target="#staticBackdrop{{item.id_usulan_topik}}">DELETE</a>
+              {%endif%}
+              {%endif%}
+              {%if user_info.2.name == "Kompartemen" or user_info.2.name == "Admin"  %}
+              {%if item.status != "ACC" or user_info.2.name == "Admin"  %}
+              {%if  item.status_dosen_Kompartemen != "Belum Di Assign" %}
+
+              <a class="btn btn-warning btn-md w-100 px-1 my-1" type="button"
+              href="{% url 'evaluasitopik_create_id_usulan' item.id_usulan_topik %}">Evaluasi</a>
+
+              {%endif%}
+              {%endif%}
+              {%endif%}
+              <!-- Modal -->
+            <div class="modal fade" id="staticBackdrop{{item.id_usulan_topik}}" data-bs-backdrop="static" data-bs-keyboard="false"
+              tabindex="-1" aria-labelledby="staticBackdropLabel{{item.nim}}" aria-hidden="true" name="{{item.id_usulan_topik}}">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel{{item.id_usulan_topik}">Apakah
+                      anda yakin akan
+                      menghapus
+                      {{item.Judul_Topik}} ?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    Data tidak akan dikembalikan ketika telah menekan tombol "Ya"
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
+                    <a type="button" class="btn btn-danger" href="{%url 'usulantopik_delete' item.id_usulan_topik%}">Ya</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {%endif%}
+            {%if user_info.2.name == "Manajemen Departemen" or user_info.2.name == "Admin" or user_info.2.name == "Properta"%}
+
+            <a href="{%url 'evaluasitopik_create_sekdept' item.id_usulan_topik%}">
+              <button type="button" class="btn btn-primary btn-md w-100 px-1 py-1 my-1" name="nim" value="{{item.nim}}" href="">ASSIGN KOMPARTEMEN</button>
+            </a>
+            <a href="{%url 'dosenpembimbing_create_sekdept' item.nim.nim%}">
+              <button type="button" class="btn btn-primary btn-md w-100 px-1 py-1 my-1" name="nim" value="{{item.nim}}" href="">ASSIGN DOSEN</button>
+            </a>
+            {%endif%}
+      </form>
+    </td>
+        
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr>
+        <th>NIM</th>
+        <th>Nama</th>
+        <th>Permohonan Dosen 1</th>
+        <th>Permohonan Dosen 2</th>
+        <th>Judul</th>
+        <th>File</th>
+        <!-- <th>preview</th> -->
+        <th>Keterangan Proposal</th>
+        <th>Dosen Kompartemen</th>
+        <th>Status ACC</th>
+        <th>Keterangan Dosen</th>
+        <th>Tanggal Dibuat</th>
+        <th>Tanggal Diedit</th>
+        <th>Operation</th>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+
+<script src="{% static 'js/dashboard.js' %}"></script>
+
+{% endblock %}

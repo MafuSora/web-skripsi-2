@@ -1,0 +1,95 @@
+{%extends 'navbar_superuser.html' %}
+{% block title %}Tabel Data User{% endblock %}
+
+{% load static %}
+{% load crispy_forms_tags%}
+
+{% block content %}
+
+<div class="container">
+    {% comment %} <div class="d-flex justify-content-center"> {% endcomment %}
+    <div>
+        {% comment %} <h1 class="h2 text-center">Create User Group Relation</h1> {% endcomment %}
+        <h2>Tabel Daftar User Group Relation</h2>
+    </div>
+    <br>
+    <!-- <a class="btn btn-success my-2" href="/skripsi_app/createusergroup">Create User Group Relation</a> -->
+
+    <table id="table-paginate" class="table table-striped table-bordered table-paginate" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+
+
+                <th>User ID</th>
+                <th>Username</th>
+
+                <th>Group ID</th>
+                <th>Group Name</th>
+
+                <th>Operation</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            {% for user in nogroups %}
+            <tr>
+
+                <td>{{user.id}}</td>
+                <td>{{user.username}}</td>
+
+                <td></td>
+                <td></td>
+                <td>
+                    <form method="post">
+                        {% csrf_token %}
+                        <!-- <button class="btn btn-success m-1" type="submit" value="{{item.id}}" name="id">READ</button> -->
+
+                        <a class="btn btn-warning text-white m-1" type="button"
+                            href="{% url 'usergroup_update' user.id %}">UPDATE</a>
+                        <!-- <button class="btn btn-danger m-1" type="submit" value="{{item.id}}" name="id">DELETE</button> -->
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+
+            {% for group in groups %}
+            {% for user in group.user_set.all %}
+            <tr>
+
+                <td>{{user.id}}</td>
+                <td>{{user.username}}</td>
+
+                <td>{{group.id}}</td>
+                <td>{{group.name}}</td>
+                <td>
+                    <form method="post">
+                        {% csrf_token %}
+                        <!-- <button class="btn btn-success m-1" type="submit" value="{{item.id}}" name="id">READ</button> -->
+
+                        <a class="btn btn-warning text-white m-1" type="button"
+                            href="{% url 'usergroup_update' user.id %}">UPDATE</a>
+                        <!-- <button class="btn btn-danger m-1" type="submit" value="{{item.id}}" name="id">DELETE</button> -->
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+
+                <th>User ID</th>
+                <th>Username</th>
+
+                <th>Group ID</th>
+                <th>Group Name</th>
+
+                <th>Operation</th>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+
+
+{% endblock %}

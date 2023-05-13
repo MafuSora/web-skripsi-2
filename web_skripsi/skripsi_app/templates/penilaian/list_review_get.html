@@ -1,0 +1,66 @@
+{%extends 'navbar_superuser.html' %}
+{% block title %}Tabel Data Hasil Review{% endblock %}
+
+{% load static %}
+{% load crispy_forms_tags%}
+
+{% block content %}
+
+<div class="container">
+  <h2>Tabel Daftar Hasil Review</h2>
+  <div class="container-fluid text-end">
+    <a class="btn btn-success text-white my-3" href="/review_all">Tanpa Filter</a>
+    <a class="btn btn-success text-white my-3" href="/review_bimbingan">Filter Bimbingan</a>
+    <a class="btn btn-success text-white my-3" href="/review_sempro">Filter Sempro</a>
+    <a class="btn btn-success text-white my-3" href="/review_semhas">Filter Semhas</a>
+  </div>
+  <table id="table-paginate" class="table table-striped table-bordered table-paginate" cellspacing="0" width="100%">
+    <thead>
+      <tr>
+        <tr>
+          <th>NIM</th>
+          <th>Nama Mahasiswa</th>
+          <th>NIP</th>
+          <th>Nama Dosen</th>
+          <th>Peran</th>
+          <th>Nama Tahap</th>
+          <th>Status Kelulusan</th>
+          <th>Hasil Review</th>
+        </tr>
+      </thead>
+      <tbody>
+        {%for item in hasil_review%}
+        <tr>
+  
+          <td>{{item.id_role_dosen.nim.nim}}</td>
+          <td>{{item.id_role_dosen.nim.id_user.first_name}}</td>
+          <td>{{item.id_role_dosen.nip.nip}}</td>
+          <td>{{item.id_role_dosen.nip.id_user.first_name}}</td>
+          <td>{{item.id_role_dosen.role}}</td>
+          <td>{{item.nama_tahap}}</td>
+          <td>{{item.status_kelulusan}}</td>
+          <td>{{item.hasil_review}}</td>
+
+  
+        </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <th>NIM</th>
+          <th>Nama Mahasiswa</th>
+          <th>NIP</th>
+          <th>Nama Dosen</th>
+          <th>Nama Tahap</th>
+          <th>Peran</th>
+          <th>Status Kelulusan</th>
+          <th>Hasil Review</th>
+        </tr>
+    </tfoot>
+  </table>
+</div>
+
+
+
+
+{% endblock %}

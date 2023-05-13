@@ -1,0 +1,80 @@
+{%extends 'navbar_superuser.html' %}
+{% block title %}Read Data Usulan Topik{% endblock %}
+
+{% load static %}
+
+
+{% block content %}
+<style>
+  .pdfobject-container { height: 300rem; border: 1rem solid rgba(0,0,0,.1); }
+</style>
+
+<div class="container-fluid">
+  <h1 class="h2"> Data Usulan Topik :  {{usulantopiks.nim.id_user.first_name}}</h1>
+  <div class="mb-3 row">
+    <label for="staticEmail" class="col-sm-2 col-form-label ">NIM</label>
+    <div class="col-sm-10">
+      <input class="form-control" type="text" value={{usulantopiks.nim.nim}} aria-label="Disabled input example" disabled
+        readonly>
+    </div>
+  </div>
+  <div class="mb-3 row">
+    <label for="staticEmail" class="col-sm-2 col-form-label ">Nama</label>
+    <div class="col-sm-10">
+      <input class="form-control" type="text" value={{usulantopiks.nim.id_user.first_name}} aria-label="Disabled input example" disabled
+        readonly>
+    </div>
+  </div>
+  <div class="mb-3 row">
+    <label for="staticEmail" class="col-sm-2 col-form-label ">Permintaan Dosen Pembimbing 1</label>
+    <div class="col-sm-10">
+        <textarea class="form-control" disabled readonly>{{usulantopiks.permintaan_dosen_1}}</textarea>
+    </div>
+  </div>
+  <div class="mb-3 row">
+    <label for="staticEmail" class="col-sm-2 col-form-label ">Permintaan Dosen Pembimbing 2</label>
+    <div class="col-sm-10">
+      <textarea class="form-control" disabled readonly>{{usulantopiks.permintaan_dosen_2}}</textarea>
+    </div>
+  </div>
+  <div class="mb-3 row">
+    <label for="staticEmail" class="col-lg-2 col-form-label">Judul Topik</label>
+    <div class="col-sm-10">
+      <textarea class="form-control" disabled readonly>{{usulantopiks.judul_topik}}</textarea>
+    </div>
+  </div>
+  <div class="mb-3 row">
+    <label for="staticEmail" class="col-lg-2 col-form-label">Keteraangan Tambahan</label>
+    <div class="col-sm-10">
+      <textarea class="form-control" disabled readonly>{{usulantopiks.keterangan}}</textarea>
+    </div>
+  </div>
+  <div class="mb-3 row">
+    <label for="staticEmail" class="col-lg-2 col-form-label">Preview</label>
+    <div class="col-sm-10">
+      <!-- <p>{{usulantopiks.File_Topik.url}}</p> -->
+      <!-- <embed src="{{abc}}" type="application/pdf" width="100%" height="100%" ></embed> -->
+      <!-- <embed src="{{abc}}" style="position:absolute; left: 0; top: 0;" width="100%" height="100%" type="application/pdf"> -->
+        <div class="container-fluid" >
+          <div id="example1" style="height:700px;">
+            <script>
+            PDFObject.embed("{{usulantopiks.file_topik.url}}", "#example1");
+            if(PDFObject.supportsPDFs){
+              console.log("Yay, this browser supports inline PDFs.");
+            } else {
+              console.log("Boo, inline PDFs are not supported by this browser");
+  }
+            
+            </script>
+        </div>
+        
+        </div>
+    </div>
+  </div>
+  
+  
+</div>
+
+
+
+{% endblock %}

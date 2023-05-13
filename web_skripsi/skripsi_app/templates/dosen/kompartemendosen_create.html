@@ -1,0 +1,30 @@
+{%extends 'navbar_superuser.html' %}
+{% block title %}Tambah Data Dosen Kompartemen{% endblock %}
+
+{% load static %}
+{% load crispy_forms_tags%}
+
+{% block content %}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <form method="post">
+        <h1 class="h2">Pendaftaran Dosen Kompartemen</h1>
+
+        {%csrf_token%}
+        {{form|crispy}}
+        <div class="row container-fluid">
+            <button type="submit" class="btn btn-primary btn-block mb-4">
+                Submit
+            </button>
+            <!-- <a type="button" class="btn btn-primary btn-block mb-4 btn-info text-white"
+                href="/skripsi_app/kompartemenget">
+                Kembali
+                Ke
+                Tabel Kompartemen</a> -->
+
+        </div>
+    </form>
+</div>
+
+
+{% endblock %}

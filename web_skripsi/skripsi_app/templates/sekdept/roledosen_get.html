@@ -1,0 +1,150 @@
+{%extends 'navbar_superuser.html' %}
+{% block title %}Tabel Data Dosen Pendamping{% endblock %}
+
+{% load static %}
+{% load crispy_forms_tags%}
+
+{% block content %}
+
+<div class="container">
+  <h2>Tabel Daftar Dosen Pendamping</h2>
+  <br>
+  {%if user_info.2.name == "Manajemen Departemen" or user_info.2.name == "Admin" or user_info.2.name == "Properta"%}
+  {%if filter == None%}
+  <div class="container-fluid text-end"><a class="btn btn-success text-white my-3"
+    href="/roledosencreate">Tambah
+    Dosen Pendamping</a></div>
+  {%endif%}
+  {%endif%}
+  <div class="container-fluid text-start">
+    <a class="btn btn-success text-white mb-2"
+    href="/roledosenget">Tanpa Filter
+    </a>
+    {%if user_info.2.name == "Manajemen Departemen" or user_info.2.name == "Admin" or user_info.2.name == "Properta"%}
+    
+      <a class="btn btn-success text-white mb-2"
+      href="/roledosenget/pembimbing/active">Filter Active Semua Dosen
+      </a>
+      <a class="btn btn-success text-white mb-2"
+      href="/roledosenget/pembimbing/finished">Filter Finished Semua Dosen
+      </a>
+    {% endif %}
+    <a class="btn btn-success text-white mb-2"
+    href="/roledosenget/pembimbing/active/filter">Filter Active 
+    </a>
+    <a class="btn btn-success text-white mb-2"
+    href="/roledosenget/pembimbing/finished/filter">Filter Finished
+    </a>
+    <a class="btn btn-success text-white mb-2"
+    href="/roledosenget/pembimbing">Filter
+    Pembimbing </a>
+    <a class="btn btn-success text-white mb-2"
+    href="/roledosenget/sempro">Filter
+    Penguji Sempro </a>
+    <a class="btn btn-success text-white mb-2"
+    href="/roledosenget/semhas">Filter
+    Penguji Semhas </a>
+  </div>
+  <table id="table-paginate" class="table table-striped table-bordered table-paginate" cellspacing="0" width="100%">
+    <thead>
+      <tr>
+            <th>NIM</th>
+            <th>Nama Mahasiswa</th>
+            <th>NIP</th>
+            <th>Nama Dosen</th>
+    
+            <th>Role</th>
+            <th>Status</th>
+        <th class="col-md-2">Operation</th>
+      </tr>
+    </thead>
+    <tbody>
+      {%for item in roledosens%}
+      <tr>
+
+        <td>{{item.nim.nim}}</td>
+        <td>{{item.nim.id_user.first_name}}</td>
+        <td>{{item.nip.nip}}</td>
+        <td>{{item.nip.id_user.first_name}}</td>
+
+        <td>{{item.role}}</td>
+        <td>{{item.status}}</td>
+        
+        <td>
+          <form method="post">
+            {% csrf_token %}
+            {% comment %} {%if role == "Dosen Pembimbing" or  user_info.2.name == "Admin" or user_info.2.name == "Mahasiswa" or user_info.2.name == "Properta"  %}
+   
+            <a class="btn btn-primary w-100 text-white my-1" type="button"
+            href="{% url 'nilai_bimbingan_get' item.nim.nim %}">Nilai Bimbingan</a>
+            <a class="btn btn-primary w-100 text-white my-1" type="button"
+            href="{% url 'nilai_sempro_get'  item.nim.nim %}">Nilai Sempro</a>
+            <a class="btn btn-primary w-100 text-white my-1" type="button"
+            href="{% url 'nilai_semhas_get'  item.nim.nim %}">Nilai Semhas</a>
+            {%elif role == "Dosen Seminar Proposal" %}
+            <a class="btn btn-primary w-100 text-white my-1" type="button"
+            href="{% url 'nilai_sempro_get'  item.nim.nim %}">Nilai Sempro</a>
+            {%elif role == "Dosen Seminar Hasil" %}
+            <a class="btn btn-primary w-100 text-white my-1" type="button"
+            href="{% url 'nilai_semhas_get'  item.nim.nim %}">Nilai Semhas</a>
+            {%elif role == "Dosen Seminar Hasil" %}
+
+            {%endif%}
+             {% endcomment %}
+            {%if user_info.2.name == "Manajemen Departemen" or user_info.2.name == "Admin" or user_info.2.name == "Properta"%}
+            {%if filter == None%}
+            
+            <a class="btn btn-warning w-100 text-black my-1" type="button"
+            href="{% url 'dosenpembimbing_update' item.id_role_dosen %}">UPDATE</a>
+            <a class="btn btn-danger w-100 text-white my-1" type="button" data-bs-toggle="modal"
+              data-bs-target="#staticBackdrop{{item.id_role_dosen}}">DELETE</a>
+
+            <!-- Modal -->
+            <div class="modal fade" id="staticBackdrop{{item.id_role_dosen}}" data-bs-backdrop="static" data-bs-keyboard="false"
+              tabindex="-1" aria-labelledby="staticBackdropLabel{{item.id_role_dosen}}" aria-hidden="true" name="{{item.id_role_dosen}}">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel{{item.id_role_dosen}}">Apakah
+                      anda yakin akan
+                      menghapus role dosen : {{item.role}} antara {{item.nim}} dan {{item.nip}}
+                      ?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    Data tidak akan dikembalikan ketika telah menekan tombol "Ya"
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
+                    <a type="button" class="btn btn-danger" href="{%url 'dosenpembimbing_delete' item.id_role_dosen%}">Ya</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {%endif%}
+            {%endif%}
+          </form>
+        </td>
+
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr>
+        <th>NIM</th>
+            <th>Nama Mahasiswa</th>
+            <th>NIP</th>
+            <th>Nama Dosen</th>
+    
+            <th>Role</th>
+            <th>Status</th>
+        <th>Operation</th>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+
+<script src="{% static 'js/dashboard.js' %}"></script>
+
+{% endblock %}

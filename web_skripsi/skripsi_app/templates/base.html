@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% load static %}
+<head>
+    <!-- <link rel="icon" href="{% static 'img/logo-ti.png' %}" type="image/icon type"> -->
+    <link rel="icon" href="{% static 'img/ub.png' %}" type="image/icon type">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
+    <style>
+        a {
+            font-family: 'Poppins', sans-serif;
+          }
+          
+    </style>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- Bootstrap CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+            integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+        <!-- PDF Opener -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfobject/2.2.8/pdfobject.js" integrity="sha512-aqpxRD4NwJUXN742KSiIr4zARkh+WTeaWwx0DYuy+9eARX/glcCFtHSeETrIc6V+1BwYfMwvPz5KWlVtRyXikQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <!-- button Datatable -->
+        <link href="https://cdn.datatables.net/buttons/2.3.2/css/buttons.dataTables.min.css" rel="stylesheet">
+        <!-- Jquery -->
+        <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+        <!-- Jquery DataTables -->
+        <script type="text/javascript" language="javascript"
+            src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+        <!-- Bootstrap DataTables CSS -->
+        <link href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+        <link href="https://cdn.datatables.net/buttons/2.3.2/css/buttons.bootstrap5.min.css" rel="stylesheet">
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+        <!-- <link href="https://cdn.datatables.net/buttons/2.3.2/css/buttons.bootstrap5.min.css" rel="stylesheet"> -->
+        <!-- Data Tables JS -->
+        <script type="text/javascript" language="javascript"
+            src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
+        <script type="text/javascript" language="javascript"
+            src="https://cdn.datatables.net/buttons/2.3.2/js/dataTables.buttons.min.js"></script>
+        <script type="text/javascript" language="javascript"
+                src="https://cdn.datatables.net/buttons/2.3.2/js/buttons.print.min.js"></script>
+        <script type="text/javascript" language="javascript"
+                src="https://cdn.datatables.net/buttons/2.3.2/js/buttons.bootstrap5.min.js"></script>
+        
+        <!-- Extension jszip -->
+        <script type="text/javascript" language="javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+            <!-- average -->
+        <script type="text/javascript" language="javascript"
+            src="https://cdn.datatables.net/plug-ins/1.13.1/api/average().js"></script>
+        <!-- PDF MAke -->
+        <script type="text/javascript" language="javascript"
+                src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+        <script type="text/javascript" language="javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+        <!-- Button Extension -->
+        <script type="text/javascript" language="javascript"
+                src="https://cdn.datatables.net/buttons/2.3.2/js/buttons.html5.min.js"></script>
+        <script type="text/javascript" language="javascript"
+                src="https://cdn.datatables.net/buttons/2.3.2/js/buttons.print.min.js"></script>
+        <script type="text/javascript" language="javascript"
+                src="https://cdn.datatables.net/buttons/2.3.2/js/buttons.colVis.min.js"></script>
+        {% comment %} Chart JS {% endcomment %}
+        
+        {% comment %} <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> {% endcomment %}
+        {% comment %} <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.7.0"></script> {% endcomment %}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js" integrity="sha512-QSkVNOCYLtj73J4hbmVoOV6KVZuMluZlioC+trLpewV8qMjsWqlIQvkn1KGX2StWvPMdWGBqim1xlC8krl1EKQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+        <script src="https://kit.fontawesome.com/9d1d9a82d2.js" crossorigin="anonymous"></script>
+        {% comment %} <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" /> {% endcomment %}
+        {% comment %} Extension Select 2 {% endcomment %}
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+        <script type="text/javascript" charset="utf-8">
+            $(document).ready(function() {
+                $('<br/>').insertBefore('select#id_permintaan_dosen_1');
+                $('select#id_permintaan_dosen_1').select2();
+            });
+
+            $(document).ready(function() {
+                $('<br/>').insertBefore('select#id_permintaan_dosen_2');
+                $('select#id_permintaan_dosen_2').select2();
+            });
+
+            $(document).ready(function() {
+                $('<br/>').insertBefore('select#id_nim');
+                $('select#id_nim').select2();
+            });
+
+            $(document).ready(function() {
+                $('<br/>').insertBefore('select#id_nip');
+                $('select#id_nip').select2();
+            });
+
+            $(document).ready(function() {
+                $('<br/>').insertBefore('select#id_semester_daftar_skripsi');
+                $('select#id_semester_daftar_skripsi').select2();
+            });
+
+            $(document).ready(function() {
+                $('<br/>').insertBefore('select#id_id_user');
+                $('select#id_id_user').select2();
+            });
+
+            $(document).ready(function() {
+                $('<br/>').insertBefore('select#id_id_dosen_kompartemen');
+                $('select#id_id_dosen_kompartemen').select2();
+            });
+            $(document).ready(function() {
+                $('<br/>').insertBefore('select#id_id_cpmk');
+                $('select#id_id_cpmk').select2();
+            });
+
+            $(document).ready(function() {
+                $('<br/>').insertBefore('select#id_id_kompartemen');
+                $('select#id_id_kompartemen').select2();
+            });
+
+            $(document).ready(function() {
+                $('<br/>').insertBefore('select#id_id_usulan_topik');
+                $('select#id_id_usulan_topik').select2();
+            });
+
+            $(document).ready(function() {
+                $('<br/>').insertBefore('select#id_role');
+                $('select#id_role').select2();
+            });
+
+            $(document).ready(function() {
+                $('<br/>').insertBefore('select#id_id_role_dosen');
+                $('select#id_id_role_dosen').select2();
+            });
+
+            $(document).ready(function() {
+                $('<br/>').insertBefore('select#id_nama_tahap');
+                $('select#id_nama_tahap').select2();
+            });
+
+            $(document).ready(function() {
+                $('<br/>').insertBefore('select#id_id_proposal');
+                $('select#id_id_proposal').select2();
+            });
+
+            $(document).ready(function() {
+                $('<br/>').insertBefore('select#id_id_cpmk_utama');
+                $('select#id_id_cpmk_utama').select2();
+            });
+
+            $(document).ready(function() {
+                $('<br/>').insertBefore('select#id_mahasiswa');
+                $('select#id_mahasiswa').select2();
+            });
+            $(document).ready(function() {
+                $('<br/>').insertBefore('select#id_dosen_pembimbing_1');
+                $('select#id_dosen_pembimbing_1').select2();
+            });
+            $(document).ready(function() {
+                $('<br/>').insertBefore('select#id_dosen_pembimbing_2');
+                $('select#id_dosen_pembimbing_2').select2();
+            });
+            $(document).ready(function() {
+                $('<br/>').insertBefore('select#id_dosen_penguji_1');
+                $('select#id_dosen_penguji_1').select2();
+            });
+            $(document).ready(function() {
+                $('<br/>').insertBefore('select#id_dosen_penguji_2');
+                $('select#id_dosen_penguji_2').select2();
+            });
+
+        </script>
+        <script type="text/javascript" charset="utf-8">
+            $(document).ready(function() {
+                var table = $('#table-paginate').DataTable( {
+                    lengthChange: true,
+                    dom: 'Blfrtip',
+                    buttons: [
+            {
+                extend: 'copyHtml5',
+                className:'btn btn-secondary text-white rounded-pill mb-1 me-2 ps-4 pe-4',
+                exportOptions: {
+                    columns: ':visible',
+                    format: {
+                        body: function ( data, row, column, node ) {
+                          var result = data;
+                          $(node,'td').each(function() {
+                            var td = $(this);
+                            var link = td.find('a');
+                            if (link.length > 0 && link.text() === 'File') { // jika ada elemen a dengan teks "File" dan href mengandung kata "download"
+                              result = link.attr('href');
+                              console.log(link)
+                              return false; // keluar dari perulangan setelah menemukan link pertama
+                            }
+                            else if (link.length > 0 && link.text() !== 'File'){
+                                result = link.text();
+                                //console.log(link)
+                                return false;
+                            }
+                            else{
+                                result = result.replace('<br>', ' ');
+                                result = result.replace('/n', ' ');
+                                return false;
+                            }
+                          });
+                          return result;
+                        }
+
+                      }
+                }
+            },
+            {
+                extend: 'csvHtml5',
+                className:'btn btn-secondary text-white rounded-pill mb-1 me-2 ms-2 ps-4 pe-4',
+                exportOptions: {
+                    columns: ':visible',
+                    format: {
+                        body: function ( data, row, column, node ) {
+                          var result = data;
+                          $(node,'td').each(function() {
+                            var td = $(this);
+                            var link = td.find('a');
+                            if (link.length > 0 && link.text() === 'File') { // jika ada elemen a dengan teks "File" dan href mengandung kata "download"
+                              result = link.attr('href');
+                              console.log(link)
+                              return false; // keluar dari perulangan setelah menemukan link pertama
+                            }
+                            else if (link.length > 0 && link.text() !== 'File'){
+                                result = link.text();
+                                //console.log(link)
+                                return false;
+                            }
+                            else{
+                                result = result.replace('<br>', ' ');
+                                result = result.replace('/n', ' ');
+                                return false;
+                            }
+                          });
+                          return result;
+                        }
+
+                      }
+                }
+            },
+            {
+                extend: 'excelHtml5',
+                className:'btn btn-secondary text-white rounded-pill  mb-1 me-2 ms-2 ps-4 pe-4',
+                exportOptions: {
+                    columns: ':visible',
+                    format: {
+                        body: function ( data, row, column, node ) {
+                          var result = data;
+                          $(node,'td').each(function() {
+                            var td = $(this);
+                            var link = td.find('a');
+                            if (link.length > 0 && link.text() === 'File') { // jika ada elemen a dengan teks "File" dan href mengandung kata "download"
+                              result = link.attr('href');
+                              console.log(link)
+                              return false; // keluar dari perulangan setelah menemukan link pertama
+                            }
+                            else if (link.length > 0 && link.text() !== 'File'){
+                                result = link.text();
+                                //console.log(link)
+                                return false;
+                            }
+                            else{
+                                result = result.replace('<br>', ' ');
+                                result = result.replace('/n', ' ');
+                                return false;
+                            }
+                          });
+                          return result;
+                        }
+
+                      }
+                }
+            },
+            {
+                extend: 'pdfHtml5',
+                className:'btn btn-secondary text-white rounded-pill mb-1  me-2 ms-2 ps-4 pe-4',
+                exportOptions: {
+                    columns: ':visible',
+                    format: {
+                        body: function ( data, row, column, node ) {
+                          var result = data;
+                          $(node,'td').each(function() {
+                            var td = $(this);
+                            var link = td.find('a');
+                            if (link.length > 0 && link.text() === 'File') { // jika ada elemen a dengan teks "File" dan href mengandung kata "download"
+                              result = link.attr('href');
+                              console.log(link)
+                              return false; // keluar dari perulangan setelah menemukan link pertama
+                            }
+                            else if (link.length > 0 && link.text() !== 'File'){
+                                result = link.text();
+                                //console.log(link)
+                                return false;
+                            }
+                            else{
+                                result = result.replace('<br>', ' ');
+                                result = result.replace('/n', ' ');
+                                return false;
+                            }
+                          });
+                          return result;
+                        }
+
+                      }
+                }
+            },
+            {extend:'colvis',
+            className:'btn btn-secondary text-white rounded-pill  mb-1 me-4 ms-2 ps-4 pe-4'}
+        ]
+                    
+                } );
+            
+        table.buttons().container()
+                    .appendTo( '#table-paginate_wrapper .col-md-6:eq(0)' );
+        // table 2
+        var table2 = $('#table-paginate2').DataTable( {
+                    lengthChange: true,
+                    dom: 'Blfrtip',
+                    buttons: [
+            {
+                extend: 'copyHtml5',
+                className:'btn btn-secondary text-white rounded-pill mb-1 me-2 ms-2 ps-4 pe-4',
+                exportOptions: {
+                    columns: ':visible',
+                    format: {
+                        body: function ( data, row, column, node ) {
+                          var result = data;
+                          $(node,'td').each(function() {
+                            var td = $(this);
+                            var link = td.find('a');
+                            if (link.length > 0 && link.text() === 'File') { // jika ada elemen a dengan teks "File" dan href mengandung kata "download"
+                              result = link.attr('href');
+                              console.log(link)
+                              return false; // keluar dari perulangan setelah menemukan link pertama
+                            }
+                            else if (link.length > 0 && link.text() !== 'File'){
+                                result = link.text();
+                                //console.log(link)
+                                return false;
+                            }
+                            else{
+                                result = result.replace('<br>', ' ');
+                                result = result.replace('/n', ' ');
+                                return false;
+                            }
+                          });
+                          return result;
+                        }
+
+                      }
+                }
+            },
+            {
+                extend: 'csvHtml5',
+                className:'btn btn-secondary text-white rounded-pill mb-1 me-2 ms-2 ps-4 pe-4',
+                exportOptions: {
+                    columns: ':visible',
+                    format: {
+                        body: function ( data, row, column, node ) {
+                          var result = data;
+                          $(node,'td').each(function() {
+                            var td = $(this);
+                            var link = td.find('a');
+                            if (link.length > 0 && link.text() === 'File') { // jika ada elemen a dengan teks "File" dan href mengandung kata "download"
+                              result = link.attr('href');
+                              console.log(link)
+                              return false; // keluar dari perulangan setelah menemukan link pertama
+                            }
+                            else if (link.length > 0 && link.text() !== 'File'){
+                                result = link.text();
+                                //console.log(link)
+                                return false;
+                            }
+                            else{
+                                result = result.replace('<br>', ' ');
+                                result = result.replace('/n', ' ');
+                                return false;
+                            }
+                          });
+                          return result;
+                        }
+
+                      }
+                }
+            },
+            {
+                extend: 'excelHtml5',
+                className:'btn btn-secondary text-white rounded-pill mb-1 me-2 ms-2 ps-4 pe-4',
+                exportOptions: {
+                    columns: ':visible',
+                    format: {
+                        body: function ( data, row, column, node ) {
+                          var result = data;
+                          $(node,'td').each(function() {
+                            var td = $(this);
+                            var link = td.find('a');
+                            if (link.length > 0 && link.text() === 'File') { // jika ada elemen a dengan teks "File" dan href mengandung kata "download"
+                              result = link.attr('href');
+                              console.log(link)
+                              return false; // keluar dari perulangan setelah menemukan link pertama
+                            }
+                            else if (link.length > 0 && link.text() !== 'File'){
+                                result = link.text();
+                                //console.log(link)
+                                return false;
+                            }
+                            else{
+                                result = result.replace('<br>', ' ');
+                                result = result.replace('/n', ' ');
+                                return false;
+                            }
+                          });
+                          return result;
+                        }
+
+                      }
+                }
+            },
+            {
+                extend: 'pdfHtml5',
+                className:'btn btn-secondary text-white rounded-pill mb-1 me-2 ms-2 ps-4 pe-4',
+                exportOptions: {
+                    columns: ':visible',
+                    format: {
+                        body: function ( data, row, column, node ) {
+                          var result = data;
+                          $(node,'td').each(function() {
+                            var td = $(this);
+                            var link = td.find('a');
+                            if (link.length > 0 && link.text() === 'File') { // jika ada elemen a dengan teks "File" dan href mengandung kata "download"
+                              result = link.attr('href');
+                              console.log(link)
+                              return false; // keluar dari perulangan setelah menemukan link pertama
+                            }
+                            else if (link.length > 0 && link.text() !== 'File'){
+                                result = link.text();
+                                //console.log(link)
+                                return false;
+                            }
+                            else{
+                                result = result.replace('<br>', ' ');
+                                result = result.replace('/n', ' ');
+                                return false;
+                            }
+                          });
+                          return result;
+                        }
+
+                      }
+                }
+            },
+            {extend:'colvis',
+            className:'btn btn-secondary text-white rounded-pill mb-1 me-4 ms-2 ps-4 pe-4'}
+        ]
+                    
+                } );
+            
+        table2.buttons().container()
+                    .appendTo( '#table-paginate_wrapper .col-md-6:eq(0)' );
+        
+        // table 3
+        var table3 = $('#table-paginate3').DataTable( {
+                    lengthChange: true,
+                    dom: 'Blfrtip',
+                    buttons: [
+            {
+                extend: 'copyHtml5',
+                className:'btn btn-secondary text-white rounded-pill mb-1 me-2 ms-2 ps-4 pe-4',
+                exportOptions: {
+                    columns: ':visible',
+                    format: {
+                        body: function ( data, row, column, node ) {
+                          var result = data;
+                          $(node,'td').each(function() {
+                            var td = $(this);
+                            var link = td.find('a');
+                            if (link.length > 0 && link.text() === 'File') { // jika ada elemen a dengan teks "File" dan href mengandung kata "download"
+                              result = link.attr('href');
+                              console.log(link)
+                              return false; // keluar dari perulangan setelah menemukan link pertama
+                            }
+                            else if (link.length > 0 && link.text() !== 'File'){
+                                result = link.text();
+                                //console.log(link)
+                                return false;
+                            }
+                            else{
+                                result = result.replace('<br>', ' ');
+                                result = result.replace('/n', ' ');
+                                return false;
+                            }
+                          });
+                          return result;
+                        }
+
+                      }
+                }
+            },
+            {
+                extend: 'csvHtml5',
+                className:'btn btn-secondary text-white rounded-pill mb-1 me-2 ms-2 ps-4 pe-4',
+                exportOptions: {
+                    columns: ':visible',
+                    format: {
+                        body: function ( data, row, column, node ) {
+                          var result = data;
+                          $(node,'td').each(function() {
+                            var td = $(this);
+                            var link = td.find('a');
+                            if (link.length > 0 && link.text() === 'File') { // jika ada elemen a dengan teks "File" dan href mengandung kata "download"
+                              result = link.attr('href');
+                              console.log(link)
+                              return false; // keluar dari perulangan setelah menemukan link pertama
+                            }
+                            else if (link.length > 0 && link.text() !== 'File'){
+                                result = link.text();
+                                //console.log(link)
+                                return false;
+                            }
+                            else{
+                                result = result.replace('<br>', ' ');
+                                result = result.replace('/n', ' ');
+                                return false;
+                            }
+                          });
+                          return result;
+                        }
+
+                      }
+                }
+            },
+            {
+                extend: 'excelHtml5',
+                className:'btn btn-secondary text-white rounded-pill  mb-1 me-2 ms-2 ps-4 pe-4',
+                exportOptions: {
+                    columns: ':visible',
+                    format: {
+                        body: function ( data, row, column, node ) {
+                          var result = data;
+                          $(node,'td').each(function() {
+                            var td = $(this);
+                            var link = td.find('a');
+                            if (link.length > 0 && link.text() === 'File') { // jika ada elemen a dengan teks "File" dan href mengandung kata "download"
+                              result = link.attr('href');
+                              console.log(link)
+                              return false; // keluar dari perulangan setelah menemukan link pertama
+                            }
+                            else if (link.length > 0 && link.text() !== 'File'){
+                                result = link.text();
+                                //console.log(link)
+                                return false;
+                            }
+                            else{
+                                result = result.replace('<br>', ' ');
+                                result = result.replace('/n', ' ');
+                                return false;
+                            }
+                          });
+                          return result;
+                        }
+
+                      }
+                }
+            },
+            {
+                extend: 'pdfHtml5',
+                className:'btn btn-secondary text-white rounded-pill  mb-1 me-2 ms-2 ps-4 pe-4',
+                exportOptions: {
+                    columns: ':visible',
+                    format: {
+                        body: function ( data, row, column, node ) {
+                          var result = data;
+                          $(node,'td').each(function() {
+                            var td = $(this);
+                            var link = td.find('a');
+                            if (link.length > 0 && link.text() === 'File') { // jika ada elemen a dengan teks "File" dan href mengandung kata "download"
+                              result = link.attr('href');
+                              console.log(link)
+                              return false; // keluar dari perulangan setelah menemukan link pertama
+                            }
+                            else if (link.length > 0 && link.text() !== 'File'){
+                                result = link.text();
+                                //console.log(link)
+                                return false;
+                            }
+                            else{
+                                result = result.replace('<br>', ' ');
+                                result = result.replace('/n', ' ');
+                                return false;
+                            }
+                          });
+                          return result;
+                        }
+
+                      }
+                }
+            },
+            {extend:'colvis',
+            className:'btn btn-secondary text-white rounded-pill  me-4 ms-2 ps-4 pe-4'}
+        ]
+                    
+                } );
+            
+        table3.buttons().container()
+                    .appendTo( '#table-paginate_wrapper .col-md-6:eq(0)' );
+        // table 4
+        var table4 = $('#table-paginate4').DataTable( {
+                    lengthChange: true,
+                    dom: 'Blfrtip',
+                    buttons: [
+            {
+                extend: 'copyHtml5',
+                className:'btn btn-secondary text-white rounded-pill  mb-1 me-2 ms-2 ps-4 pe-4',
+                exportOptions: {
+                    columns: ':visible',
+                    format: {
+                        body: function ( data, row, column, node ) {
+                          var result = data;
+                          $(node,'td').each(function() {
+                            var td = $(this);
+                            var link = td.find('a');
+                            if (link.length > 0 && link.text() === 'File') { // jika ada elemen a dengan teks "File" dan href mengandung kata "download"
+                              result = link.attr('href');
+                              console.log(link)
+                              return false; // keluar dari perulangan setelah menemukan link pertama
+                            }
+                            else if (link.length > 0 && link.text() !== 'File'){
+                                result = link.text();
+                                //console.log(link)
+                                return false;
+                            }
+                            else{
+                                result = result.replace('<br>', ' ');
+                                result = result.replace('/n', ' ');
+                                return false;
+                            }
+                          });
+                          return result;
+                        }
+
+                      }
+                }
+            },
+            {
+                extend: 'csvHtml5',
+                className:'btn btn-secondary text-white rounded-pill  mb-1 me-2 ms-2 ps-4 pe-4',
+                exportOptions: {
+                    columns: ':visible',
+                    format: {
+                        body: function ( data, row, column, node ) {
+                          var result = data;
+                          $(node,'td').each(function() {
+                            var td = $(this);
+                            var link = td.find('a');
+                            if (link.length > 0 && link.text() === 'File') { // jika ada elemen a dengan teks "File" dan href mengandung kata "download"
+                              result = link.attr('href');
+                              console.log(link)
+                              return false; // keluar dari perulangan setelah menemukan link pertama
+                            }
+                            else if (link.length > 0 && link.text() !== 'File'){
+                                result = link.text();
+                                //console.log(link)
+                                return false;
+                            }
+                            else{
+                                result = result.replace('<br>', ' ');
+                                result = result.replace('/n', ' ');
+                                return false;
+                            }
+                          });
+                          return result;
+                        }
+
+                      }
+                }
+            },
+            {
+                extend: 'excelHtml5',
+                className:'btn btn-secondary text-white rounded-pill  mb-1 me-2 ms-2 ps-4 pe-4',
+                exportOptions: {
+                    columns: ':visible',
+                    format: {
+                        body: function ( data, row, column, node ) {
+                          var result = data;
+                          $(node,'td').each(function() {
+                            var td = $(this);
+                            var link = td.find('a');
+                            if (link.length > 0 && link.text() === 'File') { // jika ada elemen a dengan teks "File" dan href mengandung kata "download"
+                              result = link.attr('href');
+                              console.log(link)
+                              return false; // keluar dari perulangan setelah menemukan link pertama
+                            }
+                            else if (link.length > 0 && link.text() !== 'File'){
+                                result = link.text();
+                                //console.log(link)
+                                return false;
+                            }
+                            else{
+                                result = result.replace('<br>', ' ');
+                                result = result.replace('/n', ' ');
+                                return false;
+                            }
+                          });
+                          return result;
+                        }
+
+                      }
+                }
+            },
+            {
+                extend: 'pdfHtml5',
+                className:'btn btn-secondary text-white rounded-pill  mb-1 me-2 ms-2 ps-4 pe-4',
+                exportOptions: {
+                    columns: ':visible',
+                    format: {
+                        body: function ( data, row, column, node ) {
+                          var result = data;
+                          $(node,'td').each(function() {
+                            var td = $(this);
+                            var link = td.find('a');
+                            if (link.length > 0 && link.text() === 'File') { // jika ada elemen a dengan teks "File" dan href mengandung kata "download"
+                              result = link.attr('href');
+                              console.log(link)
+                              return false; // keluar dari perulangan setelah menemukan link pertama
+                            }
+                            else if (link.length > 0 && link.text() !== 'File'){
+                                result = link.text();
+                                //console.log(link)
+                                return false;
+                            }
+                            else{
+                                result = result.replace('<br>', ' ');
+                                result = result.replace('/n', ' ');
+                                return false;
+                            }
+                          });
+                          return result;
+                        }
+
+                      }
+                }
+            },
+            {extend:'colvis',
+            className:'btn btn-secondary text-white rounded-pill  mb-1 me-2 ms-2 ps-4 pe-4'}
+        ]
+                    
+                } );
+            
+        table4.buttons().container()
+                    .appendTo( '#table-paginate_wrapper .col-md-6:eq(0)' );
+            } );
+        
+        // table 7
+        var table7 = $('#table-notifikasi').DataTable( {
+            lengthChange: true,
+            dom: 'Blfrtip',
+            
+        } );
+    
+        table7.buttons().container()
+                .appendTo( '#table-notifikasi_wrapper .col-md-6:eq(0)' );
+                
+        </script>
+        <script>
+            setTimeout(function(){
+                if($('#msg-notif').length>0){
+                    $('#msg-notif').remove();
+                }
+            },6000)
+        </script>
+        <script type="text/javascript" charset="utf-8">
+
+
+            $(document).ready(function () {
+
+          
+                $('#table-notifikasi').DataTable({
+          
+                  lengthChange: false,
+                              dom: 'ptpi',
+                              buttons: [
+                      {
+                          extend: 'copyHtml5', 
+                          footer: true,
+                          exportOptions: {
+                              columns:  ':visible' 
+                          }
+                      },
+                      {
+                          extend: 'csvHtml5',
+                          footer: true,
+                          exportOptions: {
+                              columns:  ':visible' 
+                          }
+                      },
+                      {
+                          extend: 'excelHtml5',
+                          footer: true,
+                          exportOptions: {
+                              columns: ':visible'
+                          }
+                      },
+                      {
+                          extend: 'pdfHtml5',
+                          footer: true,
+                          orientation: 'landscape',
+                          pageSize: 'A4',
+                          exportOptions: {
+                              columns: ':visible'
+                          },
+                      },
+                      'colvis'
+                  ],
+
+                }).buttons().container()
+                              .appendTo( '#table-paginate_wrapper .col-md-6:eq(0)' );
+                
+                
+          
+           
+            });
+        </script>
+        {% block script %}
+        {% endblock %}
+    <title>{% block title %}{% endblock %}</title>
+</head>
+
+
+<body>
+
+    
+    
+    {%block navbar%}
+    {%block content%}
+    
+    {% endblock %}
+    {% endblock %}
+    {%include 'notif_update.html' %}
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous">
+    </script>
+    
+</body>
+
+</html>
