@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .models import jadwal_seminar,cpmk, jadwal_semester, kompartemen, mahasiswa, dosen,kompartemendosen,usulantopik,evaluasitopik,roledosen,detailpenilaian,sub_cpmk,notifikasi,bimbingan,proposal,penilaian
+from ...skripsi_app.models import jadwal_seminar,cpmk, jadwal_semester, kompartemen, mahasiswa, dosen,kompartemendosen,usulantopik,evaluasitopik,roledosen,detailpenilaian,sub_cpmk,notifikasi,bimbingan,proposal,penilaian
 from django.core.files import File
 from django.contrib.auth.models import User,Group
 from datetime import datetime

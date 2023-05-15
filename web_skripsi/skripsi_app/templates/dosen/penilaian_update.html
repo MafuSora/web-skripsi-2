@@ -1,5 +1,5 @@
 {%extends 'navbar_superuser.html' %}
-{% block title %}Update Nilai{% endblock %}
+{% block title %}Formulir Penilaian{% endblock %}
 
 {% load static %}
 {% load crispy_forms_tags%}
@@ -10,7 +10,7 @@
 </style>
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <form method="post">
-        <h1 class="h2">Update Penilaian</h1>
+        <h1 class="h2">Form Penilaian</h1>
         {%csrf_token%}
         {{detailpenilaianform|crispy}}
         {{form_nilai|crispy}}

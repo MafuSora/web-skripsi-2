@@ -29,7 +29,7 @@
     href="/proposalget/pembimbing/revisi">Filter
     Revisi </a>
   </div>
-  <div class="container-fluid text-start"><a class="btn btn-success text-white mb-2"
+  {% comment %} <div class="container-fluid text-start"><a class="btn btn-success text-white mb-2"
     href="/proposalget/pembimbing/nilai">Filter
     Sudah ACC & Penilaian Belum Lengkap</a>
     <a class="btn btn-success text-white mb-2"
@@ -41,27 +41,27 @@
     <a class="btn btn-success text-white mb-2"
     href="/proposalget/pembimbing/lengkap_nilai">Filter
     Penilaian Lengkap</a>
-  </div>
+  </div> {% endcomment %}
   {%elif role == "Dosen Seminar Proposal" %}
   <h2>Tabel Berkas Skripsi Dosen Seminar Proposal</h2>
-  <div class="container-fluid text-start">
+  {% comment %} <div class="container-fluid text-start">
     <a class="btn btn-success text-white mb-2"
     href="/proposalget/sempro">Tanpa Filter
     </a>
     <a class="btn btn-success text-white mb-2"
     href="/proposalget/sempro/nilai">Filter
-    Belum Dinilai</a>
+    Belum Dinilai</a> {% endcomment %}
   </div>
   {%elif role == "Dosen Seminar Hasil" %}
   <h2>Tabel Berkas Skripsi Dosen Seminar Hasil</h2>
   
-  <div class="container-fluid text-start">
+  {% comment %} <div class="container-fluid text-start">
     <a class="btn btn-success text-white mb-2"
     href="/proposalget/semhas">Tanpa Filter
     </a>
     <a class="btn btn-success text-white mb-2"
     href="/proposalget/semhas/nilai">Filter
-    Belum Dinilai</a>
+    Belum Dinilai</a> {% endcomment %}
   </div>
   {%else%}
   <h2>Tabel Berkas Skripsi</h2>
@@ -229,44 +229,46 @@
                   <a class="btn btn-primary w-100 text-white my-1" type="button" href="{% url 'penilaian_semhas_dosen' item.id_proposal %}">Penilaian Semhas</a>  {% endcomment %}
                   
                   {%else%}
-                  <a class="btn btn-primary w-100 text-white m-1" type="button" href="{% url 'penilaian_bimbingan_dosen' item.id_proposal %}">Penilaian Bimbingan</a>
+                  {% comment %} <a class="btn btn-primary w-100 text-white m-1" type="button" href="{% url 'penilaian_bimbingan_dosen' item.id_proposal %}">Penilaian Bimbingan</a>
                   <a class="btn btn-primary w-100 text-white m-1" type="button" href="{% url 'penilaian_sempro_dosen' item.id_proposal %}">Penilaian Sempro</a>
-                  <a class="btn btn-primary w-100 text-white m-1" type="button" href="{% url 'penilaian_semhas_dosen' item.id_proposal %}">Penilaian Semhas</a>
+                  <a class="btn btn-primary w-100 text-white m-1" type="button" href="{% url 'penilaian_semhas_dosen' item.id_proposal %}">Penilaian Semhas</a> {% endcomment %}
                   {%endif%}
                 {%elif role == "Dosen Seminar Proposal"  %}
-                  <a class="btn btn-primary w-100 text-white m-1" type="button" href="{% url 'penilaian_sempro_dosen' item.id_proposal %}">Penilaian Sempro</a>
+                  {% comment %} <a class="btn btn-primary w-100 text-white m-1" type="button" href="{% url 'penilaian_sempro_dosen' item.id_proposal %}">Penilaian Sempro</a> {% endcomment %}
                 {%elif role == "Dosen Seminar Hasil" %}
-                  <a class="btn btn-primary w-100 text-white m-1" type="button" href="{% url 'penilaian_semhas_dosen' item.id_proposal %}">Penilaian Semhas</a>
+                  {% comment %} <a class="btn btn-primary w-100 text-white m-1" type="button" href="{% url 'penilaian_semhas_dosen' item.id_proposal %}">Penilaian Semhas</a> {% endcomment %}
                 {%endif%}
               </div>
               <div class="d-flex flex-column m-2">
                 {%if role == "Dosen Pembimbing" or  user_info.2.name == "Admin"  or user_info.2.name == "Properta"  %}
                   {%if item.status == "ACC"%}
-                      <a class="btn btn-danger w-100 text-white my-1" type="button"
+                      {% comment %} <a class="btn btn-danger w-100 text-white my-1" type="button"
                     href="{% url 'penilaian_bimbingan_nim' item.nim.nim %}">Review Nilai Bimbingan</a>
                       <a class="btn btn-danger w-100 text-white my-1" type="button"
                     href="{% url 'penilaian_sempro_nim'  item.nim.nim %}">Review Nilai Sempro</a>
                       <a class="btn btn-danger w-100 text-white my-1" type="button"
-                    href="{% url 'penilaian_semhas_nim'  item.nim.nim %}">Review Nilai Semhas</a>
+                    href="{% url 'penilaian_semhas_nim'  item.nim.nim %}">Review Nilai Semhas</a> {% endcomment %}
                   {%endif%}
                 {%elif role == "Dosen Seminar Proposal"  %}
-                  <a class="btn btn-danger w-100 text-white my-1" type="button"
-                href="{% url 'penilaian_sempro_nim_filter'  item.nim.nim %}">Review Nilai Sempro</a>
+                  {% comment %} <a class="btn btn-danger w-100 text-white my-1" type="button"
+                href="{% url 'penilaian_sempro_nim_filter'  item.nim.nim %}">Review Nilai Sempro</a> {% endcomment %}
                 {%elif role == "Dosen Seminar Hasil" %}
-                  <a class="btn btn-danger w-100 text-white my-1" type="button"
-                href="{% url 'penilaian_semhas_nim_filter'  item.nim.nim %}">Review Nilai Semhas</a>
+                  {% comment %} <a class="btn btn-danger w-100 text-white my-1" type="button"
+                href="{% url 'penilaian_semhas_nim_filter'  item.nim.nim %}">Review Nilai Semhas</a> {% endcomment %}
                 {% comment %} {%elif role == "Dosen Seminar Hasil" %} {% endcomment %}
                 {%endif%}
               </div>
               <div class="d-flex flex-column m-2">
                 {%if role == "Dosen Pembimbing" or  user_info.2.name == "Admin"  or user_info.2.name == "Properta"  %}
                   {%if item.status == "ACC"%}
-                  <a class="btn btn-warning w-100 text-dark my-1" type="button"
+                  {% comment %} <a class="btn btn-warning w-100 text-dark my-1" type="button"
                   href="{% url 'nilai_bimbingan_get' item.nim.nim %}">Lihat Nilai Kelulusan Bimbingan</a>
                   <a class="btn btn-warning w-100 text-dark my-1" type="button"
                   href="{% url 'nilai_sempro_get'  item.nim.nim %}">Lihat Nilai Kelulusan Sempro</a>
                   <a class="btn btn-warning w-100 text-dark my-1" type="button"
-                  href="{% url 'nilai_semhas_get'  item.nim.nim %}">Lihat Nilai Kelulusan Semhas</a>
+                  href="{% url 'nilai_semhas_get'  item.nim.nim %}">Lihat Nilai Kelulusan Semhas</a> {% endcomment %}
+
+
                   {% comment %} {%elif role == "Dosen Seminar Proposal"  %}
                   <a class="btn btn-warning w-100 text-dark my-1" type="button"
                   href="{% url 'nilai_sempro_get'  item.nim.nim %}">Lihat Nilai Sempro</a>

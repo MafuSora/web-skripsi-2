@@ -230,7 +230,7 @@
                         <span class="me-2"><i class="bi bi-speedometer2"></i></span>
                         <span>Dashboard</span>
                     </a>
-                    <a href="/jadwalget" class="nav-link px-3 active">
+                    <a href="/jadwalgettoday" class="nav-link px-3 active">
                         <span class="me-2"><i class="bi bi-speedometer2"></i></span>
                         <span>Jadwal Seminar</span>
                     </a>
@@ -239,6 +239,12 @@
                         <span class="me-2"><i class="bi bi-speedometer2"></i></span>
                         <span>Jadwal Seminar Pribadi</span>
                     </a>
+                    {%if user_info.2.name == 'Admin'  or user_info.2.name == 'Properta' or user_info.2.name == 'Manajemen Departemen'   %}
+                    <a href="/jadwalget" class="nav-link px-3 active">
+                        <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                        <span>Jadwal Seminar Tanpa Filter</span>
+                    </a>
+                    {% endif %}
                     {% comment %} {%if user_info.2.name == 'Admin' or user_info.2.name == "Properta" %} {% endcomment %}
                     {%if user_info.2.name == 'AA'  %}
                     <a href="/login" class="nav-link px-3 active">
@@ -716,7 +722,7 @@
                         <span>Tabel List Penilaian</span>
                     </a>
                 </li>
-                 <li>
+                 {% comment %} <li>
                     <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#layoutsProposalPenilaianAdmin">
                         <span class="me-2"><i class="bi bi-layout-split"></i></span>
                         <span>Penilaian Berkas Skripsi</span>
@@ -737,13 +743,46 @@
                             <li>
                                 <a href="/proposalget/sempro" class="nav-link px-3">
                                     <span class="me-2"><i class="bi bi-speedometer2"></i></span>
-                                    <span>Tabel Berkas Skripsi Penguji Semianar Proposal</span>
+                                    <span>Tabel Berkas Skripsi Penguji Seminar Proposal</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="/proposalget/semhas" class="nav-link px-3">
                                     <span class="me-2"><i class="bi bi-speedometer2"></i></span>
                                     <span>Tabel Berkas Skripsi Penguji Seminar Hasil</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>      
+                </li> {% endcomment %}
+                 <li>
+                    <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#layoutsProposalPenilaianAdmin">
+                        <span class="me-2"><i class="bi bi-layout-split"></i></span>
+                        <span>Penilaian Seminar</span>
+                        <span class="ms-auto">
+                            <span class="right-icon">
+                                <i class="bi bi-chevron-down"></i>
+                            </span>
+                        </span>
+                    </a>
+                    <div class="collapse" id="layoutsProposalPenilaianAdmin">
+                        <ul class="navbar-nav ps-3">
+                            <li>
+                                <a href="/jadwal_bimbingan/belum" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Penilaian Seminar Pembimbing</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/jadwal_sempro/belum" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Penilaian Seminar Penguji Seminar Proposal</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/jadwal_semhas/belum" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Penilaian Seminar Penguji Seminar Hasil</span>
                                 </a>
                             </li>
                         </ul>
@@ -1108,7 +1147,7 @@
                 <li>
                     <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#layoutsProposalDosen">
                         <span class="me-2"><i class="bi bi-layout-split"></i></span>
-                        <span>Berkas Skripsi & Penilaian Mahasiswa</span>
+                        <span>Berkas Skripsi</span>
                         <span class="ms-auto">
                             <span class="right-icon">
                                 <i class="bi bi-chevron-down"></i>
@@ -1123,7 +1162,7 @@
                                     <span>Tabel Berkas Skripsi Pembimbing</span>
                                 </a>
                             </li>
-                            <li>
+                            {% comment %} <li>
                                 <a href="/proposalget/sempro" class="nav-link px-3">
                                     <span class="me-2"><i class="bi bi-speedometer2"></i></span>
                                     <span>Tabel Berkas Skripsi Penguji Seminar Proposal</span>
@@ -1133,6 +1172,39 @@
                                 <a href="/proposalget/semhas" class="nav-link px-3">
                                     <span class="me-2"><i class="bi bi-speedometer2"></i></span>
                                     <span>Tabel Berkas Skripsi Penguji Seminar Hasil</span>
+                                </a>
+                            </li> {% endcomment %}
+                        </ul>
+                    </div>      
+                </li>
+                <li>
+                    <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#layoutsProposalPenilaianAdmin">
+                        <span class="me-2"><i class="bi bi-layout-split"></i></span>
+                        <span>Penilaian Seminar</span>
+                        <span class="ms-auto">
+                            <span class="right-icon">
+                                <i class="bi bi-chevron-down"></i>
+                            </span>
+                        </span>
+                    </a>
+                    <div class="collapse" id="layoutsProposalPenilaianAdmin">
+                        <ul class="navbar-nav ps-3">
+                            <li>
+                                <a href="/jadwal_bimbingan/belum" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Penilaian Seminar Pembimbing</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/jadwal_sempro/belum" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Penilaian Seminar Penguji Seminar Proposal</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/jadwal_semhas/belum" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Tabel Penilaian Seminar Penguji Seminar Hasil</span>
                                 </a>
                             </li>
                         </ul>

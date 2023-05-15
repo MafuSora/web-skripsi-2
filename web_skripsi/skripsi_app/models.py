@@ -19,36 +19,13 @@ class jadwal_semester(models.Model):
         return str(self.nama_semester)
     
     
-class jadwal_seminar(models.Model):
-    tahapan_choices = [
-        ("Seminar Proposal", 'Seminar Proposal'),
-        ("Seminar Hasil", 'Seminar Hasil'),
-        ]
-    ruangan_seminar_choices = [
-        ("Ruang Seminar A", 'Ruang Seminar A'),
-        ("Ruang Seminar B", 'Ruang Seminar B'),
-        ("Ruang Meeting A", 'Ruang Meeting A'),
-        ]
-    id_jadwal = models.BigAutoField(primary_key=True)
-    mahasiswa = models.CharField(max_length=100,null=True)
-    dosen_pembimbing_1 = models.CharField(max_length=100,null=True)
-    dosen_pembimbing_2 = models.CharField(max_length=100,null=True)
-    dosen_penguji_1 = models.CharField(max_length=60,null=True)
-    dosen_penguji_2 = models.CharField(max_length=60,null=True)
-    tahap_seminar=models.CharField(choices=tahapan_choices, max_length=60,null=True)
-    ruang_seminar=models.CharField(choices=ruangan_seminar_choices, max_length=60,null=True)
-    tanggal_seminar = models.DateField(default=now,null=True)
-    waktu_seminar = models.TimeField(default=now,null=True)
-    tanggal_buat = models.DateTimeField(auto_now_add=True)
-    tanggal_update = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return str(self.tanggal_seminar) + "-" + str(mahasiswa.objects.get(nim=str(self.mahasiswa).split("-")[0]).nim)+ "-" + str(self.tahap_seminar)
 
 class mahasiswa(models.Model):
     nim = models.BigIntegerField(primary_key=True)
     semester_daftar_skripsi = models.ForeignKey(
         jadwal_semester, null=True, on_delete= models.SET_NULL)
+    angkatan=models.IntegerField()
     id_user = models.OneToOneField(User, on_delete=models.CASCADE)
     photo_file = models.ImageField(upload_to="photo_mhs/", blank=True, storage=gd_storage)
 
@@ -64,6 +41,9 @@ class dosen(models.Model):
 
     def __str__(self):
         return str(self.id_user.first_name) + "-" + str(self.nip)
+    
+    
+    
 
 
 class kompartemen(models.Model):
@@ -159,6 +139,38 @@ class roledosen(models.Model):
     def __str__(self):
         return str(self.nip) + "-" + str(self.nim) + "-" + str(self.role)
 
+class jadwal_seminar(models.Model):
+    tahapan_choices = [
+        ("Seminar Proposal", 'Seminar Proposal'),
+        ("Seminar Hasil", 'Seminar Hasil'),
+        ]
+    ruangan_seminar_choices = [
+        ("Ruang Seminar A", 'Ruang Seminar A'),
+        ("Ruang Seminar B", 'Ruang Seminar B'),
+        ("Ruang Meeting A", 'Ruang Meeting A'),
+        ]
+    id_jadwal_seminar = models.BigAutoField(primary_key=True)
+    # mahasiswa = models.CharField(max_length=100,null=True)
+    # dosen_pembimbing_1 = models.CharField(max_length=100,null=True)
+    # dosen_pembimbing_2 = models.CharField(max_length=100,null=True)
+    # dosen_penguji_1 = models.CharField(max_length=60,null=True)
+    # dosen_penguji_2 = models.CharField(max_length=60,null=True)
+    mahasiswa = models.ForeignKey(mahasiswa, on_delete=models.CASCADE, related_name='mahasiswa')
+    dosen_pembimbing_1 = models.ForeignKey(roledosen, on_delete=models.CASCADE, related_name='pembimbing_1')
+    dosen_pembimbing_2 = models.ForeignKey(roledosen, null=True, on_delete=models.SET_NULL, related_name='pembimbing_2')
+    dosen_penguji_1 = models.ForeignKey(roledosen, on_delete=models.CASCADE, related_name='penguji_1')
+    dosen_penguji_2 = models.ForeignKey(roledosen, on_delete=models.CASCADE, related_name='penguji_2')
+    tahap_seminar=models.CharField(choices=tahapan_choices, max_length=60,null=True)
+    ruang_seminar=models.CharField(choices=ruangan_seminar_choices, max_length=60,null=True)
+    tanggal_seminar = models.DateField(default=now,null=True)
+    waktu_seminar = models.TimeField(default=now,null=True)
+    tanggal_buat = models.DateTimeField(auto_now_add=True)
+    tanggal_update = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(self.tanggal_seminar) + "-" + str(self.mahasiswa)+ "-" + str(self.tahap_seminar)
+
+
 
 class detailpenilaian(models.Model):
     tahapan_choices = [
@@ -172,11 +184,11 @@ class detailpenilaian(models.Model):
         ]
     id_detail_penilaian = models.BigAutoField(primary_key=True)
     id_jadwal_seminar=models.ForeignKey(
-        jadwal_seminar, on_delete=models.CASCADE)
+        jadwal_seminar,null=True, on_delete=models.CASCADE)
     nama_tahap = models.CharField(choices=tahapan_choices, max_length=60)
     id_role_dosen = models.ForeignKey(
         roledosen, on_delete=models.CASCADE)
-    nama_tahap = models.CharField(choices=tahapan_choices, max_length=60)
+
     hasil_review = models.TextField(blank=True)
     status_kelulusan = models.CharField(choices=status_kelulusan_choices, max_length=60)
     tanggal_buat = models.DateTimeField(auto_now_add=True)
@@ -241,19 +253,24 @@ class bimbingan(models.Model):
 
 class cpmk(models.Model):
     id_tabel_cpmk = models.BigAutoField(primary_key=True)
-    id_cpmk = models.CharField(max_length=60)
+    id_cpmk = models.CharField(max_length=60,validators=[RegexValidator(r'^\S+$', 'Tidak boleh memiliki spasi')])
+    id_nama_semester=models.ForeignKey(
+        jadwal_semester, null=True, on_delete= models.SET_NULL)
+    tahun_angkatan=models.IntegerField()
+    keterangan_sub_cpmk = models.TextField(blank=True)
     # id_cpmk = models.CharField(primary_key=True,max_length=60)
     keterangan_cpmk = models.TextField(blank=True)
     
     def __str__(self):
-        return str(self.id_cpmk) + "-" + str(self.keterangan_cpmk) 
+        return  str(self.id_cpmk) + "-" + str(self.tahun_angkatan) + "-" + str(self.id_nama_semester) + "-" + str(self.keterangan_cpmk) 
+        # return str(self.id_cpmk) + "-" + str(self.keterangan_cpmk) 
     
 class sub_cpmk(models.Model):
     id_tabel_sub_cpmk = models.BigAutoField(primary_key=True)
     id_sub_cpmk = models.CharField(max_length=60,validators=[RegexValidator(r'^\S+$', 'Tidak boleh memiliki spasi')])
-    id_jadwal_semester=models.ForeignKey(
+    id_nama_semester=models.ForeignKey(
         jadwal_semester, null=True, on_delete= models.SET_NULL)
-    tahun=models.IntegerField(blank=True,null=True)
+    tahun_angkatan=models.IntegerField()
     keterangan_sub_cpmk = models.TextField(blank=True)
     id_cpmk = models.ForeignKey(
         cpmk, on_delete=models.CASCADE)
@@ -265,7 +282,8 @@ class sub_cpmk(models.Model):
     bobot_pembimbing = models.FloatField(blank=True,default=0)
     
     def __str__(self):
-        return  str(self.keterangan_sub_cpmk) 
+        # return  str(self.keterangan_sub_cpmk) 
+        return str(self.id_sub_cpmk) + "-" + str(self.tahun_angkatan) + "-" + str(self.id_nama_semester) + "-" + str(self.keterangan_sub_cpmk)  
         # return str(self.id_sub_cpmk) + "-" + str(self.keterangan_sub_cpmk) 
 
 
@@ -281,7 +299,7 @@ class penilaian(models.Model):
     tanggal_update = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return str(self.id_penilaian) + "-" + str(self.nilai)
+        return str(self.id_penilaian) + "-"+str(self.id_sub_cpmk.id_sub_cpmk)+ "-" + str(self.nilai)
     # + str(self.id_sub_cpmk.id_sub_cpmk)+ "-" 
 
 

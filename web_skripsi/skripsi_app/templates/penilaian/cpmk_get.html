@@ -17,6 +17,8 @@
         
 
         <th>CPMK</th>
+        <th>Semester</th>
+        <th>Angkatan</th>
         <th>Keterangan CPMK</th>
        
         <th>Operation</th>
@@ -28,6 +30,8 @@
 
 
         <td>{{item.id_cpmk}}</td>
+        <td>{{item.id_nama_semester}}</td>
+        <td>{{item.tahun_angkatan}}</td>
         <td>{{item.keterangan_cpmk}}</td>
 
        
@@ -47,8 +51,8 @@
                   <div class="modal-header">
                     <h5 class="modal-title" id="staticBackdropLabel{{item.id_tabel_cpmk}}">Apakah
                       anda yakin akan
-                      menghapus SUB CPMK
-                      {{item.id_cpmk}}-{{item.keterangan_cpmk}} ?</h5>
+                      menghapus CPMK
+                      {{item.id_cpmk}}-{{item.id_nama_semester}}-{{item.tahun_angkatan}}-{{item.keterangan_cpmk}} ?</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
                   <div class="modal-body">
@@ -70,6 +74,8 @@
     <tfoot>
       <tr>
         <th>CPMK</th>
+        <th>Semester</th>
+        <th>Angkatan</th>
         <th>Keterangan CPMK</th>
         <th>Operation</th>
       </tr>

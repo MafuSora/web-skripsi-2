@@ -291,12 +291,30 @@ urlpatterns = [
          views.proposal_delete, name='proposal_delete'),
 
      # Penilaian 
-     path('penilaian_sempro_dosen/<int:id_proposal>',
-         views.penilaian_sempro_dosen, name='penilaian_sempro_dosen'),
-     path('penilaian_bimbingan_dosen/<int:id_proposal>',
-         views.penilaian_bimbingan_dosen, name='penilaian_bimbingan_dosen'),
-     path('penilaian_semhas_dosen/<int:id_proposal>',
-         views.penilaian_semhas_dosen, name='penilaian_semhas_dosen'),
+     path('penilaian_sempro_dosen_1/<int:id_jadwal_seminar>',
+         views.penilaian_sempro_dosen_1, name='penilaian_sempro_dosen_1'),
+     path('penilaian_sempro_dosen_2/<int:id_jadwal_seminar>',
+         views.penilaian_sempro_dosen_2, name='penilaian_sempro_dosen_2'),
+     
+     
+     path('penilaian_sempro_dosen_pembimbing_1/<int:id_jadwal_seminar>',
+         views.penilaian_sempro_dosen_pembimbing_1, name='penilaian_sempro_dosen_pembimbing_1'),
+     path('penilaian_sempro_dosen_pembimbing_2/<int:id_jadwal_seminar>',
+         views.penilaian_sempro_dosen_pembimbing_2, name='penilaian_sempro_dosen_pembimbing_2'),
+     path('penilaian_bimbingan_dosen_1/<int:id_jadwal_seminar>',
+         views.penilaian_bimbingan_dosen_1, name='penilaian_bimbingan_dosen_1'),
+     path('penilaian_bimbingan_dosen_2/<int:id_jadwal_seminar>',
+         views.penilaian_bimbingan_dosen_2, name='penilaian_bimbingan_dosen_2'),
+     path('penilaian_semhas_dosen_pembimbing_1/<int:id_jadwal_seminar>',
+         views.penilaian_semhas_dosen_pembimbing_1, name='penilaian_semhas_dosen_pembimbing_1'),
+     path('penilaian_semhas_dosen_pembimbing_2/<int:id_jadwal_seminar>',
+         views.penilaian_semhas_dosen_pembimbing_2, name='penilaian_semhas_dosen_pembimbing_2'),
+     
+     
+     path('penilaian_semhas_dosen_1/<int:id_jadwal_seminar>',
+         views.penilaian_semhas_dosen_1, name='penilaian_semhas_dosen_1'),
+     path('penilaian_semhas_dosen_2/<int:id_jadwal_seminar>',
+         views.penilaian_semhas_dosen_2, name='penilaian_semhas_dosen_2'),
      
      path('penilaian_list/',
          views.penilaian_list, name='penilaian_list'),
@@ -330,8 +348,19 @@ urlpatterns = [
      
      path('penilaian_get_sempro_filter/<int:nim>',
          views.penilaian_sempro_nim_filter, name='penilaian_sempro_nim_filter'),
-     path('penilaian_get_semhas/<int:nim>',
+     path('penilaian_get_semhas_filter/<int:nim>',
          views.penilaian_semhas_nim_filter, name='penilaian_semhas_nim_filter'),
+     
+     
+     path('penilaian_get_sempro/seminar/<int:id_jadwal_seminar>',
+         views.penilaian_sempro_jadwal_seminar, name='penilaian_sempro_jadwal_seminar'),
+     path('penilaian_get_sempro_filter/seminar/<int:id_jadwal_seminar>',
+         views.penilaian_sempro_jadwal_seminar_filter, name='penilaian_sempro_jadwal_seminar_filter'),
+     
+     path('penilaian_get_semhas/seminar/<int:id_jadwal_seminar>',
+         views.penilaian_semhas_jadwal_seminar, name='penilaian_semhas_jadwal_seminar'),
+     path('penilaian_get_semhas_filter/seminar/<int:id_jadwal_seminar>',
+         views.penilaian_semhas_jadwal_seminar_filter, name='penilaian_semhas_jadwal_seminar_filter'),
      
      path('penilaian_get_bimbingan/<int:nim>',
          views.penilaian_bimbingan_nim, name='penilaian_bimbingan_nim'),
@@ -343,6 +372,14 @@ urlpatterns = [
          views.nilai_semhas_get, name='nilai_semhas_get'),
      path('nilai_bimbingan/<int:nim>',
          views.nilai_bimbingan_get, name='nilai_bimbingan_get'),
+     
+     # nilai seminar
+     path('nilai_sempro/seminar/<int:id_jadwal_seminar>',
+         views.nilai_sempro_get_seminar, name='nilai_sempro_get_seminar'),
+     path('nilai_semhas/seminar/<int:id_jadwal_seminar>',
+         views.nilai_semhas_get_seminar, name='nilai_semhas_get_seminar'),
+     path('nilai_bimbingan/seminar/<int:id_jadwal_seminar>',
+         views.nilai_bimbingan_get_seminar, name='nilai_bimbingan_get_seminar'),
      
      # list review seminar
      path('review_all/',
@@ -357,6 +394,8 @@ urlpatterns = [
      # jadwal seminar
      path('jadwalcreate/',
          views.jadwal_create, name='jadwal_create'),
+     path('jadwalcreate/filter',
+         views.jadwal_create_tanpa_filter, name='jadwal_create_tanpa_filter'),
      path('jadwalget/',
          views.jadwal_get, name='jadwal_get'),
      path('jadwalgettoday/',
@@ -365,9 +404,45 @@ urlpatterns = [
          views.jadwal_mhs_dosen_get, name='jadwal_mhs_dosen_get'),
      path('jadwalupdate/<int:id>',
          views.jadwal_update, name='jadwal_update'),
+     path('jadwalupdate/filter/<int:id>',
+         views.jadwal_update_tanpa_filter, name='jadwal_update_tanpa_filter'),
      path('jadwaldelete/<int:id>',
          views.jadwal_delete, name='jadwal_delete'),
+     
 
+     
+     path('jadwal_bimbingan/',
+         views.jadwal_dosen_bimbingan_tanpa_filter, name='jadwal_dosen_bimbingan_tanpa_filter'),
+     path('jadwal_bimbingan/all',
+         views.jadwal_dosen_bimbingan, name='jadwal_dosen_bimbingan'),
+     path('jadwal_bimbingan/nilai',
+         views.jadwal_dosen_bimbingan_sudah_dinilai, name='jadwal_dosen_bimbingan_sudah_dinilai'),
+     path('jadwal_bimbingan/sebagian',
+         views.jadwal_dosen_bimbingan_sebagian_dinilai, name='jadwal_dosen_bimbingan_sebagian_dinilai'),
+     path('jadwal_bimbingan/belum',
+         views.jadwal_dosen_bimbingan_belum_dinilai, name='jadwal_dosen_bimbingan_belum_dinilai'),
+
+     path('jadwal_sempro/',
+         views.jadwal_dosen_sempro_tanpa_filter, name='jadwal_dosen_sempro_tanpa_filter'),
+     path('jadwal_sempro/all',
+         views.jadwal_dosen_sempro, name='jadwal_dosen_sempro'),
+     path('jadwal_sempro/nilai',
+         views.jadwal_dosen_sempro_sudah_dinilai, name='jadwal_dosen_sempro_sudah_dinilai'),
+     # path('jadwal_sempro/sebagian',
+     #     views.jadwal_dosen_bimbingan_sebagian_dinilai, name='jadwal_dosen_bimbingan_sebagian_dinilai'),
+     path('jadwal_sempro/belum',
+         views.jadwal_dosen_sempro_belum_dinilai, name='jadwal_dosen_sempro_belum_dinilai'),
+     
+     path('jadwal_semhas/',
+         views.jadwal_dosen_semhas_tanpa_filter, name='jadwal_dosen_semhas_tanpa_filter'),
+     path('jadwal_semhas/all',
+         views.jadwal_dosen_semhas, name='jadwal_dosen_semhas'),
+     path('jadwal_semhas/nilai',
+         views.jadwal_dosen_semhas_sudah_dinilai, name='jadwal_dosen_semhas_sudah_dinilai'),
+     # path('jadwal_sempro/sebagian',
+     #     views.jadwal_dosen_bimbingan_sebagian_dinilai, name='jadwal_dosen_bimbingan_sebagian_dinilai'),
+     path('jadwal_semhas/belum',
+         views.jadwal_dosen_semhas_belum_dinilai, name='jadwal_dosen_semhas_belum_dinilai'),
 
      path('listangkatan/',
          views.mahasiswa_jumlah_get, name='mahasiswa_jumlah_get'),
@@ -387,12 +462,12 @@ urlpatterns = [
          views.jadwal_semester_delete, name='jadwal_semester_delete'),
 
      # cpmk
-     # path('sub_cpmk_create/',
-     #     views.Sub_CPMK_create, name='Sub_CPMK_create'),
-     # path('sub_cpmk_get/',
-     #     views.Sub_CPMK_get, name='Sub_CPMK_get'),
-     # path('sub_cpmk_update/<str:id>',
-     #     views.Sub_CPMK_update, name='Sub_CPMK_update'),
+     path('sub_cpmk_create/',
+         views.Sub_CPMK_create, name='Sub_CPMK_create'),
+     path('sub_cpmk_get/',
+         views.Sub_CPMK_get, name='Sub_CPMK_get'),
+     path('sub_cpmk_update/<str:id>',
+         views.Sub_CPMK_update, name='Sub_CPMK_update'),
      path('sub_cpmk_delete/<str:id>',
          views.Sub_CPMK_delete, name='Sub_CPMK_delete'),
      # cpmk

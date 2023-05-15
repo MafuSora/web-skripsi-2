@@ -6,16 +6,21 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth.models import User
 # , Group, Permission
 from django.contrib.contenttypes.models import ContentType
-from .models import cpmk,jadwal_seminar,penilaian, bimbingan,notifikasi, detailpenilaian, evaluasitopik, proposal,notifikasi, roledosen, usulantopik, dosen, kompartemen, mahasiswa, kompartemendosen,jadwal_semester
-# , sub_cpmk
+from .models import cpmk,jadwal_seminar,penilaian, bimbingan,notifikasi, detailpenilaian, evaluasitopik, proposal,notifikasi, roledosen, usulantopik, dosen, kompartemen, mahasiswa, kompartemendosen,jadwal_semester, sub_cpmk
 # from .widget import DatePickerInput, TimePickerInput, DateTimePickerInput
 from .widget import DatePickerInput, TimePickerInput
 # , DateTimePickerInput
 # from django.forms.widgets import TimeInput
 # User Form
-from django.core.validators import validate_email,MaxValueValidator
+from django.core.validators import validate_email,MaxValueValidator,MinValueValidator
 
 
+# Function untuk menampilkan waktu
+import time,datetime
+
+# menampilakan tanggal
+tanggalan=datetime.datetime.now()
+tahun=tanggalan.strftime("%Y")
 class RegistrationForm(UserCreationForm):
     email = forms.EmailField(required=True, validators=[validate_email])
     first_name = forms.CharField(max_length=30, required=True,label='Full Name')
@@ -26,10 +31,13 @@ class RegistrationForm(UserCreationForm):
 
 
 class NimForm(forms.ModelForm):
+
+    angkatan = forms.IntegerField(
+        validators=[MinValueValidator(2004),MaxValueValidator(int(tahun))])
     class Meta:
         model = mahasiswa
         fields = ['nim'
-        ,"semester_daftar_skripsi"
+        ,"semester_daftar_skripsi","angkatan"
         ]
     
 
@@ -105,9 +113,13 @@ class KompartemenForm(forms.ModelForm):
 
 
 class MahasiswaForm(forms.ModelForm):
+    
+    angkatan = forms.IntegerField(
+        validators=[MinValueValidator(2004),MaxValueValidator(int(tahun))])
     class Meta:
+        
         model = mahasiswa
-        fields = ["nim", "id_user", "photo_file"]
+        fields = ["nim", "id_user","semester_daftar_skripsi","angkatan", "photo_file"]
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['nim'].label = 'NIM'
@@ -115,9 +127,12 @@ class MahasiswaForm(forms.ModelForm):
 
 
 class UpdateAdminMahasiswaForm(forms.ModelForm):
+
+    angkatan = forms.IntegerField(
+        validators=[MinValueValidator(2004),MaxValueValidator(int(tahun))])
     class Meta:
         model = mahasiswa
-        fields = ["nim","id_user","semester_daftar_skripsi","photo_file"]
+        fields = ["nim","id_user","semester_daftar_skripsi","angkatan","photo_file"]
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['nim'].label = 'NIM'
@@ -217,10 +232,10 @@ class UsulanTopikForm(forms.ModelForm):
         cleaned_data = super().clean()
         permintaan_dosen_1 = cleaned_data.get("permintaan_dosen_1")
         permintaan_dosen_2 = cleaned_data.get("permintaan_dosen_2")
-        print(permintaan_dosen_1)
-        print(permintaan_dosen_2)
-        print(permintaan_dosen_2==permintaan_dosen_1)
-        print(str(permintaan_dosen_2)==str(permintaan_dosen_1))
+        # print(permintaan_dosen_1)
+        # print(permintaan_dosen_2)
+        # print(permintaan_dosen_2==permintaan_dosen_1)
+        # print(str(permintaan_dosen_2)==str(permintaan_dosen_1))
         # Cek duplikat antara field dosen
         if (permintaan_dosen_2== permintaan_dosen_1) :
             print("True")
@@ -321,7 +336,7 @@ class RoleDosenFormUpdateSekdept(forms.ModelForm):
 class DetailPenilaianForm(forms.ModelForm):
     class Meta:
         model = detailpenilaian
-        fields = ["id_role_dosen",  "hasil_review","status_kelulusan"]
+        fields = ["id_role_dosen", "id_jadwal_seminar","status_kelulusan","hasil_review"]
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['id_role_dosen'].label = 'Pasangan Dosen & Mahasiswa'
@@ -331,7 +346,12 @@ class DetailPenilaianForm(forms.ModelForm):
 class DetailPenilaianFormDosen(forms.ModelForm):
     class Meta:
         model = detailpenilaian
-        fields = [  "hasil_review","status_kelulusan"]
+        fields = [ "id_jadwal_seminar","status_kelulusan","hasil_review"]
+        
+class DetailPenilaianFormBimbingan(forms.ModelForm):
+    class Meta:
+        model = detailpenilaian
+        fields = [ "status_kelulusan","hasil_review"]
 
 class DetailPenilaianIDDosen(forms.ModelForm):
     class Meta:
@@ -344,7 +364,7 @@ class DetailPenilaianIDDosen(forms.ModelForm):
 class DetailPenilaianDosenForm(forms.ModelForm):
     class Meta:
         model = detailpenilaian
-        fields = ["hasil_review","status_kelulusan"]
+        fields = ["id_jadwal_seminar","status_kelulusan","hasil_review"]
 
 class BimbinganForm(forms.ModelForm):
     class Meta:
@@ -381,14 +401,13 @@ class PenilaianForm(forms.ModelForm):
     # sub_cpmk_2= forms.CharField(disabled=True)
     
     # ini juga tanda
-    # id_sub_cpmk_= forms.CharField(widget=forms.Textarea(attrs={'disabled': 'disabled','rows': 3}),required=False, label= "Sub CPMK")
+    id_sub_cpmk_= forms.CharField(widget=forms.Textarea(attrs={'disabled': 'disabled','rows': 3}),required=False, label= "Sub CPMK")
     
     # id_sub_cpmk= forms.ModelChoiceField(queryset=sub_cpmk.objects.all())
     
     # tanda tadi yang aktif yang ini 
-    # id_sub_cpmk= forms.ModelChoiceField(queryset=sub_cpmk.objects.all(),widget=forms.HiddenInput(), label= "Sub CPMK")
-    
-    # nilai = forms.IntegerField(validators=[MaxValueValidator(100)])
+    id_sub_cpmk= forms.ModelChoiceField(queryset=sub_cpmk.objects.all(),widget=forms.HiddenInput(), label= "Sub CPMK")
+    nilai = forms.IntegerField(validators=[MaxValueValidator(100)])
     # id_sub_cpmk= forms.ModelChoiceField(queryset=sub_cpmk.objects.all(),widget=forms.HiddenInput())
 
     # def __init__(self, *args, **kwargs):
@@ -408,7 +427,7 @@ class PenilaianForm(forms.ModelForm):
     class Meta:
         model = penilaian
         fields = [
-            # "id_sub_cpmk_","id_sub_cpmk",
+            "id_sub_cpmk_","id_sub_cpmk",
             "nilai" ]
         
         # def __init__(self, *args, **kwargs):
@@ -419,18 +438,21 @@ class PenilaianForm(forms.ModelForm):
         # widgets = {
         #     'id_sub_cpmk': forms.ModelChoiceField(queryset=sub_cpmk.objects.all(),widget=forms.Select(attrs={'disabled': 'disabled', 'selected': 'selected'}))
         # }
-# class SubCPMKForm(forms.ModelForm):
-#     class Meta:
-#         # id_sub_cpmk=forms.CharField()
-#         id_sub_cpmk=forms.CharField(validators=[RegexValidator(r'^\S+$', 'Tidak boleh ada spasi')])
-#         model = sub_cpmk
-#         fields = ["id_sub_cpmk","keterangan_sub_cpmk",
-#                   "id_cpmk", 
-#                   "bobot_persen_sempro","bobot_sempro","bobot_persen_semhas","bobot_semhas","bobot_persen_pembimbing","bobot_pembimbing"]
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.fields['id_sub_cpmk'].label = 'Sub CPMK'
-#         self.fields['id_cpmk'].label = 'CPMK'
+class SubCPMKForm(forms.ModelForm):
+    tahun_angkatan=forms.IntegerField(validators=[MinValueValidator(2004),MaxValueValidator(int(tahun)+1)])
+    id_sub_cpmk=forms.CharField(validators=[RegexValidator(r'^\S+$', 'Tidak boleh ada spasi')])
+    class Meta:
+        
+        model = sub_cpmk
+        fields = ["id_sub_cpmk",'id_nama_semester',"tahun_angkatan","keterangan_sub_cpmk",
+                  "id_cpmk", 
+                  "bobot_persen_sempro","bobot_sempro","bobot_persen_semhas","bobot_semhas","bobot_persen_pembimbing","bobot_pembimbing"]
+        # ,"id_nama_semester"
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['id_nama_semester'].label = 'Nama Semester'
+        self.fields['id_sub_cpmk'].label = 'Sub CPMK'
+        self.fields['id_cpmk'].label = 'CPMK'
         # self.fields['keterangan_cpmk_utama'].label = 'Keterangan CPMK'
     # def clean_my_field(self):
     #     data = self.cleaned_data['id_sub_cpmk']
@@ -439,11 +461,14 @@ class PenilaianForm(forms.ModelForm):
         # return data
 
 class CPMKForm(forms.ModelForm):
+    tahun_angkatan = forms.IntegerField(validators=[MinValueValidator(2004),MaxValueValidator(int(tahun)+1)])
+    id_cpmk=forms.CharField(validators=[RegexValidator(r'^\S+$', 'Tidak boleh ada spasi')])
     class Meta:
         model = cpmk
-        fields = ["id_cpmk","keterangan_cpmk"]
+        fields = ["id_cpmk",'id_nama_semester',"tahun_angkatan","keterangan_cpmk"]
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['id_nama_semester'].label = 'Nama Semester'
         self.fields['id_cpmk'].label = 'CPMK'
         self.fields['keterangan_cpmk'].label = 'Keterangan CPMK'
 
@@ -461,95 +486,122 @@ class NotifikasiForm(forms.ModelForm):
         fields = ["status" ]
 
 
-# class Time24Input(forms.TimeInput):
-#     input_type = 'time'
-#     format = '%H:%M'
-# class Time24Input(TimeInput):
-#     input_type = 'time'
-#     format = '%H:%M:%S'
 
-#     def __init__(self, attrs=None):
-#         attrs = {'class': 'form-control'}
-#         super().__init__(attrs)
 
 class JadwalForm(forms.ModelForm):
-    data_dosen =dosen.objects.all()[0:]
-    data_mahasiswa =mahasiswa.objects.all()[0:]
-    # data_mahasiswa =mahasiswa.objects.all()[0:]
-    # data_mahasiswa =mahasiswa.objects.all()[0:]
-    # Mahasiswa
-    ListMahasiswa= [None]
-    for fields in data_mahasiswa:
-        ListMahasiswa += [fields]
-    ChoiceMahasiswa= list(zip(ListMahasiswa, ListMahasiswa))
-    # Dosen
-    ListDosen= [None]
-    for fields in data_dosen:
-        ListDosen += [fields]
-    ChoiceDosen= list(zip(ListDosen, ListDosen))
 
-    mahasiswa= forms.ChoiceField(choices=ChoiceMahasiswa,required=True)
-    dosen_pembimbing_1= forms.ChoiceField(choices=ChoiceDosen,required=True)
-    dosen_pembimbing_2= forms.ChoiceField(choices=ChoiceDosen,required=False)
-    dosen_penguji_1= forms.ChoiceField(choices=ChoiceDosen,required=True)
-    dosen_penguji_2= forms.ChoiceField(choices=ChoiceDosen,required=True)
-    # tanggal_seminar= forms.DateField(widget=DatePickerInput,required=False,initial=tanggal_seminar)
+    dosen_pembimbing_1= forms.ModelChoiceField(queryset=roledosen.objects.filter(role="Pembimbing 1").filter(status="Active"),required=True)
+    dosen_pembimbing_2= forms.ModelChoiceField(queryset=roledosen.objects.filter(role="Pembimbing 2").filter(status="Active"),required=False)
+    dosen_penguji_1= forms.ModelChoiceField(queryset=roledosen.objects.filter(role="Penguji Seminar Proposal 1").filter(status="Active")|roledosen.objects.filter(role="Penguji Seminar Hasil 1").filter(status="Active"),required=True)
+    dosen_penguji_2= forms.ModelChoiceField(queryset=roledosen.objects.filter(role="Penguji Seminar Proposal 2").filter(status="Active")|roledosen.objects.filter(role="Penguji Seminar Hasil 2").filter(status="Active"),required=True)
     tanggal_seminar= forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-    # waktu_seminar= forms.TimeField(widget=Time24Input())
     waktu_seminar= forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
-    # Waktu_Seminar= forms.DateTimeField(input_formats=["%d %b %Y %H:%M:%S %Z"],required=False, default=)
-    # Dosen_Penguji_2= forms.ModelChoiceField(queryset=Dosen.objects.all())1
+    # dosen_penguji_1= forms.ChoiceField(choices=ChoiceDosen,required=True)
+    # dosen_penguji_2= forms.ChoiceField(choices=ChoiceDosen,required=True)
+    # # tanggal_seminar= forms.DateField(widget=DatePickerInput,required=False,initial=tanggal_seminar)
+    # # waktu_seminar= forms.TimeField(widget=Time24Input())
+    # # Waktu_Seminar= forms.DateTimeField(input_formats=["%d %b %Y %H:%M:%S %Z"],required=False, default=)
+    # # Dosen_Penguji_2= forms.ModelChoiceField(queryset=Dosen.objects.all())1
     class Meta:
         model = jadwal_seminar
         fields = ["mahasiswa", "dosen_pembimbing_1","dosen_pembimbing_2","dosen_penguji_1","dosen_penguji_2","tahap_seminar","ruang_seminar","tanggal_seminar","waktu_seminar" ]
-        
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        data_dosen =dosen.objects.all()[0:]
-        ListDosen= [None]
-        for fields in data_dosen:
-            ListDosen += [fields]
-        ChoiceDosen= list(zip(ListDosen, ListDosen))
-        # print(ChoiceDosen)
-        instance = kwargs.get('instance')
-        # print(instance.dosen_pembimbing_1)
-        if instance:
-            choices = [(instance.dosen_pembimbing_1,instance.dosen_pembimbing_1 )]+ChoiceDosen
-            choices = list(set(choices))
-            self.fields['dosen_pembimbing_1'].choices = choices 
-            
-            choices = [(instance.dosen_pembimbing_2,instance.dosen_pembimbing_2 )]+ChoiceDosen
-            choices = list(set(choices))
-            self.fields['dosen_pembimbing_2'].choices = choices 
-            
-            choices = [(instance.dosen_penguji_1,instance.dosen_penguji_1 )]+ChoiceDosen
-            choices = list(set(choices))
-            self.fields['dosen_penguji_1'].choices = choices 
-            
-            choices = [(instance.dosen_penguji_2,instance.dosen_penguji_2 )]+ChoiceDosen
-            choices = list(set(choices))
-            self.fields['dosen_penguji_2'].choices = choices 
             
     def clean(self):
         cleaned_data = super().clean()
+        mahasiswa = cleaned_data.get("mahasiswa")
         dosen_pembimbing_1 = cleaned_data.get("dosen_pembimbing_1")
         dosen_pembimbing_2 = cleaned_data.get("dosen_pembimbing_2")
         dosen_penguji_1 = cleaned_data.get("dosen_penguji_1")
         dosen_penguji_2 = cleaned_data.get("dosen_penguji_2")
 
         # Cek duplikat antara field dosen
-        if (dosen_pembimbing_1 and dosen_pembimbing_1 == dosen_pembimbing_2) or \
-           (dosen_pembimbing_1 and dosen_pembimbing_1 == dosen_penguji_1) or \
-           (dosen_pembimbing_1 and dosen_pembimbing_1 == dosen_penguji_2) or \
-           (dosen_pembimbing_2 and dosen_pembimbing_2 == dosen_penguji_1) or \
-           (dosen_pembimbing_2 and dosen_pembimbing_2 == dosen_penguji_2) or \
-           (dosen_penguji_1 and dosen_penguji_1 == dosen_penguji_2):
+        if ((dosen_pembimbing_1 and dosen_pembimbing_1.nip) and \
+            (dosen_pembimbing_2 and dosen_pembimbing_2.nip) and \
+            dosen_pembimbing_1.nip.nip == dosen_pembimbing_2.nip.nip) or \
+        ((dosen_pembimbing_1 and dosen_pembimbing_1.nip) and \
+            (dosen_penguji_1 and dosen_penguji_1.nip) and \
+            dosen_pembimbing_1.nip.nip == dosen_penguji_1.nip.nip) or \
+        ((dosen_pembimbing_1 and dosen_pembimbing_1.nip) and \
+            (dosen_penguji_2 and dosen_penguji_2.nip) and \
+            dosen_pembimbing_1.nip.nip == dosen_penguji_2.nip.nip) or \
+        ((dosen_pembimbing_2 and dosen_pembimbing_2.nip) and \
+            (dosen_penguji_1 and dosen_penguji_1.nip) and \
+            dosen_pembimbing_2.nip.nip == dosen_penguji_1.nip.nip) or \
+        ((dosen_pembimbing_2 and dosen_pembimbing_2.nip) and \
+            (dosen_penguji_2 and dosen_penguji_2.nip) and \
+            dosen_pembimbing_2.nip.nip == dosen_penguji_2.nip.nip) or \
+        ((dosen_penguji_1 and dosen_penguji_1.nip) and \
+            (dosen_penguji_2 and dosen_penguji_2.nip) and \
+            dosen_penguji_1.nip.nip == dosen_penguji_2.nip.nip):
             raise ValidationError("Dosen tidak boleh duplikat.")
+        
+        # if (mahasiswa and mahasiswa.nim) and \
+        #     not((dosen_pembimbing_1 and dosen_pembimbing_1.nim) and mahasiswa.nim == dosen_pembimbing_1.nim.nim) and \
+        #     not((dosen_pembimbing_2 and dosen_pembimbing_2.nim) and mahasiswa.nim == dosen_pembimbing_2.nim.nim) and \
+        #     not((dosen_penguji_1 and dosen_penguji_1.nim) and mahasiswa.nim == dosen_penguji_1.nim.nim) and \
+        #     not((dosen_penguji_2 and dosen_penguji_2.nim) and mahasiswa.nim == dosen_penguji_2.nim.nim):
+        #     raise ValidationError("NIM mahasiswa berbeda dengan NIM dosen.")
         
         
         return cleaned_data
             
-    
+class JadwalFormTanpaFilter(forms.ModelForm):
+
+    dosen_pembimbing_1= forms.ModelChoiceField(queryset=roledosen.objects.filter(role="Pembimbing 1"),required=True)
+    dosen_pembimbing_2= forms.ModelChoiceField(queryset=roledosen.objects.filter(role="Pembimbing 2"),required=False)
+    dosen_penguji_1= forms.ModelChoiceField(queryset=roledosen.objects.filter(role="Penguji Seminar Proposal 1")|roledosen.objects.filter(role="Penguji Seminar Hasil 1"),required=True)
+    dosen_penguji_2= forms.ModelChoiceField(queryset=roledosen.objects.filter(role="Penguji Seminar Proposal 2")|roledosen.objects.filter(role="Penguji Seminar Hasil 2"),required=True)
+    tanggal_seminar= forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    waktu_seminar= forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
+    # dosen_penguji_1= forms.ChoiceField(choices=ChoiceDosen,required=True)
+    # dosen_penguji_2= forms.ChoiceField(choices=ChoiceDosen,required=True)
+    # # tanggal_seminar= forms.DateField(widget=DatePickerInput,required=False,initial=tanggal_seminar)
+    # # waktu_seminar= forms.TimeField(widget=Time24Input())
+    # # Waktu_Seminar= forms.DateTimeField(input_formats=["%d %b %Y %H:%M:%S %Z"],required=False, default=)
+    # # Dosen_Penguji_2= forms.ModelChoiceField(queryset=Dosen.objects.all())1
+    class Meta:
+        model = jadwal_seminar
+        fields = ["mahasiswa", "dosen_pembimbing_1","dosen_pembimbing_2","dosen_penguji_1","dosen_penguji_2","tahap_seminar","ruang_seminar","tanggal_seminar","waktu_seminar" ]
+            
+    def clean(self):
+        cleaned_data = super().clean()
+        mahasiswa = cleaned_data.get("mahasiswa")
+        dosen_pembimbing_1 = cleaned_data.get("dosen_pembimbing_1")
+        dosen_pembimbing_2 = cleaned_data.get("dosen_pembimbing_2")
+        dosen_penguji_1 = cleaned_data.get("dosen_penguji_1")
+        dosen_penguji_2 = cleaned_data.get("dosen_penguji_2")
+
+
+        # Cek duplikat antara field dosen
+        if ((dosen_pembimbing_1 and dosen_pembimbing_1.nip) and \
+            (dosen_pembimbing_2 and dosen_pembimbing_2.nip) and \
+            dosen_pembimbing_1.nip.nip == dosen_pembimbing_2.nip.nip) or \
+        ((dosen_pembimbing_1 and dosen_pembimbing_1.nip) and \
+            (dosen_penguji_1 and dosen_penguji_1.nip) and \
+            dosen_pembimbing_1.nip.nip == dosen_penguji_1.nip.nip) or \
+        ((dosen_pembimbing_1 and dosen_pembimbing_1.nip) and \
+            (dosen_penguji_2 and dosen_penguji_2.nip) and \
+            dosen_pembimbing_1.nip.nip == dosen_penguji_2.nip.nip) or \
+        ((dosen_pembimbing_2 and dosen_pembimbing_2.nip) and \
+            (dosen_penguji_1 and dosen_penguji_1.nip) and \
+            dosen_pembimbing_2.nip.nip == dosen_penguji_1.nip.nip) or \
+        ((dosen_pembimbing_2 and dosen_pembimbing_2.nip) and \
+            (dosen_penguji_2 and dosen_penguji_2.nip) and \
+            dosen_pembimbing_2.nip.nip == dosen_penguji_2.nip.nip) or \
+        ((dosen_penguji_1 and dosen_penguji_1.nip) and \
+            (dosen_penguji_2 and dosen_penguji_2.nip) and \
+            dosen_penguji_1.nip.nip == dosen_penguji_2.nip.nip):
+            raise ValidationError("Dosen tidak boleh duplikat.")
+        
+        # if (mahasiswa and mahasiswa.nim) and \
+        #     not((dosen_pembimbing_1 and dosen_pembimbing_1.nim) and mahasiswa.nim == dosen_pembimbing_1.nim.nim) and \
+        #     not((dosen_pembimbing_2 and dosen_pembimbing_2.nim) and mahasiswa.nim == dosen_pembimbing_2.nim.nim) and \
+        #     not((dosen_penguji_1 and dosen_penguji_1.nim) and mahasiswa.nim == dosen_penguji_1.nim.nim) and \
+        #     not((dosen_penguji_2 and dosen_penguji_2.nim) and mahasiswa.nim == dosen_penguji_2.nim.nim):
+        #     raise ValidationError("NIM mahasiswa berbeda dengan NIM dosen.")
+        
+        
+        return cleaned_data  
    
 
 

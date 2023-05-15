@@ -1,0 +1,131 @@
+login_required(login_url="/login")
+@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+def penilaian_sempro_dosen(request, id_proposal):
+    user_info = user_information(request)
+    proposal_data=proposal.objects.get(pk=id_proposal)
+    list_cpmk_sempro=["1A","1B","1C", "2A","3A","3B","3C","5A","5B","6A","7A"]
+    list_cpmk_semhas=["1A","1C", "2A","2B","2C","2D","3D","4A","5A","5B","7A","8A"]
+    list_cpmk_pembimbing=["1A","1B","1C", "2A","3A","3B","3C","5A","5B","6A","7A"]
+    
+    cpmk_data=sub_cpmk.objects.all()
+    roledosen_data=roledosen.objects.filter(nip=user_info[0]).filter(nim=proposal_data.nim).first()
+    roledosen_get=roledosen.objects.get(pk=roledosen_data.id_role_dosen)
+    # roledosen_checker=roledosen.objects.filter(pk=roledosen_data.id_role_dosen).exists()
+    
+    # print(roledosen_data.id_role_dosen)
+    detailpenilaian_data=detailpenilaian.objects.filter(id_role_dosen=roledosen_get).filter(nama_tahap="Seminar Proposal").first()
+    detailpenilaian_checker=detailpenilaian.objects.filter(id_role_dosen=roledosen_get).filter(nama_tahap="Seminar Proposal").exists()
+    penilaian_first=penilaian.objects.filter(id_detail_penilaian=detailpenilaian_data).first()
+
+    PenilaianFormSet = inlineformset_factory(detailpenilaian, penilaian,form=PenilaianForm, extra=0,can_delete=False)
+
+    if request.method == 'POST':
+        try :
+            penilaian_data=penilaian.objects.get(pk=penilaian_first.id_penilaian)
+        except :
+            penilaian_data=None
+
+        if penilaian_data==None and detailpenilaian_checker==False:
+            detailpenilaian_form=DetailPenilaianFormDosen(request.POST)
+            penilaianset_form=PenilaianFormSet(request.POST)
+        elif penilaian_data==None and detailpenilaian_checker==True:
+            detailpenilaian_form=DetailPenilaianFormDosen(request.POST)
+            penilaianset_form=PenilaianFormSet(request.POST,instance=detailpenilaian_data)
+        elif penilaian_data!=None and detailpenilaian_checker==True:
+            detailpenilaian_form=DetailPenilaianFormDosen(request.POST,instance=detailpenilaian_data)
+            penilaianset_form=PenilaianFormSet(request.POST,instance=detailpenilaian_data)
+        else :
+            detailpenilaian_form=DetailPenilaianFormDosen(request.POST,instance=detailpenilaian_data)
+            penilaianset_form=PenilaianFormSet(request.POST)
+        
+            # form.initial[]
+        # print(penilaianset_form.is_valid())
+        if all((detailpenilaian_form.is_valid(), penilaianset_form.is_valid())):
+                # print(2,penilaianset_form)
+                if detailpenilaian_checker==False:
+                    detailpenilaian_form=detailpenilaian(
+                        id_role_dosen = roledosen_get,
+                        hasil_review = request.POST["hasil_review"],
+                        
+                        status_kelulusan = request.POST["status_kelulusan"],
+                        nama_tahap= "Seminar Proposal",
+                    )
+
+                else :
+                    detailpenilaian_form=detailpenilaian.objects.get(pk=detailpenilaian_data.id_detail_penilaian)
+                    detailpenilaian_form.hasil_review=request.POST["hasil_review"]
+                    detailpenilaian_form.status_kelulusan=request.POST["status_kelulusan"]
+
+                detailpenilaian_form.save()
+                # print(detailpenilaian_form)
+                detailpenilaianfilter=detailpenilaian.objects.filter(id_role_dosen = roledosen_get).filter(hasil_review = request.POST["hasil_review"]).first()
+                detailpenilaiandata=detailpenilaian.objects.get(pk=detailpenilaianfilter.id_detail_penilaian)
+                penilaianset_form=PenilaianFormSet(request.POST,instance=detailpenilaiandata)
+
+                if penilaianset_form.is_valid():
+                
+                   penilaianset_form.save()
+                messages.success(request,"Data Penilaian Telah Berhasil Dibuat! ")
+                return redirect('/proposalget')
+        else :
+            counter_cpmk=0
+            for form in penilaianset_form:
+            
+                    form.fields['id_tabel_sub_cpmk_'].widget.attrs['placeholder'] = sub_cpmk.objects.get(pk=list_cpmk_sempro[counter_cpmk])
+                    counter_cpmk+=1
+            
+
+    else :
+        try :
+            penilaian_data=penilaian.objects.get(pk=penilaian_first.id_penilaian)
+        except :
+            penilaian_data=None
+        
+        if penilaian_data==None and detailpenilaian_checker==False:
+            detailpenilaian_form=DetailPenilaianFormDosen()
+            PenilaianFormSet = inlineformset_factory(detailpenilaian, penilaian,form=PenilaianForm, extra=11,can_delete=False)  
+            penilaianset_form=PenilaianFormSet()
+
+            counter_cpmk=0
+            for form in penilaianset_form:
+                if "id_tabel_sub_cpmk" not in form.initial:
+                    form.initial["id_tabel_sub_cpmk"]=list_cpmk_sempro[counter_cpmk]
+                    # print(form.initial["id_tabel_sub_cpmk"])
+                    form.fields['id_tabel_sub_cpmk_'].widget.attrs['placeholder'] = sub_cpmk.objects.get(pk=list_cpmk_sempro[counter_cpmk])
+                    counter_cpmk+=1
+            # print(1)
+        elif penilaian_data==None and detailpenilaian_checker==True:
+            detailpenilaian_form=DetailPenilaianFormDosen(instance=detailpenilaian_data)
+            PenilaianFormSet = inlineformset_factory(detailpenilaian, penilaian,form=PenilaianForm, extra=11,can_delete=False)
+            penilaianset_form=PenilaianFormSet(instance=detailpenilaian_data)
+            # print(detailpenilaian_data)
+            counter_cpmk=0
+            for form in penilaianset_form:
+                if "id_tabel_sub_cpmk" not in form.initial:
+                    form.initial["id_tabel_sub_cpmk"]=list_cpmk_sempro[counter_cpmk]
+                    # print(form.initial["id_tabel_sub_cpmk"])
+                    form.fields['id_tabel_sub_cpmk_'].widget.attrs['placeholder'] = sub_cpmk.objects.get(pk=list_cpmk_sempro[counter_cpmk])
+                    counter_cpmk+=1
+        elif penilaian_data!=None and detailpenilaian_checker==True:
+            detailpenilaian_form=DetailPenilaianFormDosen(instance=detailpenilaian_data)
+            penilaianset_form=PenilaianFormSet(instance=detailpenilaian_data)
+            counter_cpmk=0
+            for form in penilaianset_form:
+               
+                    form.initial["id_tabel_sub_cpmk"]=list_cpmk_sempro[counter_cpmk]
+                    # print(form.initial["id_tabel_sub_cpmk"])
+                    form.fields['id_tabel_sub_cpmk_'].widget.attrs['placeholder'] = sub_cpmk.objects.get(pk=list_cpmk_sempro[counter_cpmk])
+                    counter_cpmk+=1
+            # print(3)
+        else :
+            detailpenilaian_form=DetailPenilaianFormDosen(instance=detailpenilaian_data)
+            penilaianset_form=PenilaianFormSet()
+            # print(4)
+            counter_cpmk=0
+            for form in penilaianset_form:
+                if "id_tabel_sub_cpmk" not in form.initial:
+                    form.initial["id_tabel_sub_cpmk"]=list_cpmk_sempro[counter_cpmk]
+                    # print(form.initial["id_tabel_sub_cpmk"])
+                    form.fields['id_tabel_sub_cpmk_'].widget.attrs['placeholder'] = sub_cpmk.objects.get(pk=list_cpmk_sempro[counter_cpmk])
+                    counter_cpmk+=1
+    return render(request, 'dosen/penilaian_update.html', {"detailpenilaianform":detailpenilaian_form,"form_nilai":penilaianset_form,"proposal_data":proposal_data,"cpmk_data":cpmk_data, "user_info": user_info})
