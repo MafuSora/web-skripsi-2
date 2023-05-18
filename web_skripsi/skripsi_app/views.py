@@ -1203,20 +1203,183 @@ def dashboard(request):
             except:
                 jumlah_belum_dinilai_pembimbing+=1
 
+    # HITUNG JUMLAH DARI SEMINAR
+    id_roledosen_list=[]
+    jumlah_belum_dinilai_pembimbing_seminar=0
+    jumlah_belum_lengkap_pembimbing_seminar=0
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+        ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
+        for item in ambil_pembimbing:
+            id_roledosen_list.append(item.id_role_dosen)
+        jadwal_data=jadwal_seminar.objects.filter(dosen_pembimbing_1__nip=user_info[0])|jadwal_seminar.objects.filter(dosen_pembimbing_2__nip=user_info[0])
+    else:
+        ambil_pembimbing=roledosen.objects.filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(status="Active").filter(role="Pembimbing 2")
+        for item in ambil_pembimbing:
+            id_roledosen_list.append(item.id_role_dosen)
+            
+        jadwal_data=jadwal_seminar.objects.all()
+     
+    # try:
+    jadwal_data=jadwal_data.filter(
+            dosen_pembimbing_1__in=id_roledosen_list)|jadwal_data.filter(
+            dosen_pembimbing_2__in=id_roledosen_list)
+        # proposals = proposal.objects.all()
+
+    # except:
+    #     jadwal_data = []
+    print(jadwal_data)
+    
+    
+    jumlah=0  
+    for item in jadwal_data:
+        try:
+            # cek_pembimbing
+            tahap_list=[]
+            status_dosen=False
+            if item.dosen_pembimbing_2==None:
+                status_dosen=True
+            else:
+                pass
+                # detailpenilaian_data=list(detailpenilaian.objects.filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).values_list("id_role_dosen",flat=True))
+                # hasil= len(detailpenilaian_data)
+                # if hasil==4:
+                #     status_dosen=True
+            # print(item.dosen_pembimbing_2)       
+            # print(status_dosen)
+                   
+            if item.tahap_seminar=="Seminar Proposal":
+                if  status_dosen==True  :
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True))
+                else:
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True)|roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_2.id_role_dosen).values_list("id_role_dosen",flat=True))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap=item.tahap_seminar).filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).filter(id_role_dosen__in=cek_roledosen)
+                # print(cek_penilaian)
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap="Bimbingan").filter(id_role_dosen__nim=item.mahasiswa).filter(id_role_dosen__in=cek_roledosen)
+                # tahap_list=tahap_list+cek_penilaian
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                # print("",item.mahasiswa,cek_penilaian.values_list("id_role_dosen__role"))
+                # print(tahap_list)
+                if len(tahap_list)>=2  and status_dosen==True :
+                    # jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+                    # jadwal_data[jumlah].tahap_penilaian = tahap_list
+                    pass
+                elif len(tahap_list)>=2 and status_dosen==False :
+                    # jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+                    # jadwal_data[jumlah].tahap_penilaian = tahap_list
+                    pass
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==False :
+                    # jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian: Belum Ada Penilaian 2 Dosen Pembimbing"
+                    # jadwal_data[jumlah].tahap_penilaian = tahap_list
+                    jumlah_belum_lengkap_pembimbing_seminar+=1
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==True:
+                    # jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
+                    # jadwal_data[jumlah].tahap_penilaian = tahap_list
+                    jumlah_belum_lengkap_pembimbing_seminar+=1
+                    
+                else :
+                    # jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
+                    # jadwal_data[jumlah].tahap_penilaian = None
+                    jumlah_belum_dinilai_pembimbing_seminar+=1
+            else : 
+                if  status_dosen==True  :
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True))
+                else:
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True)|roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_2.id_role_dosen).values_list("id_role_dosen",flat=True))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap=item.tahap_seminar).filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).filter(id_role_dosen__in=cek_roledosen)
+                # print(cek_penilaian)
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap="Bimbingan").filter(id_role_dosen__nim=item.mahasiswa).filter(id_role_dosen__in=cek_roledosen)
+                # tahap_list=tahap_list+cek_penilaian
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                # print("",item.mahasiswa,cek_penilaian.values_list("id_role_dosen__role"))
+                # print(tahap_list)
+                if len(tahap_list)>=2  and status_dosen==True :
+                    # jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+                    # jadwal_data[jumlah].tahap_penilaian = tahap_list
+                    pass
+                elif len(tahap_list)>=2 and status_dosen==False :
+                    # jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+                    # jadwal_data[jumlah].tahap_penilaian = tahap_list
+                    pass
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==False :
+                    # jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian: Belum Ada Penilaian 2 Dosen Pembimbing"
+                    # jadwal_data[jumlah].tahap_penilaian = tahap_list
+                    jumlah_belum_lengkap_pembimbing_seminar+=1
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==True:
+                    # jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
+                    # jadwal_data[jumlah].tahap_penilaian = tahap_list
+                    jumlah_belum_lengkap_pembimbing_seminar+=1
+                else :
+                    # jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
+                    # jadwal_data[jumlah].tahap_penilaian = None
+                    jumlah_belum_dinilai_pembimbing_seminar+=1
+        except : 
+            # jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
+            # jadwal_data[jumlah].tahap_penilaian = None
+            jumlah_belum_dinilai_pembimbing_seminar+=1
+        
+
+        jumlah += 1
+    # jumlah=0  
+    # for item in jadwal_data:
+    #     try:
+    #         # cek_pembimbing
+            
+    #         status_dosen=False
+    #         if item.dosen_pembimbing_2==None:
+    #             status_dosen=True
+    #         else:
+    #             detailpenilaian_data=list(detailpenilaian.objects.filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).values_list("id_role_dosen",flat=True))
+    #             hasil= len(detailpenilaian_data)
+    #             if hasil==4:
+    #                 status_dosen=True
+                    
+    #         if penilaian.objects.filter(
+    #             id_detail_penilaian__id_role_dosen__nim=item.mahasiswa).exists():
+                
+    #             jumlah_penilaian=list(penilaian.objects.filter(
+    #             id_detail_penilaian__id_role_dosen__nim=item.mahasiswa).order_by().values_list("id_detail_penilaian__nama_tahap",flat=True).distinct())
+    #             # print(list(jumlah_penilaian))
+    #             if len(jumlah_penilaian)==3 and status_dosen==True :
+    #                 # jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+    #                 pass
+    #             elif len(jumlah_penilaian)==3 and status_dosen==False :
+    #                 # jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian: Belum Ada Penilaian 2 Dosen Pembimbing"
+    #                 jumlah_belum_lengkap_pembimbing_seminar+=1
+    #             elif len(jumlah_penilaian)!=3:
+    #                 # jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
+    #                 jumlah_belum_lengkap_pembimbing_seminar+=1
+                
+    #             # jadwal_data[jumlah].tahap_penilaian = jumlah_penilaian
+    #         else:
+    #             # jadwal_data[jumlah].tahap_penilaian = None
+    #             # jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
+    #             jumlah_belum_dinilai_pembimbing_seminar+=1
+                
+            
+    #     except:
+    #         jumlah_belum_dinilai_pembimbing_seminar+=1
+    #         # jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
+    #         # jadwal_data[jumlah].tahap_penilaian = None
+        
+    #     jumlah += 1
             
             
     
     
     # print(ambil_pembimbing)
-    jumlah_pembimbing_sebagian=jumlah_belum_lengkap_pembimbing
-    jumlah_pembimbing=jumlah_belum_dinilai_pembimbing
+    jumlah_pembimbing_sebagian=jumlah_belum_lengkap_pembimbing_seminar
+    jumlah_pembimbing=jumlah_belum_dinilai_pembimbing_seminar
+    # jumlah_pembimbing_sebagian=jumlah_belum_lengkap_pembimbing
+    # jumlah_pembimbing=jumlah_belum_dinilai_pembimbing
     # ambil_pembimbing=ambil_pembimbing.exclude(nim__in=list_nim_penilaian)
     # ambil_pembimbing=ambil_pembimbing.values_list("id_role_dosen")
     # print("pembimbing",ambil_pembimbing)
 
 
     # jumlah_pembimbing=ambil_pembimbing.count()
-    # print(1,jumlah_pembimbing)
+    print(1,jumlah_pembimbing)
 
     # Sempro
     # Penilaian 
@@ -1241,8 +1404,54 @@ def dashboard(request):
     # for i in range(len(ambil_penguji_sempro)):
     #     list_nim_penilaian_sempro.append(ambil_penguji_sempro[i][0])
     # jumlah_penguji_sempro=proposal_data_acc_sempro.filter(id_role_dosen__in=list_nim_penilaian_sempro)
+    
+    # Penilaiana sempro seminar
+    nim_list=[]
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+        ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Proposal 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Proposal 2")
+        for item in ambil_pembimbing:
+            nim_list.append(item.id_role_dosen)
+        jadwal_data=jadwal_seminar.objects.filter(dosen_pembimbing_1__nip=user_info[0])|jadwal_seminar.objects.filter(dosen_pembimbing_2__nip=user_info[0])
+    else:
+        ambil_pembimbing=roledosen.objects.filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(status="Active").filter(role="Pembimbing 2")
+        for item in ambil_pembimbing:
+            nim_list.append(item.id_role_dosen)
+            
+        jadwal_data=jadwal_seminar.objects.all()
+     
+    try:
+        jadwal_data=jadwal_data.filter(
+                dosen_penguji_1__in=nim_list)|jadwal_data.filter(
+                dosen_penguji_2__in=nim_list)
+        # proposals = proposal.objects.all()
 
-    jumlah_penguji_sempro=ambil_penguji_sempro.count()
+    except:
+        jadwal_data = []
+    sempro_seminar_count=0
+    jumlah=0
+    for item in jadwal_data:
+            try:
+                # detailpenilaian_data=detailpenilaian.objects.filter(nama_tahap="Seminar Proposal").filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).exists()
+                check_role= list(ambil_pembimbing.filter(
+                    nim=item.mahasiswa).values_list("id_role_dosen",flat=True))
+                # print(penilaian.objects.filter(id_detail_penilaian__nama_tahap="Seminar Proposal").filter(id_detail_penilaian__id_role_dosen__in=check_role).filter(
+                #     id_detail_penilaian__id_role_dosen__nim=item.nim).exists())
+                if detailpenilaian.objects.filter(nama_tahap="Seminar Proposal").filter(id_role_dosen__in=check_role).filter(id_jadwal_seminar=item.id_jadwal_seminar).exists():
+                    # jadwal_data[jumlah].status_nilai = "Sudah Ada Penilaian"
+                    pass
+                else:
+                    # jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
+                    sempro_seminar_count+=1
+
+            except:
+                # jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
+                sempro_seminar_count+=1
+           
+            jumlah += 1
+    
+
+    jumlah_penguji_sempro=sempro_seminar_count
+    # jumlah_penguji_sempro=ambil_penguji_sempro.count()
     # print(2,jumlah_penguji_sempro)
 
 
@@ -1272,6 +1481,49 @@ def dashboard(request):
 
     ambil_penguji_semhas=ambil_penguji_semhas.exclude(id_role_dosen__in=list_nim_penilaian)
     ambil_penguji_semhas=ambil_penguji_semhas.values_list("id_role_dosen")
+# Penilaian seminar semhas
+    nim_list=[]
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+        ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Hasil 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Hasil 2")
+        for item in ambil_pembimbing:
+            nim_list.append(item.id_role_dosen)
+        jadwal_data=jadwal_seminar.objects.filter(dosen_pembimbing_1__nip=user_info[0])|jadwal_seminar.objects.filter(dosen_pembimbing_2__nip=user_info[0])
+    else:
+        ambil_pembimbing=roledosen.objects.filter(status="Active").filter(role="Penguji Seminar Hasil 1")|roledosen.objects.filter(status="Active").filter(role="Penguji Seminar Hasil 2")
+        for item in ambil_pembimbing:
+            nim_list.append(item.id_role_dosen)
+            
+        jadwal_data=jadwal_seminar.objects.all()
+     
+    try:
+        jadwal_data=jadwal_data.filter(
+                dosen_penguji_1__in=nim_list)|jadwal_data.filter(
+                dosen_penguji_2__in=nim_list)
+        # proposals = proposal.objects.all()
+
+    except:
+        jadwal_data = []
+    semhas_seminar_count=0 
+    jumlah=0
+    for item in jadwal_data:
+        try:
+            # detailpenilaian_data=detailpenilaian.objects.filter(nama_tahap="Seminar Proposal").filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).exists()
+            check_role= list(ambil_pembimbing.filter(
+                nim=item.mahasiswa).values_list("id_role_dosen",flat=True))
+            # print(penilaian.objects.filter(id_detail_penilaian__nama_tahap="Seminar Proposal").filter(id_detail_penilaian__id_role_dosen__in=check_role).filter(
+            #     id_detail_penilaian__id_role_dosen__nim=item.nim).exists())
+            if detailpenilaian.objects.filter(nama_tahap="Seminar Hasil").filter(id_role_dosen__in=check_role).filter(id_jadwal_seminar=item.id_jadwal_seminar).exists():
+                # jadwal_data[jumlah].status_nilai = "Sudah Ada Penilaian"
+                pass
+            else:
+                # jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
+                semhas_seminar_count+=1
+
+        except:
+            semhas_seminar_count+=1
+            # jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
+        
+        jumlah += 1
 
     # list_nim_penilaian_semhas=[]
     # for i in range(len(ambil_penguji_semhas)):
@@ -1279,7 +1531,8 @@ def dashboard(request):
     # print("semhas",proposal_data_acc_semhas)
     # jumlah_penguji_semhas=proposal_data_acc_semhas.filter(id_role_dosen__in=list_nim_penilaian_semhas)
 
-    jumlah_penguji_semhas=ambil_penguji_semhas.count()
+    jumlah_penguji_semhas=semhas_seminar_count
+    # jumlah_penguji_semhas=ambil_penguji_semhas.count()
     # print(3,jumlah_penguji_semhas)
 
 
@@ -4225,8 +4478,14 @@ def dosenpembimbing_update(request, id):
     if user_info[2].name == "Dosen":
         if request.method == "POST":
             form = RoleDosenForm(request.POST, instance=dosenpembimbing_data)
-            if roledosen.objects.filter(nim=request.POST["nim"]).filter(role=request.POST["role"]).exists():
-                return redirect("../roledosenmax")
+            # if roledosen.objects.filter(nim=request.POST["nim"]).filter(role=request.POST["role"]).exists():
+            #     return redirect("../roledosenmax")
+            if roledosen.objects.filter(nim=request.POST["nim"]).filter(role=request.POST["role"]).filter(status="Active").exists():
+                return redirect('dosenpembimbing_max', my_variable= "Role Sudah di Assign Sebelumnya")
+            elif roledosen.objects.filter(nim=request.POST["nim"]).filter(nip=request.POST["nip"]).filter(status="Active").exists():
+                return redirect( 'dosenpembimbing_max', my_variable=  "Dosen Sudah di Assign Sebelumnya")
+            
+            
             else : 
                 if form.is_valid():
                     create_roledosen = form.save()
@@ -4247,10 +4506,15 @@ def dosenpembimbing_update(request, id):
         if request.method == "POST":
             form = RoleDosenFormUpdateSekdept(
                 request.POST, instance=dosenpembimbing_data)
-            if form.is_valid():
-                create_roledosen = form.save()
-                create_roledosen.save()
-                messages.warning(request,"Data Dosen Pembimbing Telah Berhasil Diubah! ")
+            if roledosen.objects.filter(nim=request.POST["nim"]).filter(role=request.POST["role"]).filter(status="Active").exists():
+                return redirect('dosenpembimbing_max', my_variable= "Role Sudah di Assign Sebelumnya")
+            elif roledosen.objects.filter(nim=request.POST["nim"]).filter(nip=request.POST["nip"]).filter(status="Active").exists():
+                return redirect( 'dosenpembimbing_max', my_variable=  "Dosen Sudah di Assign Sebelumnya")
+            else : 
+                if form.is_valid():
+                    create_roledosen = form.save()
+                    create_roledosen.save()
+                    messages.warning(request,"Data Dosen Pembimbing Telah Berhasil Diubah! ")
                 # contoh : notif
             # user_sekdept=list(User.objects.value_list('id_user').filter(groups__name='Manajemen Departemen'))
             # sekdept_filter=dosen.object.filter(id_user__in=user_sekdept)
@@ -6165,9 +6429,12 @@ def penilaian_sempro_dosen_1(request, id_jadwal_seminar):
     # list_cpmk_sempro=sub_cpmk.objects.filter(id_nama_semester=mahasiswa_data.semester_daftar_skripsi).exclude(bobot_sempro=0).order_by("id_sub_cpmk").values_list("id_tabel_sub_cpmk",flat=True))
     list_cpmk_sempro=list(sub_cpmk.objects.filter(tahun_angkatan=mahasiswa_data.angkatan).exclude(bobot_sempro=0).order_by("id_sub_cpmk").values_list("id_tabel_sub_cpmk",flat=True))
     # print(list_cpmk_sempro)
-    bimbingan_filter=bimbingan.objects.filter(nama_tahap="Proposal Awal").filter(id_proposal__nim=mahasiswa_data.nim).filter(status_bimbingan="ACC").order_by("-tanggal_update").first()
+    bimbingan_filter=bimbingan.objects.filter(id_proposal__nama_tahap="Proposal Awal").filter(id_proposal__nim=mahasiswa_data.nim).filter(status_bimbingan="ACC").order_by("-tanggal_update").first()
     # .filter(status_bimbingan="ACC")
-    proposal_data=proposal.objects.get(pk=bimbingan_filter.id_proposal.id_proposal)
+    try : 
+        proposal_data=proposal.objects.get(pk=bimbingan_filter.id_proposal.id_proposal)
+    except:
+        proposal_data=None
     # print(proposal_data)
     # list1=list_cpmk_sempro
     # list(list_cpmk_sempro.values_list("id_sub_cpmk",flat=True))
@@ -6325,9 +6592,12 @@ def penilaian_sempro_dosen_2(request, id_jadwal_seminar):
     # list_cpmk_sempro=sub_cpmk.objects.filter(id_nama_semester=mahasiswa_data.semester_daftar_skripsi).exclude(bobot_sempro=0).order_by("id_sub_cpmk").values_list("id_tabel_sub_cpmk",flat=True))
     list_cpmk_sempro=list(sub_cpmk.objects.filter(tahun_angkatan=mahasiswa_data.angkatan).exclude(bobot_sempro=0).order_by("id_sub_cpmk").values_list("id_tabel_sub_cpmk",flat=True))
     # print(list_cpmk_sempro)
-    bimbingan_filter=bimbingan.objects.filter(id_proposal__nim=mahasiswa_data.nim).filter(status_bimbingan="ACC").order_by("-tanggal_update").first()
+    bimbingan_filter=bimbingan.objects.filter(id_proposal__nama_tahap="Proposal Awal").filter(id_proposal__nim=mahasiswa_data.nim).filter(status_bimbingan="ACC").order_by("-tanggal_update").first()
     # .filter(status_bimbingan="ACC")
-    proposal_data=proposal.objects.get(pk=bimbingan_filter.id_proposal.id_proposal)
+    try : 
+        proposal_data=proposal.objects.get(pk=bimbingan_filter.id_proposal.id_proposal)
+    except:
+        proposal_data=None
     # print(proposal_data)
     # list1=list_cpmk_sempro
     # list(list_cpmk_sempro.values_list("id_sub_cpmk",flat=True))
@@ -6484,9 +6754,12 @@ def penilaian_sempro_dosen_pembimbing_1(request, id_jadwal_seminar):
     # list_cpmk_sempro=sub_cpmk.objects.filter(id_nama_semester=mahasiswa_data.semester_daftar_skripsi).exclude(bobot_sempro=0).order_by("id_sub_cpmk").values_list("id_tabel_sub_cpmk",flat=True))
     list_cpmk_sempro=list(sub_cpmk.objects.filter(tahun_angkatan=mahasiswa_data.angkatan).exclude(bobot_sempro=0).order_by("id_sub_cpmk").values_list("id_tabel_sub_cpmk",flat=True))
     # print(list_cpmk_sempro)
-    bimbingan_filter=bimbingan.objects.filter(id_proposal__nim=mahasiswa_data.nim).filter(status_bimbingan="ACC").order_by("-tanggal_update").first()
+    bimbingan_filter=bimbingan.objects.filter(id_proposal__nama_tahap="Proposal Awal").filter(id_proposal__nim=mahasiswa_data.nim).filter(status_bimbingan="ACC").order_by("-tanggal_update").first()
     # .filter(status_bimbingan="ACC")
-    proposal_data=proposal.objects.get(pk=bimbingan_filter.id_proposal.id_proposal)
+    try : 
+        proposal_data=proposal.objects.get(pk=bimbingan_filter.id_proposal.id_proposal)
+    except:
+        proposal_data=None
     # print(proposal_data)
     # list1=list_cpmk_sempro
     # list(list_cpmk_sempro.values_list("id_sub_cpmk",flat=True))
@@ -6643,9 +6916,12 @@ def penilaian_sempro_dosen_pembimbing_2(request, id_jadwal_seminar):
     # list_cpmk_sempro=sub_cpmk.objects.filter(id_nama_semester=mahasiswa_data.semester_daftar_skripsi).exclude(bobot_sempro=0).order_by("id_sub_cpmk").values_list("id_tabel_sub_cpmk",flat=True))
     list_cpmk_sempro=list(sub_cpmk.objects.filter(tahun_angkatan=mahasiswa_data.angkatan).exclude(bobot_sempro=0).order_by("id_sub_cpmk").values_list("id_tabel_sub_cpmk",flat=True))
     # print(list_cpmk_sempro)
-    bimbingan_filter=bimbingan.objects.filter(id_proposal__nim=mahasiswa_data.nim).filter(status_bimbingan="ACC").order_by("-tanggal_update").first()
+    bimbingan_filter=bimbingan.objects.filter(id_proposal__nama_tahap="Proposal Awal").filter(id_proposal__nim=mahasiswa_data.nim).filter(status_bimbingan="ACC").order_by("-tanggal_update").first()
     # .filter(status_bimbingan="ACC")
-    proposal_data=proposal.objects.get(pk=bimbingan_filter.id_proposal.id_proposal)
+    try : 
+        proposal_data=proposal.objects.get(pk=bimbingan_filter.id_proposal.id_proposal)
+    except:
+        proposal_data=None
     # print(proposal_data)
     # list1=list_cpmk_sempro
     # list(list_cpmk_sempro.values_list("id_sub_cpmk",flat=True))
@@ -6804,9 +7080,12 @@ def penilaian_bimbingan_dosen_1(request, id_jadwal_seminar):
     # list_cpmk_pembimbing=sub_cpmk.objects.filter(id_nama_semester=mahasiswa_data.semester_daftar_skripsi).exclude(bobot_sempro=0).order_by("id_sub_cpmk").values_list("id_tabel_sub_cpmk",flat=True))
     list_cpmk_pembimbing=list(sub_cpmk.objects.filter(tahun_angkatan=mahasiswa_data.angkatan).exclude(bobot_pembimbing=0).order_by("id_sub_cpmk").values_list("id_tabel_sub_cpmk",flat=True))
     # print(list_cpmk_sempro)
-    bimbingan_filter=bimbingan.objects.filter(id_proposal__nim=mahasiswa_data.nim).filter(status_bimbingan="ACC").order_by("-tanggal_update").first()
-    # .filter(status_bimbingan="ACC")
-    proposal_data=proposal.objects.get(pk=bimbingan_filter.id_proposal.id_proposal)
+    # bimbingan_filter=bimbingan.objects.filter(id_proposal__nim=mahasiswa_data.nim).filter(status_bimbingan="ACC").order_by("-tanggal_update").first()
+    # # .filter(status_bimbingan="ACC")
+    #     try : 
+    #     proposal_data=proposal.objects.get(pk=bimbingan_filter.id_proposal.id_proposal)
+    # except:
+    #     proposal_data=None
     # print(proposal_data)
     # list1=list(sub_cpmk.objects.filter(tahun_angkatan=mahasiswa_data.angkatan).exclude(bobot_pembimbing=0).values_list("id_sub_cpmk",flat=True))
     # # list(list_cpmk_pembimbing.values_list("id_sub_cpmk",flat=True))
@@ -6949,7 +7228,7 @@ def penilaian_bimbingan_dosen_1(request, id_jadwal_seminar):
                     # print(form.initial["id_sub_cpmk"])
                     form.fields["id_sub_cpmk_"].widget.attrs['placeholder'] = sub_cpmk.objects.get(pk=list_cpmk_pembimbing[counter_cpmk])
                     counter_cpmk+=1
-    return render(request, 'dosen/penilaian_update.html', {"detailpenilaianform":detailpenilaian_form,"form_nilai":penilaianset_form,"proposal_data":proposal_data,"cpmk_data":cpmk_data, "user_info": user_info})
+    return render(request, 'dosen/penilaian_update.html', {"detailpenilaianform":detailpenilaian_form,"form_nilai":penilaianset_form,"cpmk_data":cpmk_data, "user_info": user_info})
 
 @login_required(login_url="/login")
 @role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
@@ -6962,9 +7241,12 @@ def penilaian_bimbingan_dosen_2(request, id_jadwal_seminar):
     # list_cpmk_pembimbing=sub_cpmk.objects.filter(id_nama_semester=mahasiswa_data.semester_daftar_skripsi).exclude(bobot_sempro=0).order_by("id_sub_cpmk").values_list("id_tabel_sub_cpmk",flat=True))
     list_cpmk_pembimbing=list(sub_cpmk.objects.filter(tahun_angkatan=mahasiswa_data.angkatan).exclude(bobot_pembimbing=0).order_by("id_sub_cpmk").values_list("id_tabel_sub_cpmk",flat=True))
     # print(list_cpmk_sempro)
-    bimbingan_filter=bimbingan.objects.filter(id_proposal__nim=mahasiswa_data.nim).filter(status_bimbingan="ACC").order_by("-tanggal_update").first()
-    # .filter(status_bimbingan="ACC")
-    proposal_data=proposal.objects.get(pk=bimbingan_filter.id_proposal.id_proposal)
+    # bimbingan_filter=bimbingan.objects.filter(id_proposal__nim=mahasiswa_data.nim).filter(status_bimbingan="ACC").order_by("-tanggal_update").first()
+    # # .filter(status_bimbingan="ACC")
+    #     try : 
+    #     proposal_data=proposal.objects.get(pk=bimbingan_filter.id_proposal.id_proposal)
+    # except:
+    #     proposal_data=None
     # print(proposal_data)
     # list1=list(sub_cpmk.objects.filter(tahun_angkatan=mahasiswa_data.angkatan).exclude(bobot_pembimbing=0).values_list("id_sub_cpmk",flat=True))
     # # list(list_cpmk_pembimbing.values_list("id_sub_cpmk",flat=True))
@@ -7107,7 +7389,9 @@ def penilaian_bimbingan_dosen_2(request, id_jadwal_seminar):
                     # print(form.initial["id_sub_cpmk"])
                     form.fields["id_sub_cpmk_"].widget.attrs['placeholder'] = sub_cpmk.objects.get(pk=list_cpmk_pembimbing[counter_cpmk])
                     counter_cpmk+=1
-    return render(request, 'dosen/penilaian_update.html', {"detailpenilaianform":detailpenilaian_form,"form_nilai":penilaianset_form,"proposal_data":proposal_data,"cpmk_data":cpmk_data, "user_info": user_info})
+    return render(request, 'dosen/penilaian_update.html', {"detailpenilaianform":detailpenilaian_form,"form_nilai":penilaianset_form,
+                                                        #    "proposal_data":proposal_data,
+                                                        "cpmk_data":cpmk_data, "user_info": user_info})
 
 
 # penilaian dan detail penilaian:create & update
@@ -7123,9 +7407,12 @@ def penilaian_semhas_dosen_1(request, id_jadwal_seminar):
     # list_cpmk_pembimbing=sub_cpmk.objects.filter(id_nama_semester=mahasiswa_data.semester_daftar_skripsi).exclude(bobot_sempro=0).order_by("id_sub_cpmk").values_list("id_tabel_sub_cpmk",flat=True))
     list_cpmk_semhas=list(sub_cpmk.objects.filter(tahun_angkatan=mahasiswa_data.angkatan).exclude(bobot_semhas=0).order_by("id_sub_cpmk").values_list("id_tabel_sub_cpmk",flat=True))
     # print(list_cpmk_sempro)
-    bimbingan_filter=bimbingan.objects.filter(id_proposal__nim=mahasiswa_data.nim).filter(status_bimbingan="ACC").order_by("-tanggal_update").first()
+    bimbingan_filter=bimbingan.objects.filter(id_proposal__nama_tahap="Laporan Akhir").filter(id_proposal__nim=mahasiswa_data.nim).filter(status_bimbingan="ACC").order_by("-tanggal_update").first()
     # .filter(status_bimbingan="ACC")
-    proposal_data=proposal.objects.get(pk=bimbingan_filter.id_proposal.id_proposal)
+    try : 
+        proposal_data=proposal.objects.get(pk=bimbingan_filter.id_proposal.id_proposal)
+    except:
+        proposal_data=None
     # print(proposal_data)
     # list1=list(sub_cpmk.objects.filter(tahun_angkatan=mahasiswa_data.angkatan).exclude(bobot_semhas=0).values_list("id_sub_cpmk",flat=True))
     # # list(list_cpmk_semhas.values_list("id_sub_cpmk",flat=True))
@@ -7276,9 +7563,12 @@ def penilaian_semhas_dosen_2(request, id_jadwal_seminar):
     # list_cpmk_pembimbing=sub_cpmk.objects.filter(id_nama_semester=mahasiswa_data.semester_daftar_skripsi).exclude(bobot_sempro=0).order_by("id_sub_cpmk").values_list("id_tabel_sub_cpmk",flat=True))
     list_cpmk_semhas=list(sub_cpmk.objects.filter(tahun_angkatan=mahasiswa_data.angkatan).exclude(bobot_semhas=0).order_by("id_sub_cpmk").values_list("id_tabel_sub_cpmk",flat=True))
     # print(list_cpmk_sempro)
-    bimbingan_filter=bimbingan.objects.filter(id_proposal__nim=mahasiswa_data.nim).filter(status_bimbingan="ACC").order_by("-tanggal_update").first()
+    bimbingan_filter=bimbingan.objects.filter(id_proposal__nama_tahap="Laporan Akhir").filter(id_proposal__nim=mahasiswa_data.nim).filter(status_bimbingan="ACC").order_by("-tanggal_update").first()
     # .filter(status_bimbingan="ACC")
-    proposal_data=proposal.objects.get(pk=bimbingan_filter.id_proposal.id_proposal)
+    try : 
+        proposal_data=proposal.objects.get(pk=bimbingan_filter.id_proposal.id_proposal)
+    except:
+        proposal_data=None
     # print(proposal_data)
     # list1=list(sub_cpmk.objects.filter(tahun_angkatan=mahasiswa_data.angkatan).exclude(bobot_semhas=0).values_list("id_sub_cpmk",flat=True))
     # # list(list_cpmk_semhas.values_list("id_sub_cpmk",flat=True))
@@ -7429,9 +7719,12 @@ def penilaian_semhas_dosen_pembimbing_1(request, id_jadwal_seminar):
     # list_cpmk_pembimbing=sub_cpmk.objects.filter(id_nama_semester=mahasiswa_data.semester_daftar_skripsi).exclude(bobot_sempro=0).order_by("id_sub_cpmk").values_list("id_tabel_sub_cpmk",flat=True))
     list_cpmk_semhas=list(sub_cpmk.objects.filter(tahun_angkatan=mahasiswa_data.angkatan).exclude(bobot_semhas=0).order_by("id_sub_cpmk").values_list("id_tabel_sub_cpmk",flat=True))
     # print(list_cpmk_sempro)
-    bimbingan_filter=bimbingan.objects.filter(id_proposal__nim=mahasiswa_data.nim).filter(status_bimbingan="ACC").order_by("-tanggal_update").first()
+    bimbingan_filter=bimbingan.objects.filter(id_proposal__nama_tahap="Laporan Akhir").filter(id_proposal__nim=mahasiswa_data.nim).filter(status_bimbingan="ACC").order_by("-tanggal_update").first()
     # .filter(status_bimbingan="ACC")
-    proposal_data=proposal.objects.get(pk=bimbingan_filter.id_proposal.id_proposal)
+    try : 
+        proposal_data=proposal.objects.get(pk=bimbingan_filter.id_proposal.id_proposal)
+    except:
+        proposal_data=None
     # print(proposal_data)
     # list1=list(sub_cpmk.objects.filter(tahun_angkatan=mahasiswa_data.angkatan).exclude(bobot_semhas=0).values_list("id_sub_cpmk",flat=True))
     # # list(list_cpmk_semhas.values_list("id_sub_cpmk",flat=True))
@@ -7582,9 +7875,12 @@ def penilaian_semhas_dosen_pembimbing_2(request, id_jadwal_seminar):
     # list_cpmk_pembimbing=sub_cpmk.objects.filter(id_nama_semester=mahasiswa_data.semester_daftar_skripsi).exclude(bobot_sempro=0).order_by("id_sub_cpmk").values_list("id_tabel_sub_cpmk",flat=True))
     list_cpmk_semhas=list(sub_cpmk.objects.filter(tahun_angkatan=mahasiswa_data.angkatan).exclude(bobot_semhas=0).order_by("id_sub_cpmk").values_list("id_tabel_sub_cpmk",flat=True))
     # print(list_cpmk_sempro)
-    bimbingan_filter=bimbingan.objects.filter(id_proposal__nim=mahasiswa_data.nim).filter(status_bimbingan="ACC").order_by("-tanggal_update").first()
+    bimbingan_filter=bimbingan.objects.filter(id_proposal__nama_tahap="Laporan Akhir").filter(id_proposal__nim=mahasiswa_data.nim).filter(status_bimbingan="ACC").order_by("-tanggal_update").first()
     # .filter(status_bimbingan="ACC")
-    proposal_data=proposal.objects.get(pk=bimbingan_filter.id_proposal.id_proposal)
+    try : 
+        proposal_data=proposal.objects.get(pk=bimbingan_filter.id_proposal.id_proposal)
+    except:
+        proposal_data=None
     # print(proposal_data)
     # list1=list(sub_cpmk.objects.filter(tahun_angkatan=mahasiswa_data.angkatan).exclude(bobot_semhas=0).values_list("id_sub_cpmk",flat=True))
     # # list(list_cpmk_semhas.values_list("id_sub_cpmk",flat=True))
@@ -8424,7 +8720,7 @@ def proposal_get_filter_sempro(request):
                     cek_sempro_tidak_lulus[jumlah].status_dosen=f"Belum Mencukupi : 0 Assign Dosen"
             
             try:
-                if item.id_proposal.nim in list_jadwal_sempro:
+                if item.id_proposal.nim.nim in list_jadwal_sempro:
                     cek_sempro_tidak_lulus[jumlah].status_jadwal="Sudah Assign Jadwal"
                 else :
                     cek_sempro_tidak_lulus[jumlah].status_jadwal="Belum Assign Jadwal"
@@ -8525,7 +8821,7 @@ def proposal_get_filter_sempro(request):
                     lolos_tidak_lulus[jumlah].status_dosen="Belum Mencukupi : 0 Assign Dosen" 
                     
             try:
-                if item.id_proposal.nim in list_jadwal_sempro:
+                if item.id_proposal.nim.nim in list_jadwal_sempro:
                     lolos_tidak_lulus[jumlah].status_jadwal="Sudah Assign Jadwal"
                 else :
                     lolos_tidak_lulus[jumlah].status_jadwal="Belum Assign Jadwal"
@@ -8588,13 +8884,14 @@ def proposal_get_filter_sempro_jadwal(request):
     tabel="Seminar Proposal"
     
     list_jadwal_sempro=list(jadwal_seminar.objects.filter(tahap_seminar="Seminar Proposal").values_list("mahasiswa",flat=True))
+    print(list_jadwal_sempro)
     list_jadwal_sempro = list(filter(lambda x: x is not None and x != '', list_jadwal_sempro))
     role_dosen_filter=roledosen.objects.filter(role="Penguji Seminar Proposal 1")|roledosen.objects.filter(role="Penguji Seminar Proposal 2")
     
     cek_jumlah_sempro=bimbingan.objects.filter(id_proposal__nama_tahap="Proposal Awal").filter(status_bimbingan="ACC")
     detail_penilaian_lulus=detailpenilaian.objects.filter(nama_tahap="Seminar Proposal").filter(status_kelulusan="Lulus")
     list_detailpenilaian_lulus=list(detail_penilaian_lulus.values_list("id_role_dosen__nim__nim",flat=True))
-    print(detail_penilaian_lulus)
+    # print(detail_penilaian_lulus)
     
     cek_jumlah_sempro=cek_jumlah_sempro.exclude(id_proposal__nim__nim__in=list_detailpenilaian_lulus)
     
@@ -8627,7 +8924,7 @@ def proposal_get_filter_sempro_jadwal(request):
     jumlah=0
     for item in cek_sempro_tidak_lulus:
         try:
-            if item.id_proposal.nim in list_jadwal_sempro:
+            if item.id_proposal.nim.nim in list_jadwal_sempro:
                 cek_sempro_tidak_lulus[jumlah].status_jadwal="Sudah Assign Jadwal"
             else :
                 cek_sempro_tidak_lulus[jumlah].status_jadwal="Belum Assign Jadwal"
@@ -8668,7 +8965,7 @@ def proposal_get_filter_sempro_jadwal(request):
                     cek_sempro_tidak_lulus[jumlah].status_dosen=f"Belum Mencukupi : 0 Assign Dosen"
             
             try:
-                if item.id_proposal.nim in list_jadwal_sempro:
+                if item.id_proposal.nim.nim in list_jadwal_sempro:
                     cek_sempro_tidak_lulus[jumlah].status_jadwal="Sudah Assign Jadwal"
                 else :
                     cek_sempro_tidak_lulus[jumlah].status_jadwal="Belum Assign Jadwal"
@@ -8714,14 +9011,17 @@ def proposal_get_filter_sempro_jadwal(request):
     
     
     lolos_tidak_lulus=cek_jumlah_sempro.exclude(id_proposal__nim__nim__in=list_detailpenilaian_tdk_lulus)
+    # print(lolos_tidak_lulus)
     jumlah=0
     for item in lolos_tidak_lulus:
+
             try:
                 get_object = bimbingan.objects.filter(
                     id_proposal=item.id_proposal).last()
                 lolos_tidak_lulus[jumlah].status = get_object.status_bimbingan
 
             except:
+                # print("a")
                 lolos_tidak_lulus[jumlah].status = "Belum Diperiksa"
             jumlah += 1
             
@@ -8734,13 +9034,14 @@ def proposal_get_filter_sempro_jadwal(request):
     jumlah=0
     for item in lolos_tidak_lulus:
         try:
-            if item.id_proposal.nim in list_jadwal_sempro:
+
+            if item.id_proposal.nim.nim in list_jadwal_sempro:
                 lolos_tidak_lulus[jumlah].status_jadwal="Sudah Assign Jadwal"
             else :
                 lolos_tidak_lulus[jumlah].status_jadwal="Belum Assign Jadwal"
         except :     
-                lolos_tidak_lulus[jumlah].status_jadwal="Belum Assign Jadwal"
-        jumlah+=1
+        #         lolos_tidak_lulus[jumlah].status_jadwal="Belum Assign Jadwal"
+            jumlah+=1
     
     for item in lolos_tidak_lulus:
         if item.status_jadwal=="Sudah Assign Jadwal":
@@ -8762,7 +9063,7 @@ def proposal_get_filter_sempro_jadwal(request):
                     lolos_tidak_lulus[jumlah].status_dosen="Belum Mencukupi : 0 Assign Dosen" 
                     
             try:
-                if item.id_proposal.nim in list_jadwal_sempro:
+                if item.id_proposal.nim.nim in list_jadwal_sempro:
                     lolos_tidak_lulus[jumlah].status_jadwal="Sudah Assign Jadwal"
                 else :
                     lolos_tidak_lulus[jumlah].status_jadwal="Belum Assign Jadwal"
@@ -8921,7 +9222,7 @@ def proposal_get_filter_semhas(request):
                     cek_semhas_tidak_lulus[jumlah].status_dosen=f"Belum Mencukupi : 0 Assign Dosen"
             
             try:
-                if item.id_proposal.nim in list_jadwal_semhas:
+                if item.id_proposal.nim.nim in list_jadwal_semhas:
                     cek_semhas_tidak_lulus[jumlah].status_jadwal="Sudah Assign Jadwal"
                 else :
                     cek_semhas_tidak_lulus[jumlah].status_jadwal="Belum Assign Jadwal"
@@ -9027,7 +9328,7 @@ def proposal_get_filter_semhas(request):
                     lolos_tidak_lulus_semhas[jumlah].status_dosen="Belum Mencukupi : 0 Assign Dosen" 
                     
             try:
-                if item.id_proposal.nim in list_jadwal_semhas:
+                if item.id_proposal.nim.nim in list_jadwal_semhas:
                     lolos_tidak_lulus_semhas[jumlah].status_jadwal="Sudah Assign Jadwal"
                 else :
                     lolos_tidak_lulus_semhas[jumlah].status_jadwal="Belum Assign Jadwal"
@@ -9131,7 +9432,7 @@ def proposal_get_filter_semhas_jadwal(request):
     jumlah=0
     for item in cek_semhas_tidak_lulus:
         try:
-            if item.id_proposal.nim in list_jadwal_semhas:
+            if item.id_proposal.nim.nim in list_jadwal_semhas:
                 cek_semhas_tidak_lulus[jumlah].status_jadwal="Sudah Assign Jadwal"
             else :
                 cek_semhas_tidak_lulus[jumlah].status_jadwal="Belum Assign Jadwal"
@@ -9171,7 +9472,7 @@ def proposal_get_filter_semhas_jadwal(request):
                     cek_semhas_tidak_lulus[jumlah].status_dosen=f"Belum Mencukupi : 0 Assign Dosen"
             
             try:
-                if item.id_proposal.nim in list_jadwal_semhas:
+                if item.id_proposal.nim.nim in list_jadwal_semhas:
                     cek_semhas_tidak_lulus[jumlah].status_jadwal="Sudah Assign Jadwal"
                 else :
                     cek_semhas_tidak_lulus[jumlah].status_jadwal="Belum Assign Jadwal"
@@ -9240,7 +9541,7 @@ def proposal_get_filter_semhas_jadwal(request):
     jumlah=0
     for item in lolos_tidak_lulus_semhas:
         try:
-            if item.id_proposal.nim in list_jadwal_semhas:
+            if item.id_proposal.nim.nim in list_jadwal_semhas:
                 lolos_tidak_lulus_semhas[jumlah].status_jadwal="Sudah Assign Jadwal"
             else :
                 lolos_tidak_lulus_semhas[jumlah].status_jadwal="Belum Assign Jadwal"
@@ -9267,7 +9568,7 @@ def proposal_get_filter_semhas_jadwal(request):
                     lolos_tidak_lulus_semhas[jumlah].status_dosen="Belum Mencukupi : 0 Assign Dosen" 
                     
             try:
-                if item.id_proposal.nim in list_jadwal_semhas:
+                if item.id_proposal.nim.nim in list_jadwal_semhas:
                     lolos_tidak_lulus_semhas[jumlah].status_jadwal="Sudah Assign Jadwal"
                 else :
                     lolos_tidak_lulus_semhas[jumlah].status_jadwal="Belum Assign Jadwal"
@@ -12028,7 +12329,7 @@ def jadwal_dosen_bimbingan_tanpa_filter(request):
     if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
-            nim_list.append(item.nim)
+            nim_list.append(item.id_role_dosen)
         jadwal_data=jadwal_seminar.objects.filter(dosen_pembimbing_1__nip=user_info[0])|jadwal_seminar.objects.filter(dosen_pembimbing_2__nip=user_info[0])
     else:
         ambil_pembimbing=roledosen.objects.filter(role="Pembimbing 1")|roledosen.objects.filter(role="Pembimbing 2")
@@ -12049,38 +12350,278 @@ def jadwal_dosen_bimbingan_tanpa_filter(request):
     for item in jadwal_data:
         try:
             # cek_pembimbing
-            
+            tahap_list=[]
             status_dosen=False
             if item.dosen_pembimbing_2==None:
                 status_dosen=True
             else:
-                detailpenilaian_data=list(detailpenilaian.objects.filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).values_list("id_role_dosen",flat=True))
-                hasil= len(detailpenilaian_data)
-                if hasil==4:
-                    status_dosen=True
-                    
-            if penilaian.objects.filter(
-                id_detail_penilaian__id_role_dosen__nim=item.mahasiswa).exists():
-                
-                jumlah_penilaian=list(penilaian.objects.filter(
-                id_detail_penilaian__id_role_dosen__nim=item.mahasiswa).order_by().values_list("id_detail_penilaian__nama_tahap",flat=True).distinct())
-                # print(list(jumlah_penilaian))
-                if len(jumlah_penilaian)==3 and status_dosen==True :
+                pass
+                # detailpenilaian_data=list(detailpenilaian.objects.filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).values_list("id_role_dosen",flat=True))
+                # hasil= len(detailpenilaian_data)
+                # if hasil==4:
+                #     status_dosen=True
+            # print(item.dosen_pembimbing_2)       
+            # print(status_dosen)
+                   
+            if item.tahap_seminar=="Seminar Proposal":
+                if  status_dosen==True  :
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True))
+                else:
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True)|roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_2.id_role_dosen).values_list("id_role_dosen",flat=True))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap=item.tahap_seminar).filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).filter(id_role_dosen__in=cek_roledosen)
+                # print(cek_penilaian)
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap="Bimbingan").filter(id_role_dosen__nim=item.mahasiswa).filter(id_role_dosen__in=cek_roledosen)
+                # tahap_list=tahap_list+cek_penilaian
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                # print("",item.mahasiswa,cek_penilaian.values_list("id_role_dosen__role"))
+                # print(tahap_list)
+                if len(tahap_list)>=2  and status_dosen==True :
                     jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
-                elif len(jumlah_penilaian)==3 and status_dosen==False :
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>=2 and status_dosen==False :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==False :
                     jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian: Belum Ada Penilaian 2 Dosen Pembimbing"
-                elif len(jumlah_penilaian)!=3:
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==True:
                     jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
-                
-                jadwal_data[jumlah].tahap_penilaian = jumlah_penilaian
-            else:
-                jadwal_data[jumlah].tahap_penilaian = None
-                jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
-            
-        except:
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                else :
+                    jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
+                    jadwal_data[jumlah].tahap_penilaian = None
+            else : 
+                if  status_dosen==True  :
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True))
+                else:
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True)|roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_2.id_role_dosen).values_list("id_role_dosen",flat=True))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap=item.tahap_seminar).filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).filter(id_role_dosen__in=cek_roledosen)
+                # print(cek_penilaian)
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap="Bimbingan").filter(id_role_dosen__nim=item.mahasiswa).filter(id_role_dosen__in=cek_roledosen)
+                # tahap_list=tahap_list+cek_penilaian
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                # print("",item.mahasiswa,cek_penilaian.values_list("id_role_dosen__role"))
+                # print(tahap_list)
+                if len(tahap_list)>=2  and status_dosen==True :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>=2 and status_dosen==False :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==False :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian: Belum Ada Penilaian 2 Dosen Pembimbing"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==True:
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                else :
+                    jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
+                    jadwal_data[jumlah].tahap_penilaian = None
+        except : 
             jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
             jadwal_data[jumlah].tahap_penilaian = None
         
+
+        jumlah += 1
+    # for item in jadwal_data: 
+    #     # print(item.status, item.status == "ACC")
+    #     if item.status_nilai != "Belum Di Nilai" :
+    #         jadwal_data=jadwal_data.exclude(id_jadwal_seminar=item.id_jadwal_seminar)
+            
+            
+    return render(request, 'dosen/jadwal_penilaian.html', {"jadwals": jadwal_data, "user_info": user_info,"role":role})
+
+@login_required(login_url="/login")
+@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+def tabulasi_penilaian(request):
+    user_info = user_information(request)
+    # role=""
+    nim_list=[]
+    role_dosen_list=[]
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+        ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
+        for item in ambil_pembimbing:
+            role_dosen_list.append(item.id_role_dosen)
+            nim_list.append(item.nim.nim)
+        jadwal_data=jadwal_seminar.objects.filter(dosen_pembimbing_1__nip=user_info[0])|jadwal_seminar.objects.filter(dosen_pembimbing_2__nip=user_info[0])
+    else:
+        ambil_pembimbing=roledosen.objects.filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(status="Active").filter(role="Pembimbing 2")
+        for item in ambil_pembimbing:
+            role_dosen_list.append(item.id_role_dosen)
+            nim_list.append(item.nim.nim)
+            
+        jadwal_data=jadwal_seminar.objects.all()
+     
+    # try:
+        mahasiswa_data=mahasiswa.objects.filter(nim__in=nim_list)
+        jadwal_data=jadwal_data.filter(
+                dosen_pembimbing_1__in=role_dosen_list)|jadwal_data.filter(
+                dosen_pembimbing_2__in=role_dosen_list)
+        # proposals = proposal.objects.all()
+
+    # except:
+    #     jadwal_data = []
+    jumlah=0
+    for item in mahasiswa_data:
+        cek_pembimbing=roledosen.objects.filter(nim=item.nim).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nim=item.nim).filter(status="Active").filter(role="Pembimbing 2")
+        if cek_pembimbing.count() == 2:
+            jumlah_penilaian_pembimbing=2
+        else:
+            jumlah_penilaian_pembimbing=1
+        print(jumlah_penilaian_pembimbing)
+        # try :    
+        detailpenilaian_data=detailpenilaian.objects.filter(nama_tahap="Bimbingan").filter(id_role_dosen__nim=item.nim).filter(status_kelulusan="Lulus")
+        if detailpenilaian_data.count() == jumlah_penilaian_pembimbing :
+            mahasiswa_data[jumlah].status_bimbingan="Penilaian Bimbingan Sudah Lengkap"
+            detailpenilaian_data_list=list(detailpenilaian.objects.filter(nama_tahap="Bimbingan").filter(id_role_dosen__nim=item.nim).filter(status_kelulusan="Lulus").values_list("id_role_dosen__role",flat=True))
+            mahasiswa_data[jumlah].tahap_bimbingan=detailpenilaian_data_list
+            # mahasiswa_data[jumlah].tahap_bimbingan=None
+        else:
+            mahasiswa_data[jumlah].status_bimbingan="Penilaian Bimbingan Belum Lengkap"
+            detailpenilaian_data_list=list(detailpenilaian.objects.filter(nama_tahap="Bimbingan").filter(id_role_dosen__nim=item.nim).filter(status_kelulusan="Lulus").values_list("id_role_dosen__role",flat=True))
+            mahasiswa_data[jumlah].tahap_bimbingan=detailpenilaian_data_list
+        # except:
+
+        
+            
+        cek_data_sempro=detailpenilaian.objects.filter(nama_tahap="Seminar Proposal").filter(id_role_dosen__nim=item.nim).filter(status_kelulusan="Lulus")
+        if cek_data_sempro==4 and cek_pembimbing.count() == 2:
+            mahasiswa_data[jumlah].status_sempro="Penilaian Seminar Proposal Sudah Lengkap"
+            detailpenilaian_data_list=list(detailpenilaian.objects.filter(nama_tahap="Seminar Proposal").filter(id_role_dosen__nim=item.nim).filter(status_kelulusan="Lulus").values_list("id_role_dosen__role",flat=True))
+            mahasiswa_data[jumlah].tahap_sempro=detailpenilaian_data_list
+        elif cek_data_sempro==3 and cek_pembimbing.count() ==1:
+            mahasiswa_data[jumlah].status_sempro="Penilaian Seminar Proposal Sudah Lengkap"
+            detailpenilaian_data_list=list(detailpenilaian.objects.filter(nama_tahap="Seminar Proposal").filter(id_role_dosen__nim=item.nim).filter(status_kelulusan="Lulus").values_list("id_role_dosen__role",flat=True))
+            mahasiswa_data[jumlah].tahap_sempro=detailpenilaian_data_list
+        else:
+            mahasiswa_data[jumlah].status_sempro="Penilaian Seminar Proposal Belum Lengkap"
+            detailpenilaian_data_list=list(detailpenilaian.objects.filter(nama_tahap="Seminar Proposal").filter(id_role_dosen__nim=item.nim).filter(status_kelulusan="Lulus").values_list("id_role_dosen__role",flat=True))
+            mahasiswa_data[jumlah].tahap_sempro=detailpenilaian_data_list
+        
+        cek_data_semhas=detailpenilaian.objects.filter(nama_tahap="Seminar Hasil").filter(id_role_dosen__nim=item.nim).filter(status_kelulusan="Lulus")
+        if cek_data_semhas==4 and cek_pembimbing.count() == 2:
+            mahasiswa_data[jumlah].status_semhas="Penilaian Seminar Hasil Sudah Lengkap"
+            detailpenilaian_data_list=list(detailpenilaian.objects.filter(nama_tahap="Seminar Hasil").filter(id_role_dosen__nim=item.nim).filter(status_kelulusan="Lulus").values_list("id_role_dosen__role",flat=True))
+            mahasiswa_data[jumlah].tahap_semhas=detailpenilaian_data_list
+        elif cek_data_semhas==3 and cek_pembimbing.count() ==1:
+            mahasiswa_data[jumlah].status_semhas="Penilaian Seminar Hasil Sudah Lengkap"
+            detailpenilaian_data_list=list(detailpenilaian.objects.filter(nama_tahap="Seminar Hasil").filter(id_role_dosen__nim=item.nim).filter(status_kelulusan="Lulus").values_list("id_role_dosen__role",flat=True))
+            mahasiswa_data[jumlah].tahap_semhas=detailpenilaian_data_list
+        else:
+            mahasiswa_data[jumlah].status_semhas="Penilaian Seminar Hasil Belum Lengkap"
+            detailpenilaian_data_list=list(detailpenilaian.objects.filter(nama_tahap="Seminar Hasil").filter(id_role_dosen__nim=item.nim).filter(status_kelulusan="Lulus").values_list("id_role_dosen__role",flat=True))
+            mahasiswa_data[jumlah].tahap_semhas=detailpenilaian_data_list
+        jumlah+=1        
+            
+            
+    return render(request, 'mahasiswa/mahasiswa_penilaian.html', {"mahasiswa_data": mahasiswa_data, "user_info": user_info})
+
+@login_required(login_url="/login")
+@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+def jadwal_dosen_bimbingan_filter_nim(request,nim):
+    user_info = user_information(request)
+    role="Dosen Pembimbing"
+    nim_list=[]
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+        ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
+        for item in ambil_pembimbing:
+            nim_list.append(item.id_role_dosen)
+        jadwal_data=jadwal_seminar.objects.filter(dosen_pembimbing_1__nip=user_info[0])|jadwal_seminar.objects.filter(dosen_pembimbing_2__nip=user_info[0])
+    else:
+        ambil_pembimbing=roledosen.objects.filter(role="Pembimbing 1")|roledosen.objects.filter(role="Pembimbing 2")
+        for item in ambil_pembimbing:
+            nim_list.append(item.id_role_dosen)
+            
+        jadwal_data=jadwal_seminar.objects.all()
+     
+    try:
+        jadwal_data=jadwal_data.filter(mahasiswa=nim).filter(
+                dosen_pembimbing_1__in=nim_list)|jadwal_data.filter(
+                dosen_pembimbing_2__in=nim_list)
+        # proposals = proposal.objects.all()
+
+    except:
+        jadwal_data = []
+        jumlah=0  
+    for item in jadwal_data:
+        try:
+            # cek_pembimbing
+            tahap_list=[]
+            status_dosen=False
+            if item.dosen_pembimbing_2==None:
+                status_dosen=True
+            else:
+                pass
+                # detailpenilaian_data=list(detailpenilaian.objects.filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).values_list("id_role_dosen",flat=True))
+                # hasil= len(detailpenilaian_data)
+                # if hasil==4:
+                #     status_dosen=True
+            # print(item.dosen_pembimbing_2)       
+            # print(status_dosen)
+                   
+            if item.tahap_seminar=="Seminar Proposal":
+                if  status_dosen==True  :
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True))
+                else:
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True)|roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_2.id_role_dosen).values_list("id_role_dosen",flat=True))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap=item.tahap_seminar).filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).filter(id_role_dosen__in=cek_roledosen)
+                # print(cek_penilaian)
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap="Bimbingan").filter(id_role_dosen__nim=item.mahasiswa).filter(id_role_dosen__in=cek_roledosen)
+                # tahap_list=tahap_list+cek_penilaian
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                # print("",item.mahasiswa,cek_penilaian.values_list("id_role_dosen__role"))
+                # print(tahap_list)
+                if len(tahap_list)>=2  and status_dosen==True :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>=2 and status_dosen==False :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==False :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==True:
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                else :
+                    jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
+                    jadwal_data[jumlah].tahap_penilaian = None
+            else : 
+                if  status_dosen==True  :
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True))
+                else:
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True)|roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_2.id_role_dosen).values_list("id_role_dosen",flat=True))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap=item.tahap_seminar).filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).filter(id_role_dosen__in=cek_roledosen)
+                # print(cek_penilaian)
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap="Bimbingan").filter(id_role_dosen__nim=item.mahasiswa).filter(id_role_dosen__in=cek_roledosen)
+                # tahap_list=tahap_list+cek_penilaian
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                # print("",item.mahasiswa,cek_penilaian.values_list("id_role_dosen__role"))
+                # print(tahap_list)
+                if len(tahap_list)>=2  and status_dosen==True :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>=2 and status_dosen==False :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==False :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==True:
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                else :
+                    jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
+                    jadwal_data[jumlah].tahap_penilaian = None
+        except : 
+            jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
+            jadwal_data[jumlah].tahap_penilaian = None
+        
+
         jumlah += 1
             
     # for item in jadwal_data: 
@@ -12101,7 +12642,7 @@ def jadwal_dosen_bimbingan(request):
     if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
-            nim_list.append(item.nim)
+            nim_list.append(item.id_role_dosen)
         jadwal_data=jadwal_seminar.objects.filter(dosen_pembimbing_1__nip=user_info[0])|jadwal_seminar.objects.filter(dosen_pembimbing_2__nip=user_info[0])
     else:
         ambil_pembimbing=roledosen.objects.filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(status="Active").filter(role="Pembimbing 2")
@@ -12120,41 +12661,102 @@ def jadwal_dosen_bimbingan(request):
         jadwal_data = []
     jumlah=0  
     for item in jadwal_data:
-        try:
+        # try:
             # cek_pembimbing
-            
+            tahap_list=[]
             status_dosen=False
             if item.dosen_pembimbing_2==None:
                 status_dosen=True
             else:
-                detailpenilaian_data=list(detailpenilaian.objects.filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).values_list("id_role_dosen",flat=True))
-                hasil= len(detailpenilaian_data)
-                if hasil==4:
-                    status_dosen=True
-                    
-            if penilaian.objects.filter(
-                id_detail_penilaian__id_role_dosen__nim=item.mahasiswa).exists():
-                
-                jumlah_penilaian=list(penilaian.objects.filter(
-                id_detail_penilaian__id_role_dosen__nim=item.mahasiswa).order_by().values_list("id_detail_penilaian__nama_tahap",flat=True).distinct())
-                # print(list(jumlah_penilaian))
-                if len(jumlah_penilaian)==3 and status_dosen==True :
+                pass
+                # detailpenilaian_data=list(detailpenilaian.objects.filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).values_list("id_role_dosen",flat=True))
+                # hasil= len(detailpenilaian_data)
+                # if hasil==4:
+                #     status_dosen=True
+            # print(item.dosen_pembimbing_2)       
+            # print(status_dosen)
+                   
+            if item.tahap_seminar=="Seminar Proposal":
+                if  status_dosen==True  :
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True))
+                else:
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True)|roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_2.id_role_dosen).values_list("id_role_dosen",flat=True))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap=item.tahap_seminar).filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).filter(id_role_dosen__in=cek_roledosen)
+                # print(cek_penilaian)
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap="Bimbingan").filter(id_role_dosen__nim=item.mahasiswa).filter(id_role_dosen__in=cek_roledosen)
+                # tahap_list=tahap_list+cek_penilaian
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                # print("",item.mahasiswa,cek_penilaian.values_list("id_role_dosen__role"))
+                # print(tahap_list)
+                if len(tahap_list)>=2  and status_dosen==True :
                     jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
-                elif len(jumlah_penilaian)==3 and status_dosen==False :
-                    jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian: Belum Ada Penilaian 2 Dosen Pembimbing"
-                elif len(jumlah_penilaian)!=3:
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>=2 and status_dosen==False :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==False :
                     jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==True:
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                else :
+                    jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
+                    jadwal_data[jumlah].tahap_penilaian = None
+            else : 
+                if  status_dosen==True  :
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True))
+                else:
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True)|roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_2.id_role_dosen).values_list("id_role_dosen",flat=True))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap=item.tahap_seminar).filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).filter(id_role_dosen__in=cek_roledosen)
+                # print(cek_penilaian)
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap="Bimbingan").filter(id_role_dosen__nim=item.mahasiswa).filter(id_role_dosen__in=cek_roledosen)
+                # tahap_list=tahap_list+cek_penilaian
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                # print("",item.mahasiswa,cek_penilaian.values_list("id_role_dosen__role"))
+                # print(tahap_list)
+                if len(tahap_list)>=2  and status_dosen==True :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>=2 and status_dosen==False :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==False :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==True:
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                else :
+                    jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
+                    jadwal_data[jumlah].tahap_penilaian = None
                 
-                jadwal_data[jumlah].tahap_penilaian = jumlah_penilaian
-            else:
-                jadwal_data[jumlah].tahap_penilaian = None
-                jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
+            # if penilaian.objects.filter(
+            #     id_detail_penilaian__id_role_dosen__nim=item.mahasiswa).exists():
+                
+            #     jumlah_penilaian=list(penilaian.objects.filter(
+            #     id_detail_penilaian__id_role_dosen__nim=item.mahasiswa).order_by().values_list("id_detail_penilaian__nama_tahap",flat=True).distinct())
+                
+            #     # print(list(jumlah_penilaian))
+            #     if len(jumlah_penilaian)==3  and status_dosen==True :
+            #         jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+            #     elif len(jumlah_penilaian)==3 and status_dosen==False :
+            #         jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian: Belum Ada Penilaian 2 Dosen Pembimbing"
+            #     elif len(jumlah_penilaian)!=3:
+            #         jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
+                
+            #     jadwal_data[jumlah].tahap_penilaian = jumlah_penilaian
+            # else:
+            #     jadwal_data[jumlah].tahap_penilaian = None
+            #     jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
             
-        except:
-            jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
-            jadwal_data[jumlah].tahap_penilaian = None
+        # except:
+        #     jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
+        #     jadwal_data[jumlah].tahap_penilaian = None
         
-        jumlah += 1
+            jumlah += 1
             
     # for item in jadwal_data: 
     #     # print(item.status, item.status == "ACC")
@@ -12173,7 +12775,7 @@ def jadwal_dosen_bimbingan_belum_dinilai(request):
     if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
-            nim_list.append(item.nim)
+            nim_list.append(item.id_role_dosen)
         jadwal_data=jadwal_seminar.objects.filter(dosen_pembimbing_1__nip=user_info[0])|jadwal_seminar.objects.filter(dosen_pembimbing_2__nip=user_info[0])
     else:
         ambil_pembimbing=roledosen.objects.filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(status="Active").filter(role="Pembimbing 2")
@@ -12190,43 +12792,110 @@ def jadwal_dosen_bimbingan_belum_dinilai(request):
 
     except:
         jadwal_data = []
+        
     jumlah=0  
     for item in jadwal_data:
-            try:
-                # cek_pembimbing
-                
-                status_dosen=False
-                if item.dosen_pembimbing_2==None:
-                    status_dosen=True
-                else:
-                    detailpenilaian_data=list(detailpenilaian.objects.filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).values_list("id_role_dosen",flat=True))
-                    hasil= len(detailpenilaian_data)
-                    if hasil==4:
-                        status_dosen=True
-                        
-                if penilaian.objects.filter(
-                    id_detail_penilaian__id_role_dosen__nim=item.mahasiswa).exists():
+        # try:
+            # cek_pembimbing
+            tahap_list=[]
+            status_dosen=False
+            if item.dosen_pembimbing_2==None:
+                status_dosen=True
+            else:
+                pass
+                # detailpenilaian_data=list(detailpenilaian.objects.filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).values_list("id_role_dosen",flat=True))
+                # hasil= len(detailpenilaian_data)
+                # if hasil==4:
+                #     status_dosen=True
+            # print(item.dosen_pembimbing_2)       
+            # print(status_dosen)
                    
-                    jumlah_penilaian=list(penilaian.objects.filter(
-                    id_detail_penilaian__id_role_dosen__nim=item.mahasiswa).order_by().values_list("id_detail_penilaian__nama_tahap",flat=True).distinct())
-                    # print(list(jumlah_penilaian))
-                    if len(jumlah_penilaian)==3 and status_dosen==True :
-                        jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
-                    elif len(jumlah_penilaian)==3 and status_dosen==False :
-                        jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian: Belum Ada Penilaian 2 Dosen Pembimbing"
-                    elif len(jumlah_penilaian)!=3:
-                        jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
-                    
-                    jadwal_data[jumlah].tahap_penilaian = jumlah_penilaian
+            if item.tahap_seminar=="Seminar Proposal":
+                if  status_dosen==True  :
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True))
                 else:
-                    jadwal_data[jumlah].tahap_penilaian = None
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True)|roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_2.id_role_dosen).values_list("id_role_dosen",flat=True))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap=item.tahap_seminar).filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).filter(id_role_dosen__in=cek_roledosen)
+                # print(cek_penilaian)
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap="Bimbingan").filter(id_role_dosen__nim=item.mahasiswa).filter(id_role_dosen__in=cek_roledosen)
+                # tahap_list=tahap_list+cek_penilaian
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                # print("",item.mahasiswa,cek_penilaian.values_list("id_role_dosen__role"))
+                # print(tahap_list)
+                if len(tahap_list)>=2  and status_dosen==True :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>=2 and status_dosen==False :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==False :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==True:
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                else :
                     jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
+                    jadwal_data[jumlah].tahap_penilaian = None
+            else : 
+                if  status_dosen==True  :
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True))
+                else:
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True)|roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_2.id_role_dosen).values_list("id_role_dosen",flat=True))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap=item.tahap_seminar).filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).filter(id_role_dosen__in=cek_roledosen)
+                # print(cek_penilaian)
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap="Bimbingan").filter(id_role_dosen__nim=item.mahasiswa).filter(id_role_dosen__in=cek_roledosen)
+                # tahap_list=tahap_list+cek_penilaian
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                # print("",item.mahasiswa,cek_penilaian.values_list("id_role_dosen__role"))
+                # print(tahap_list)
+                if len(tahap_list)>=2  and status_dosen==True :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>=2 and status_dosen==False :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==False :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==True:
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                else :
+                    jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
+                    jadwal_data[jumlah].tahap_penilaian = None
                 
-            except:
-                jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
-                jadwal_data[jumlah].tahap_penilaian = None
+            # if penilaian.objects.filter(
+            #     id_detail_penilaian__id_role_dosen__nim=item.mahasiswa).exists():
+                
+            #     jumlah_penilaian=list(penilaian.objects.filter(
+            #     id_detail_penilaian__id_role_dosen__nim=item.mahasiswa).order_by().values_list("id_detail_penilaian__nama_tahap",flat=True).distinct())
+                
+            #     # print(list(jumlah_penilaian))
+            #     if len(jumlah_penilaian)==3  and status_dosen==True :
+            #         jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+            #     elif len(jumlah_penilaian)==3 and status_dosen==False :
+            #         jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian: Belum Ada Penilaian 2 Dosen Pembimbing"
+            #     elif len(jumlah_penilaian)!=3:
+            #         jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
+                
+            #     jadwal_data[jumlah].tahap_penilaian = jumlah_penilaian
+            # else:
+            #     jadwal_data[jumlah].tahap_penilaian = None
+            #     jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
             
+        # except:
+        #     jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
+        #     jadwal_data[jumlah].tahap_penilaian = None
+        
             jumlah += 1
+            
+    # for item in jadwal_data: 
+    #     # print(item.status, item.status == "ACC")
+    #     if item.status_nilai != "Belum Di Nilai" :
+    #         jadwal_data=jadwal_data.exclude(id_jadwal_seminar=item.id_jadwal_seminar)
             
     for item in jadwal_data: 
         # print(item.status, item.status == "ACC")
@@ -12236,38 +12905,80 @@ def jadwal_dosen_bimbingan_belum_dinilai(request):
     for item in jadwal_data:
         try:
             # cek_pembimbing
-            
+            tahap_list=[]
             status_dosen=False
             if item.dosen_pembimbing_2==None:
                 status_dosen=True
             else:
-                detailpenilaian_data=list(detailpenilaian.objects.filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).values_list("id_role_dosen",flat=True))
-                hasil= len(detailpenilaian_data)
-                if hasil==4:
-                    status_dosen=True
-                    
-            if penilaian.objects.filter(
-                id_detail_penilaian__id_role_dosen__nim=item.mahasiswa).exists():
-                
-                jumlah_penilaian=list(penilaian.objects.filter(
-                id_detail_penilaian__id_role_dosen__nim=item.mahasiswa).order_by().values_list("id_detail_penilaian__nama_tahap",flat=True).distinct())
-                # print(list(jumlah_penilaian))
-                if len(jumlah_penilaian)==3 and status_dosen==True :
+                pass
+                # detailpenilaian_data=list(detailpenilaian.objects.filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).values_list("id_role_dosen",flat=True))
+                # hasil= len(detailpenilaian_data)
+                # if hasil==4:
+                #     status_dosen=True
+            # print(item.dosen_pembimbing_2)       
+            # print(status_dosen)
+                   
+            if item.tahap_seminar=="Seminar Proposal":
+                if  status_dosen==True  :
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True))
+                else:
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True)|roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_2.id_role_dosen).values_list("id_role_dosen",flat=True))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap=item.tahap_seminar).filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).filter(id_role_dosen__in=cek_roledosen)
+                # print(cek_penilaian)
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap="Bimbingan").filter(id_role_dosen__nim=item.mahasiswa).filter(id_role_dosen__in=cek_roledosen)
+                # tahap_list=tahap_list+cek_penilaian
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                # print("",item.mahasiswa,cek_penilaian.values_list("id_role_dosen__role"))
+                # print(tahap_list)
+                if len(tahap_list)>=2  and status_dosen==True :
                     jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
-                elif len(jumlah_penilaian)==3 and status_dosen==False :
-                    jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian: Belum Ada Penilaian 2 Dosen Pembimbing"
-                elif len(jumlah_penilaian)!=3:
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>=2 and status_dosen==False :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==False :
                     jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
-                
-                jadwal_data[jumlah].tahap_penilaian = jumlah_penilaian
-            else:
-                jadwal_data[jumlah].tahap_penilaian = None
-                jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
-            
-        except:
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==True:
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                else :
+                    jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
+                    jadwal_data[jumlah].tahap_penilaian = None
+            else : 
+                if  status_dosen==True  :
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True))
+                else:
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True)|roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_2.id_role_dosen).values_list("id_role_dosen",flat=True))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap=item.tahap_seminar).filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).filter(id_role_dosen__in=cek_roledosen)
+                # print(cek_penilaian)
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap="Bimbingan").filter(id_role_dosen__nim=item.mahasiswa).filter(id_role_dosen__in=cek_roledosen)
+                # tahap_list=tahap_list+cek_penilaian
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                # print("",item.mahasiswa,cek_penilaian.values_list("id_role_dosen__role"))
+                # print(tahap_list)
+                if len(tahap_list)>=2  and status_dosen==True :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>=2 and status_dosen==False :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==False :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==True:
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                else :
+                    jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
+                    jadwal_data[jumlah].tahap_penilaian = None
+        except : 
             jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
             jadwal_data[jumlah].tahap_penilaian = None
         
+
         jumlah += 1
             
     return render(request, 'dosen/jadwal_penilaian.html', {"jadwals": jadwal_data, "user_info": user_info,"role":role})
@@ -12281,7 +12992,7 @@ def jadwal_dosen_bimbingan_sudah_dinilai(request):
     if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
-            nim_list.append(item.nim)
+            nim_list.append(item.id_role_dosen)
         jadwal_data=jadwal_seminar.objects.filter(dosen_pembimbing_1__nip=user_info[0])|jadwal_seminar.objects.filter(dosen_pembimbing_2__nip=user_info[0])
     else:
         ambil_pembimbing=roledosen.objects.filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(status="Active").filter(role="Pembimbing 2")
@@ -12300,41 +13011,83 @@ def jadwal_dosen_bimbingan_sudah_dinilai(request):
         jadwal_data = []
     jumlah=0  
     for item in jadwal_data:
-            try:
-                # cek_pembimbing
-                
-                status_dosen=False
-                if item.dosen_pembimbing_2==None:
-                    status_dosen=True
-                else:
-                    detailpenilaian_data=list(detailpenilaian.objects.filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).values_list("id_role_dosen",flat=True))
-                    hasil= len(detailpenilaian_data)
-                    if hasil==4:
-                        status_dosen=True
-                        
-                if penilaian.objects.filter(
-                    id_detail_penilaian__id_role_dosen__nim=item.mahasiswa).exists():
+        try:
+            # cek_pembimbing
+            tahap_list=[]
+            status_dosen=False
+            if item.dosen_pembimbing_2==None:
+                status_dosen=True
+            else:
+                pass
+                # detailpenilaian_data=list(detailpenilaian.objects.filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).values_list("id_role_dosen",flat=True))
+                # hasil= len(detailpenilaian_data)
+                # if hasil==4:
+                #     status_dosen=True
+            # print(item.dosen_pembimbing_2)       
+            # print(status_dosen)
                    
-                    jumlah_penilaian=list(penilaian.objects.filter(
-                    id_detail_penilaian__id_role_dosen__nim=item.mahasiswa).order_by().values_list("id_detail_penilaian__nama_tahap",flat=True).distinct())
-                    # print(list(jumlah_penilaian))
-                    if len(jumlah_penilaian)==3 and status_dosen==True :
-                        jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
-                    elif len(jumlah_penilaian)==3 and status_dosen==False :
-                        jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian: Belum Ada Penilaian 2 Dosen Pembimbing"
-                    elif len(jumlah_penilaian)!=3:
-                        jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
-                    
-                    jadwal_data[jumlah].tahap_penilaian = jumlah_penilaian
+            if item.tahap_seminar=="Seminar Proposal":
+                if  status_dosen==True  :
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True))
                 else:
-                    jadwal_data[jumlah].tahap_penilaian = None
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True)|roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_2.id_role_dosen).values_list("id_role_dosen",flat=True))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap=item.tahap_seminar).filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).filter(id_role_dosen__in=cek_roledosen)
+                # print(cek_penilaian)
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap="Bimbingan").filter(id_role_dosen__nim=item.mahasiswa).filter(id_role_dosen__in=cek_roledosen)
+                # tahap_list=tahap_list+cek_penilaian
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                # print("",item.mahasiswa,cek_penilaian.values_list("id_role_dosen__role"))
+                # print(tahap_list)
+                if len(tahap_list)>=2  and status_dosen==True :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>=2 and status_dosen==False :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==False :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==True:
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                else :
                     jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
-                
-            except:
-                jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
-                jadwal_data[jumlah].tahap_penilaian = None
-            
-            jumlah += 1
+                    jadwal_data[jumlah].tahap_penilaian = None
+            else : 
+                if  status_dosen==True  :
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True))
+                else:
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True)|roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_2.id_role_dosen).values_list("id_role_dosen",flat=True))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap=item.tahap_seminar).filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).filter(id_role_dosen__in=cek_roledosen)
+                # print(cek_penilaian)
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap="Bimbingan").filter(id_role_dosen__nim=item.mahasiswa).filter(id_role_dosen__in=cek_roledosen)
+                # tahap_list=tahap_list+cek_penilaian
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                # print("",item.mahasiswa,cek_penilaian.values_list("id_role_dosen__role"))
+                # print(tahap_list)
+                if len(tahap_list)>=2  and status_dosen==True :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>=2 and status_dosen==False :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==False :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==True:
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                else :
+                    jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
+                    jadwal_data[jumlah].tahap_penilaian = None
+        except : 
+            jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
+            jadwal_data[jumlah].tahap_penilaian = None
+        
+
+        jumlah += 1
             
     for item in jadwal_data: 
         # print(item.status, item.status == "ACC")
@@ -12344,40 +13097,81 @@ def jadwal_dosen_bimbingan_sudah_dinilai(request):
     for item in jadwal_data:
         try:
             # cek_pembimbing
-            
+            tahap_list=[]
             status_dosen=False
             if item.dosen_pembimbing_2==None:
                 status_dosen=True
             else:
-                detailpenilaian_data=list(detailpenilaian.objects.filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).values_list("id_role_dosen",flat=True))
-                hasil= len(detailpenilaian_data)
-                if hasil==4:
-                    status_dosen=True
-                    
-            if penilaian.objects.filter(
-                id_detail_penilaian__id_role_dosen__nim=item.mahasiswa).exists():
-                
-                jumlah_penilaian=list(penilaian.objects.filter(
-                id_detail_penilaian__id_role_dosen__nim=item.mahasiswa).order_by().values_list("id_detail_penilaian__nama_tahap",flat=True).distinct())
-                # print(list(jumlah_penilaian))
-                if len(jumlah_penilaian)==3 and status_dosen==True :
+                pass
+                # detailpenilaian_data=list(detailpenilaian.objects.filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).values_list("id_role_dosen",flat=True))
+                # hasil= len(detailpenilaian_data)
+                # if hasil==4:
+                #     status_dosen=True
+            # print(item.dosen_pembimbing_2)       
+            # print(status_dosen)
+                   
+            if item.tahap_seminar=="Seminar Proposal":
+                if  status_dosen==True  :
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True))
+                else:
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True)|roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_2.id_role_dosen).values_list("id_role_dosen",flat=True))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap=item.tahap_seminar).filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).filter(id_role_dosen__in=cek_roledosen)
+                # print(cek_penilaian)
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap="Bimbingan").filter(id_role_dosen__nim=item.mahasiswa).filter(id_role_dosen__in=cek_roledosen)
+                # tahap_list=tahap_list+cek_penilaian
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                # print("",item.mahasiswa,cek_penilaian.values_list("id_role_dosen__role"))
+                # print(tahap_list)
+                if len(tahap_list)>=2  and status_dosen==True :
                     jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
-                elif len(jumlah_penilaian)==3 and status_dosen==False :
-                    jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian: Belum Ada Penilaian 2 Dosen Pembimbing"
-                elif len(jumlah_penilaian)!=3:
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>=2 and status_dosen==False :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==False :
                     jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
-                
-                jadwal_data[jumlah].tahap_penilaian = jumlah_penilaian
-            else:
-                jadwal_data[jumlah].tahap_penilaian = None
-                jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
-            
-        except:
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==True:
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                else :
+                    jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
+                    jadwal_data[jumlah].tahap_penilaian = None
+            else : 
+                if  status_dosen==True  :
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True))
+                else:
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True)|roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_2.id_role_dosen).values_list("id_role_dosen",flat=True))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap=item.tahap_seminar).filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).filter(id_role_dosen__in=cek_roledosen)
+                # print(cek_penilaian)
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap="Bimbingan").filter(id_role_dosen__nim=item.mahasiswa).filter(id_role_dosen__in=cek_roledosen)
+                # tahap_list=tahap_list+cek_penilaian
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                # print("",item.mahasiswa,cek_penilaian.values_list("id_role_dosen__role"))
+                # print(tahap_list)
+                if len(tahap_list)>=2  and status_dosen==True :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>=2 and status_dosen==False :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==False :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==True:
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                else :
+                    jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
+                    jadwal_data[jumlah].tahap_penilaian = None
+        except : 
             jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
             jadwal_data[jumlah].tahap_penilaian = None
         
+
         jumlah += 1
-            
     return render(request, 'dosen/jadwal_penilaian.html', {"jadwals": jadwal_data, "user_info": user_info,"role":role})
             
 @login_required(login_url="/login")
@@ -12389,7 +13183,7 @@ def jadwal_dosen_bimbingan_sebagian_dinilai(request):
     if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
-            nim_list.append(item.nim)
+            nim_list.append(item.id_role_dosen)
         jadwal_data=jadwal_seminar.objects.filter(dosen_pembimbing_1__nip=user_info[0])|jadwal_seminar.objects.filter(dosen_pembimbing_2__nip=user_info[0])
     else:
         ambil_pembimbing=roledosen.objects.filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(status="Active").filter(role="Pembimbing 2")
@@ -12410,40 +13204,81 @@ def jadwal_dosen_bimbingan_sebagian_dinilai(request):
     for item in jadwal_data:
         try:
             # cek_pembimbing
-            
+            tahap_list=[]
             status_dosen=False
             if item.dosen_pembimbing_2==None:
                 status_dosen=True
             else:
-                detailpenilaian_data=list(detailpenilaian.objects.filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).values_list("id_role_dosen",flat=True))
-                hasil= len(detailpenilaian_data)
-                if hasil==4:
-                    status_dosen=True
-                    
-            if penilaian.objects.filter(
-                id_detail_penilaian__id_role_dosen__nim=item.mahasiswa).exists():
-                
-                jumlah_penilaian=list(penilaian.objects.filter(
-                id_detail_penilaian__id_role_dosen__nim=item.mahasiswa).order_by().values_list("id_detail_penilaian__nama_tahap",flat=True).distinct())
-                # print(list(jumlah_penilaian))
-                if len(jumlah_penilaian)==3 and status_dosen==True :
+                pass
+                # detailpenilaian_data=list(detailpenilaian.objects.filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).values_list("id_role_dosen",flat=True))
+                # hasil= len(detailpenilaian_data)
+                # if hasil==4:
+                #     status_dosen=True
+            # print(item.dosen_pembimbing_2)       
+            # print(status_dosen)
+                   
+            if item.tahap_seminar=="Seminar Proposal":
+                if  status_dosen==True  :
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True))
+                else:
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True)|roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_2.id_role_dosen).values_list("id_role_dosen",flat=True))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap=item.tahap_seminar).filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).filter(id_role_dosen__in=cek_roledosen)
+                # print(cek_penilaian)
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap="Bimbingan").filter(id_role_dosen__nim=item.mahasiswa).filter(id_role_dosen__in=cek_roledosen)
+                # tahap_list=tahap_list+cek_penilaian
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                # print("",item.mahasiswa,cek_penilaian.values_list("id_role_dosen__role"))
+                # print(tahap_list)
+                if len(tahap_list)>=2  and status_dosen==True :
                     jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
-                elif len(jumlah_penilaian)==3 and status_dosen==False :
-                    jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian: Belum Ada Penilaian 2 Dosen Pembimbing"
-                elif len(jumlah_penilaian)!=3:
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>=2 and status_dosen==False :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==False :
                     jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
-                
-                jadwal_data[jumlah].tahap_penilaian = jumlah_penilaian
-            else:
-                jadwal_data[jumlah].tahap_penilaian = None
-                jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
-            
-        except:
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==True:
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                else :
+                    jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
+                    jadwal_data[jumlah].tahap_penilaian = None
+            else : 
+                if  status_dosen==True  :
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True))
+                else:
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True)|roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_2.id_role_dosen).values_list("id_role_dosen",flat=True))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap=item.tahap_seminar).filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).filter(id_role_dosen__in=cek_roledosen)
+                # print(cek_penilaian)
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap="Bimbingan").filter(id_role_dosen__nim=item.mahasiswa).filter(id_role_dosen__in=cek_roledosen)
+                # tahap_list=tahap_list+cek_penilaian
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                # print("",item.mahasiswa,cek_penilaian.values_list("id_role_dosen__role"))
+                # print(tahap_list)
+                if len(tahap_list)>=2  and status_dosen==True :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>=2 and status_dosen==False :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==False :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==True:
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                else :
+                    jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
+                    jadwal_data[jumlah].tahap_penilaian = None
+        except : 
             jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
             jadwal_data[jumlah].tahap_penilaian = None
         
+
         jumlah += 1
-            
     for item in jadwal_data: 
         # print(item.status, item.status == "ACC")
         if item.status_nilai == "Belum Di Nilai" or item.status_nilai == "Sudah Ada Seluruh Penilaian" :
@@ -12453,40 +13288,81 @@ def jadwal_dosen_bimbingan_sebagian_dinilai(request):
     for item in jadwal_data:
         try:
             # cek_pembimbing
-            
+            tahap_list=[]
             status_dosen=False
             if item.dosen_pembimbing_2==None:
                 status_dosen=True
             else:
-                detailpenilaian_data=list(detailpenilaian.objects.filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).values_list("id_role_dosen",flat=True))
-                hasil= len(detailpenilaian_data)
-                if hasil==4:
-                    status_dosen=True
-                    
-            if penilaian.objects.filter(
-                id_detail_penilaian__id_role_dosen__nim=item.mahasiswa).exists():
-                
-                jumlah_penilaian=list(penilaian.objects.filter(
-                id_detail_penilaian__id_role_dosen__nim=item.mahasiswa).order_by().values_list("id_detail_penilaian__nama_tahap",flat=True).distinct())
-                # print(list(jumlah_penilaian))
-                if len(jumlah_penilaian)==3 and status_dosen==True :
+                pass
+                # detailpenilaian_data=list(detailpenilaian.objects.filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).values_list("id_role_dosen",flat=True))
+                # hasil= len(detailpenilaian_data)
+                # if hasil==4:
+                #     status_dosen=True
+            # print(item.dosen_pembimbing_2)       
+            # print(status_dosen)
+                   
+            if item.tahap_seminar=="Seminar Proposal":
+                if  status_dosen==True  :
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True))
+                else:
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True)|roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_2.id_role_dosen).values_list("id_role_dosen",flat=True))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap=item.tahap_seminar).filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).filter(id_role_dosen__in=cek_roledosen)
+                # print(cek_penilaian)
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap="Bimbingan").filter(id_role_dosen__nim=item.mahasiswa).filter(id_role_dosen__in=cek_roledosen)
+                # tahap_list=tahap_list+cek_penilaian
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                # print("",item.mahasiswa,cek_penilaian.values_list("id_role_dosen__role"))
+                # print(tahap_list)
+                if len(tahap_list)>=2  and status_dosen==True :
                     jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
-                elif len(jumlah_penilaian)==3 and status_dosen==False :
-                    jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian: Belum Ada Penilaian 2 Dosen Pembimbing"
-                elif len(jumlah_penilaian)!=3:
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>=2 and status_dosen==False :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==False :
                     jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
-                
-                jadwal_data[jumlah].tahap_penilaian = jumlah_penilaian
-            else:
-                jadwal_data[jumlah].tahap_penilaian = None
-                jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
-            
-        except:
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==True:
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                else :
+                    jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
+                    jadwal_data[jumlah].tahap_penilaian = None
+            else : 
+                if  status_dosen==True  :
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True))
+                else:
+                    cek_roledosen=list(roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_1.id_role_dosen).values_list("id_role_dosen",flat=True)|roledosen.objects.filter(nim=item.mahasiswa).filter(id_role_dosen=item.dosen_pembimbing_2.id_role_dosen).values_list("id_role_dosen",flat=True))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap=item.tahap_seminar).filter(id_role_dosen__nim=item.mahasiswa).filter(id_jadwal_seminar=item.id_jadwal_seminar).filter(id_role_dosen__in=cek_roledosen)
+                # print(cek_penilaian)
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                cek_penilaian=  detailpenilaian.objects.filter(nama_tahap="Bimbingan").filter(id_role_dosen__nim=item.mahasiswa).filter(id_role_dosen__in=cek_roledosen)
+                # tahap_list=tahap_list+cek_penilaian
+                tahap_list=tahap_list+list(cek_penilaian.values_list("nama_tahap","id_role_dosen__role"))
+                # print("",item.mahasiswa,cek_penilaian.values_list("id_role_dosen__role"))
+                # print(tahap_list)
+                if len(tahap_list)>=2  and status_dosen==True :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>=2 and status_dosen==False :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Seluruh Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==False :
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                elif len(tahap_list)>0 and len(tahap_list)<2 and status_dosen==True:
+                    jadwal_data[jumlah].status_nilai = "Sudah Ada Sebagian Penilaian"
+                    jadwal_data[jumlah].tahap_penilaian = tahap_list
+                else :
+                    jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
+                    jadwal_data[jumlah].tahap_penilaian = None
+        except : 
             jadwal_data[jumlah].status_nilai = "Belum Di Nilai"
             jadwal_data[jumlah].tahap_penilaian = None
         
+
         jumlah += 1
-            
             
     return render(request, 'dosen/jadwal_penilaian.html', {"jadwals": jadwal_data, "user_info": user_info,"role":role})
 
@@ -12499,12 +13375,12 @@ def jadwal_dosen_sempro_tanpa_filter(request):
     if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(role="Penguji Seminar Proposal 1")|roledosen.objects.filter(nip=user_info[0]).filter(role="Penguji Seminar Proposal 2")
         for item in ambil_pembimbing:
-            nim_list.append(item.nim)
+            nim_list.append(item.id_role_dosen)
         jadwal_data=jadwal_seminar.objects.filter(dosen_pembimbing_1__nip=user_info[0])|jadwal_seminar.objects.filter(dosen_pembimbing_2__nip=user_info[0])
     else:
         ambil_pembimbing=roledosen.objects.filter(role="Pembimbing 1")|roledosen.objects.filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
-            nim_list.append(item.nim)
+            nim_list.append(item.id_role_dosen)
             
         jadwal_data=jadwal_seminar.objects.all()
      
@@ -12552,12 +13428,12 @@ def jadwal_dosen_sempro(request):
     if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Proposal 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Proposal 2")
         for item in ambil_pembimbing:
-            nim_list.append(item.nim)
+            nim_list.append(item.id_role_dosen)
         jadwal_data=jadwal_seminar.objects.filter(dosen_pembimbing_1__nip=user_info[0])|jadwal_seminar.objects.filter(dosen_pembimbing_2__nip=user_info[0])
     else:
         ambil_pembimbing=roledosen.objects.filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
-            nim_list.append(item.nim)
+            nim_list.append(item.id_role_dosen)
             
         jadwal_data=jadwal_seminar.objects.all()
      
@@ -12605,12 +13481,12 @@ def jadwal_dosen_sempro_belum_dinilai_tanpa_filter(request):
     if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(role="Penguji Seminar Proposal 1")|roledosen.objects.filter(nip=user_info[0]).filter(role="Penguji Seminar Proposal 2")
         for item in ambil_pembimbing:
-            nim_list.append(item.nim)
+            nim_list.append(item.id_role_dosen)
         jadwal_data=jadwal_seminar.objects.filter(dosen_pembimbing_1__nip=user_info[0])|jadwal_seminar.objects.filter(dosen_pembimbing_2__nip=user_info[0])
     else:
         ambil_pembimbing=roledosen.objects.filter(role="Pembimbing 1")|roledosen.objects.filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
-            nim_list.append(item.nim)
+            nim_list.append(item.id_role_dosen)
             
         jadwal_data=jadwal_seminar.objects.all()
      
@@ -12676,12 +13552,12 @@ def jadwal_dosen_sempro_belum_dinilai(request):
     if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Proposal 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Proposal 2")
         for item in ambil_pembimbing:
-            nim_list.append(item.nim)
+            nim_list.append(item.id_role_dosen)
         jadwal_data=jadwal_seminar.objects.filter(dosen_pembimbing_1__nip=user_info[0])|jadwal_seminar.objects.filter(dosen_pembimbing_2__nip=user_info[0])
     else:
         ambil_pembimbing=roledosen.objects.filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
-            nim_list.append(item.nim)
+            nim_list.append(item.id_role_dosen)
             
         jadwal_data=jadwal_seminar.objects.all()
      
@@ -12747,12 +13623,12 @@ def jadwal_dosen_sempro_sudah_dinilai_tanpa_filter(request):
     if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(role="Penguji Seminar Proposal 1")|roledosen.objects.filter(nip=user_info[0]).filter(role="Penguji Seminar Proposal 2")
         for item in ambil_pembimbing:
-            nim_list.append(item.nim)
+            nim_list.append(item.id_role_dosen)
         jadwal_data=jadwal_seminar.objects.filter(dosen_pembimbing_1__nip=user_info[0])|jadwal_seminar.objects.filter(dosen_pembimbing_2__nip=user_info[0])
     else:
         ambil_pembimbing=roledosen.objects.filter(role="Pembimbing 1")|roledosen.objects.filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
-            nim_list.append(item.nim)
+            nim_list.append(item.id_role_dosen)
             
         jadwal_data=jadwal_seminar.objects.all()
      
@@ -12819,12 +13695,12 @@ def jadwal_dosen_sempro_sudah_dinilai(request):
     if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Proposal 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Proposal 2")
         for item in ambil_pembimbing:
-            nim_list.append(item.nim)
+            nim_list.append(item.id_role_dosen)
         jadwal_data=jadwal_seminar.objects.filter(dosen_pembimbing_1__nip=user_info[0])|jadwal_seminar.objects.filter(dosen_pembimbing_2__nip=user_info[0])
     else:
         ambil_pembimbing=roledosen.objects.filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
-            nim_list.append(item.nim)
+            nim_list.append(item.id_role_dosen)
             
         jadwal_data=jadwal_seminar.objects.all()
      
@@ -12891,12 +13767,12 @@ def jadwal_dosen_semhas_tanpa_filter(request):
     if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(role="Penguji Seminar Hasil 1")|roledosen.objects.filter(nip=user_info[0]).filter(role="Penguji Seminar Hasil 2")
         for item in ambil_pembimbing:
-            nim_list.append(item.nim)
+            nim_list.append(item.id_role_dosen)
         jadwal_data=jadwal_seminar.objects.filter(dosen_pembimbing_1__nip=user_info[0])|jadwal_seminar.objects.filter(dosen_pembimbing_2__nip=user_info[0])
     else:
         ambil_pembimbing=roledosen.objects.filter(role="Penguji Seminar Hasil 1")|roledosen.objects.filter(role="Penguji Seminar Hasil 2")
         for item in ambil_pembimbing:
-            nim_list.append(item.nim)
+            nim_list.append(item.id_role_dosen)
             
         jadwal_data=jadwal_seminar.objects.all()
      
@@ -12942,12 +13818,12 @@ def jadwal_dosen_semhas(request):
     if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Hasil 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Hasil 2")
         for item in ambil_pembimbing:
-            nim_list.append(item.nim)
+            nim_list.append(item.id_role_dosen)
         jadwal_data=jadwal_seminar.objects.filter(dosen_pembimbing_1__nip=user_info[0])|jadwal_seminar.objects.filter(dosen_pembimbing_2__nip=user_info[0])
     else:
         ambil_pembimbing=roledosen.objects.filter(status="Active").filter(role="Penguji Seminar Hasil 1")|roledosen.objects.filter(status="Active").filter(role="Penguji Seminar Hasil 2")
         for item in ambil_pembimbing:
-            nim_list.append(item.nim)
+            nim_list.append(item.id_role_dosen)
             
         jadwal_data=jadwal_seminar.objects.all()
      
@@ -12993,12 +13869,12 @@ def jadwal_dosen_semhas_belum_dinilai_tanpa_filter(request):
     if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(role="Penguji Seminar Hasil 1")|roledosen.objects.filter(nip=user_info[0]).filter(role="Penguji Seminar Hasil 2")
         for item in ambil_pembimbing:
-            nim_list.append(item.nim)
+            nim_list.append(item.id_role_dosen)
         jadwal_data=jadwal_seminar.objects.filter(dosen_pembimbing_1__nip=user_info[0])|jadwal_seminar.objects.filter(dosen_pembimbing_2__nip=user_info[0])
     else:
         ambil_pembimbing=roledosen.objects.filter(role="Penguji Seminar Hasil 1")|roledosen.objects.filter(role="Penguji Seminar Hasil 2")
         for item in ambil_pembimbing:
-            nim_list.append(item.nim)
+            nim_list.append(item.id_role_dosen)
             
         jadwal_data=jadwal_seminar.objects.all()
      
@@ -13063,12 +13939,12 @@ def jadwal_dosen_semhas_belum_dinilai(request):
     if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Hasil 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Hasil 2")
         for item in ambil_pembimbing:
-            nim_list.append(item.nim)
+            nim_list.append(item.id_role_dosen)
         jadwal_data=jadwal_seminar.objects.filter(dosen_pembimbing_1__nip=user_info[0])|jadwal_seminar.objects.filter(dosen_pembimbing_2__nip=user_info[0])
     else:
         ambil_pembimbing=roledosen.objects.filter(status="Active").filter(role="Penguji Seminar Hasil 1")|roledosen.objects.filter(status="Active").filter(role="Penguji Seminar Hasil 2")
         for item in ambil_pembimbing:
-            nim_list.append(item.nim)
+            nim_list.append(item.id_role_dosen)
             
         jadwal_data=jadwal_seminar.objects.all()
      
@@ -13132,12 +14008,12 @@ def jadwal_dosen_semhas_sudah_dinilai_tanpa_filter(request):
     if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(role="Penguji Seminar Hasil 1")|roledosen.objects.filter(nip=user_info[0]).filter(role="Penguji Seminar Hasil 2")
         for item in ambil_pembimbing:
-            nim_list.append(item.nim)
+            nim_list.append(item.id_role_dosen)
         jadwal_data=jadwal_seminar.objects.filter(dosen_pembimbing_1__nip=user_info[0])|jadwal_seminar.objects.filter(dosen_pembimbing_2__nip=user_info[0])
     else:
         ambil_pembimbing=roledosen.objects.filter(role="Penguji Seminar Hasil 1")|roledosen.objects.filter(role="Penguji Seminar Hasil 2")
         for item in ambil_pembimbing:
-            nim_list.append(item.nim)
+            nim_list.append(item.id_role_dosen)
             
         jadwal_data=jadwal_seminar.objects.all()
      
@@ -13202,12 +14078,12 @@ def jadwal_dosen_semhas_sudah_dinilai(request):
     if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Hasil 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Hasil 2")
         for item in ambil_pembimbing:
-            nim_list.append(item.nim)
+            nim_list.append(item.id_role_dosen)
         jadwal_data=jadwal_seminar.objects.filter(dosen_pembimbing_1__nip=user_info[0])|jadwal_seminar.objects.filter(dosen_pembimbing_2__nip=user_info[0])
     else:
         ambil_pembimbing=roledosen.objects.filter(status="Active").filter(role="Penguji Seminar Hasil 1")|roledosen.objects.filter(status="Active").filter(role="Penguji Seminar Hasil 2")
         for item in ambil_pembimbing:
-            nim_list.append(item.nim)
+            nim_list.append(item.id_role_dosen)
             
         jadwal_data=jadwal_seminar.objects.all()
      

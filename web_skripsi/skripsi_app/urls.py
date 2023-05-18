@@ -316,6 +316,8 @@ urlpatterns = [
      path('penilaian_semhas_dosen_2/<int:id_jadwal_seminar>',
          views.penilaian_semhas_dosen_2, name='penilaian_semhas_dosen_2'),
      
+     path('penilaian_list_mahasiswa/<int:nim>',
+         views.jadwal_dosen_bimbingan_filter_nim, name='jadwal_dosen_bimbingan_filter_nim'),
      path('penilaian_list/',
          views.penilaian_list, name='penilaian_list'),
      path('penilaian_list_dosen/',
@@ -411,6 +413,8 @@ urlpatterns = [
      
 
      
+     path('tabulasi_penilaian/',
+         views.tabulasi_penilaian, name='tabulasi_penilaian'),
      path('jadwal_bimbingan/',
          views.jadwal_dosen_bimbingan_tanpa_filter, name='jadwal_dosen_bimbingan_tanpa_filter'),
      path('jadwal_bimbingan/all',

@@ -1,0 +1,91 @@
+{%extends 'navbar_superuser.html' %}
+{% block title %}Tabel Rekapitulasi Kelulusan Penilaian Mahasiswa{% endblock %}
+
+{% load static %}
+{% load crispy_forms_tags%}
+
+{% block content %}
+
+<div class="container">
+  <h2>Tabel Rekapitulasi Kelulusan Penilaian Mahasiswa</h2>
+  <br>
+  <table id="table-paginate" class="table table-striped table-bordered table-paginate" cellspacing="0" width="100%">
+    <thead>
+      <tr>
+        <th>NIM</th>
+        <th>User</th>
+        <th>Nama</th>
+        <th>Angkatan</th>
+        <th>Status Nilai Bimbingan</th>
+        <th>Penilaian Bimbingan Lengkap</th>
+        <th>Status Nilai Sempro</th>
+        <th>Penilaian Sempro Lengkap</th>
+        <th>Status Nilai Semhas</th>
+        <th>Penilaian Semhas Lengkap</th>
+  
+
+        <th>Semester Daftar Skripsi</th>
+        
+        <th>Operation</th>
+      </tr>
+    </thead>
+    <tbody>
+      {%for item in mahasiswa_data%}
+      <tr>
+
+        <td>{{item.nim}}</td>
+        <td>{{item.id_user}}</td>
+        <td>{{item.id_user.first_name}}</td>
+        <td>{{item.angkatan}}</td>
+        <td>{{item.semester_daftar_skripsi}}</td>
+        <td>{{item.status_bimbingan}}
+          
+        </td>
+        <td>
+          {%if item.tahap_bimbingan != None %}Penilaian Lengkap :<br/> {%for item2 in item.tahap_bimbingan%}{{forloop.counter}}. {{item2}}{%endfor%}{%endif%}
+        </td>
+        <td>{{item.status_sempro}}
+          
+        </td>
+        <td>
+          {%if item.tahap_sempro != None %}Penilaian Lengkap :<br/> {%for item2 in item.tahap_sempro%}{{forloop.counter}}. {{item2}}{%endfor%}{%endif%}
+        </td>
+        <td>{{item.status_semhas}}
+          
+        </td>
+        <td>
+          {%if item.tahap_semhas != None %}Penilaian Lengkap :<br/> {%for item2 in item.tahap_semhas%}{{forloop.counter}}. {{item2}}{%endfor%}{%endif%}
+        </td>
+
+        <td>
+          <div class="d-flex flex-column m-2">
+          <a class="btn btn-success m-1" type="button" href="{% url 'penilaian_bimbingan_nim' item.nim %}">Nilai Bimbingan</a>
+          <a class="btn btn-success m-1" type="button" href="{% url 'penilaian_sempro_nim' item.nim %}">Nilai Sempro</a>
+          <a class="btn btn-success m-1" type="button" href="{% url 'penilaian_semhas_nim' item.nim %}">Nilai Semhas</a>
+          <a class="btn btn-warning m-1" type="button" href="{% url 'jadwal_dosen_bimbingan_filter_nim' item.nim %}">List Seminar Mahasiswa</a>
+          </div>
+        </td>
+
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr>
+        <th>NIM</th>
+        <th>User</th>
+        <th>Nama</th>
+        <th>Angkatan</th>
+
+        <th>Semester Daftar Skripsi</th>
+        <th>Photo</th>
+        
+        <th>Operation</th>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+
+
+
+{% endblock %}

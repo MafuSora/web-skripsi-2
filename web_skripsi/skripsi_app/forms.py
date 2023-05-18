@@ -336,7 +336,9 @@ class RoleDosenFormUpdateSekdept(forms.ModelForm):
 class DetailPenilaianForm(forms.ModelForm):
     class Meta:
         model = detailpenilaian
-        fields = ["id_role_dosen", "id_jadwal_seminar","status_kelulusan","hasil_review"]
+        fields = ["id_role_dosen"
+                #   , "id_jadwal_seminar"
+                  ,"status_kelulusan","hasil_review"]
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['id_role_dosen'].label = 'Pasangan Dosen & Mahasiswa'
@@ -346,7 +348,9 @@ class DetailPenilaianForm(forms.ModelForm):
 class DetailPenilaianFormDosen(forms.ModelForm):
     class Meta:
         model = detailpenilaian
-        fields = [ "id_jadwal_seminar","status_kelulusan","hasil_review"]
+        fields = [ 
+                #   "id_jadwal_seminar",
+                  "status_kelulusan","hasil_review"]
         
 class DetailPenilaianFormBimbingan(forms.ModelForm):
     class Meta:
@@ -364,7 +368,9 @@ class DetailPenilaianIDDosen(forms.ModelForm):
 class DetailPenilaianDosenForm(forms.ModelForm):
     class Meta:
         model = detailpenilaian
-        fields = ["id_jadwal_seminar","status_kelulusan","hasil_review"]
+        fields = [
+            # "id_jadwal_seminar",
+            "status_kelulusan","hasil_review"]
 
 class BimbinganForm(forms.ModelForm):
     class Meta:
@@ -509,6 +515,7 @@ class JadwalForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         mahasiswa = cleaned_data.get("mahasiswa")
+        tahap_seminar = cleaned_data.get("tahap_seminar")
         dosen_pembimbing_1 = cleaned_data.get("dosen_pembimbing_1")
         dosen_pembimbing_2 = cleaned_data.get("dosen_pembimbing_2")
         dosen_penguji_1 = cleaned_data.get("dosen_penguji_1")
@@ -535,12 +542,24 @@ class JadwalForm(forms.ModelForm):
             dosen_penguji_1.nip.nip == dosen_penguji_2.nip.nip):
             raise ValidationError("Dosen tidak boleh duplikat.")
         
-        # if (mahasiswa and mahasiswa.nim) and \
-        #     not((dosen_pembimbing_1 and dosen_pembimbing_1.nim) and mahasiswa.nim == dosen_pembimbing_1.nim.nim) and \
-        #     not((dosen_pembimbing_2 and dosen_pembimbing_2.nim) and mahasiswa.nim == dosen_pembimbing_2.nim.nim) and \
-        #     not((dosen_penguji_1 and dosen_penguji_1.nim) and mahasiswa.nim == dosen_penguji_1.nim.nim) and \
-        #     not((dosen_penguji_2 and dosen_penguji_2.nim) and mahasiswa.nim == dosen_penguji_2.nim.nim):
-        #     raise ValidationError("NIM mahasiswa berbeda dengan NIM dosen.")
+        if (mahasiswa and mahasiswa.nim) and \
+            not((dosen_pembimbing_1 and dosen_pembimbing_1.nim) and mahasiswa.nim == dosen_pembimbing_1.nim.nim) and \
+            not((dosen_pembimbing_2 and dosen_pembimbing_2.nim) and mahasiswa.nim == dosen_pembimbing_2.nim.nim) and \
+            not((dosen_penguji_1 and dosen_penguji_1.nim) and mahasiswa.nim == dosen_penguji_1.nim.nim) and \
+            not((dosen_penguji_2 and dosen_penguji_2.nim) and mahasiswa.nim == dosen_penguji_2.nim.nim):
+            raise ValidationError("NIM mahasiswa berbeda dengan NIM dosen.")
+        
+        if tahap_seminar=="Seminar Proposal":
+            if dosen_penguji_1.role != "Penguji Seminar Proposal 1":
+                raise ValidationError("Role Dosen Penguji 1 Tidak Sesuai.")
+            if dosen_penguji_2.role != "Penguji Seminar Proposal 2":
+                raise ValidationError("Role Dosen Penguji 2 Tidak Sesuai.")
+            
+        if tahap_seminar=="Seminar Hasil":
+            if dosen_penguji_1.role != "Penguji Seminar Hasil 1":
+                raise ValidationError("Role Dosen Penguji 1 Tidak Sesuai.")
+            if dosen_penguji_2.role != "Penguji Seminar Hasil 2":
+                raise ValidationError("Role Dosen Penguji 2 Tidak Sesuai.")
         
         
         return cleaned_data

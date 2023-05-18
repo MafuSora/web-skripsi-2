@@ -284,9 +284,12 @@
               </div>
               <div class="card-footer text-muted text-center align-items-center mt-3">
                 <div class="col">
-                    <a href="{% url 'proposal_get_dosen_belum_dinilai' %}" class="text-danger">
+                    <a href="{% url 'jadwal_dosen_bimbingan_belum_dinilai' %}" class="text-danger">
                         Menuju Penilaian <i class="fas fa-arrow-right ml-1"></i>
                       </a>
+                    {% comment %} <a href="{% url 'proposal_get_dosen_belum_dinilai' %}" class="text-danger">
+                        Menuju Penilaian <i class="fas fa-arrow-right ml-1"></i>
+                      </a> {% endcomment %}
                 </div>
             </div>
           </div>
@@ -309,9 +312,12 @@
             </div>
             <div class="card-footer text-muted text-center align-items-center mt-3">
                 <div class="col">
-                    <a href="{% url 'proposal_get_dosen_sudah_dinilai_sebagian' %}" class="text-danger">
+                    <a href="{% url 'jadwal_dosen_bimbingan_sebagian_dinilai' %}" class="text-danger">
                         Menuju Penilaian <i class="fas fa-arrow-right ml-1"></i>
                       </a>
+                    {% comment %} <a href="{% url 'proposal_get_dosen_sudah_dinilai_sebagian' %}" class="text-danger">
+                        Menuju Penilaian <i class="fas fa-arrow-right ml-1"></i>
+                      </a> {% endcomment %}
                 </div>
             </div>
         </div>
@@ -335,7 +341,10 @@
               </div>
               <div class="card-footer text-muted text-center align-items-center mt-3">
                 <div class="col">
-                    <a href="{% url 'proposal_get_sempro_sudah_nilai' %}" class="text-success">
+                    {% comment %} <a href="{% url 'proposal_get_sempro_sudah_nilai' %}" class="text-success">
+                        Menuju Penilaian <i class="fas fa-arrow-right ml-1"></i>
+                      </a> {% endcomment %}
+                    <a href="{% url 'jadwal_dosen_sempro_belum_dinilai' %}" class="text-success">
                         Menuju Penilaian <i class="fas fa-arrow-right ml-1"></i>
                       </a>
                 </div>
@@ -361,9 +370,12 @@
               </div>
               <div class="card-footer text-muted text-center align-items-center mt-3">
                 <div class="col">
-                    <a href="{% url 'proposal_get_semhas_sudah_dinilai' %}" class="text-success">
+                    <a href="{% url 'jadwal_dosen_semhas_belum_dinilai' %}" class="text-success">
                         Menuju Penilaian <i class="fas fa-arrow-right ml-1"></i>
                       </a>
+                    {% comment %} <a href="{% url 'proposal_get_semhas_sudah_dinilai' %}" class="text-success">
+                        Menuju Penilaian <i class="fas fa-arrow-right ml-1"></i>
+                      </a> {% endcomment %}
                 </div>
             </div>
           </div>
