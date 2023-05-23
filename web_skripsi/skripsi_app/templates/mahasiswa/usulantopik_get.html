@@ -153,9 +153,13 @@
             <a href="{%url 'evaluasitopik_create_sekdept' item.id_usulan_topik%}">
               <button type="button" class="btn btn-primary btn-md w-100 px-1 py-1 my-1" name="nim" value="{{item.nim}}" href="">ASSIGN KOMPARTEMEN</button>
             </a>
+            {% if item.status == "ACC" %}
             <a href="{%url 'dosenpembimbing_create_sekdept' item.nim.nim%}">
               <button type="button" class="btn btn-primary btn-md w-100 px-1 py-1 my-1" name="nim" value="{{item.nim}}" href="">ASSIGN DOSEN</button>
             </a>
+            
+            {% else %}
+            {% endif %}
             {%endif%}
       </form>
     </td>

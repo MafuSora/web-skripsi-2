@@ -22,8 +22,16 @@
   href="/proposalget_sempro/jadwal">Filter Jadwal Belum Dibuat</a>
 </div> 
   {%endif%}
+  {% if user_info.2.name == "Admin" %}
+  
   <div class="container-fluid text-end"><a class="btn btn-success text-white my-3"
-  href="/jadwalcreate">Buat Jadwal</a></div> 
+  href="/jadwalcreate">Buat Jadwal</a></div>
+  {% elif user_info.2.name == "Properta" %}
+  <div class="container-fluid text-end"><a class="btn btn-success text-white my-3"
+  href="/jadwalcreate">Buat Jadwal</a></div>
+
+  {% else  %}
+  {% endif %}
   <table id="table-paginate" class="table table-striped table-bordered table-paginate" cellspacing="0" width="100%">
     <thead>
       <tr>

@@ -16,14 +16,14 @@
         {{form_nilai|crispy}}
         {% comment %} {{ form_nilai.nilai.errors|crispy }} {% endcomment %}
         <p>Preview</p>
-        {% if  proposal_data.0.file_proposal.url == None%}
+        {% if  proposal_data.file_proposal.url == None%}
         <h3>Tidak Terdapat File Yang Bisa di Tampilkan</h3>
 
         {% else %}
         <div class="container-fluid mb-2" >
           <div id="example1" style="height:700px;">
               <script>
-                  PDFObject.embed("{{proposal_data.0.file_proposal.url}}", "#example1");
+                  PDFObject.embed("{{proposal_data.file_proposal.url}}", "#example1");
                   if(PDFObject.supportsPDFs){
                       console.log("Yay, this browser supports inline PDFs.");
                   } else {

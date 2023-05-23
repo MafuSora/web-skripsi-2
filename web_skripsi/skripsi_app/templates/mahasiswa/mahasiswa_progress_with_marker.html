@@ -31,7 +31,12 @@
         {%elif item.Tanggal_Update_Terakhir.days > 90 %}
         <td class="text-black bg-warning">{{item.Tanggal_Update_Terakhir.days}}</td>
         {%else%}
+        {% if  item.Tanggal_Update_Terakhir.days < 0 %}
+        
+        <td>0</td>
+        {% else %}
         <td>{{item.Tanggal_Update_Terakhir.days}}</td>
+        {% endif %}
         {%endif%}
       </tr>
       {% endfor %}
@@ -48,7 +53,12 @@
         {%elif item3.Tanggal_Update_Terakhir.days > 90 %}
         <td class="text-black bg-warning">{{item3.Tanggal_Update_Terakhir.days}}</td>
         {%else%}
+        {% if  item3.Tanggal_Update_Terakhir.days < 0 %}
+        
+        <td>0</td>
+        {% else %}
         <td>{{item3.Tanggal_Update_Terakhir.days}}</td>
+        {% endif %}
         {%endif%}
 
       </tr>
@@ -65,7 +75,12 @@
         {%elif item2.Tanggal_Update_Terakhir.days > 90 %}
         <td class="text-black bg-warning">{{item2.Tanggal_Update_Terakhir.days}}</td>
         {%else%}
+        {% if  item2.Tanggal_Update_Terakhir.days < 0 %}
+        
+        <td>0</td>
+        {% else %}
         <td>{{item2.Tanggal_Update_Terakhir.days}}</td>
+        {% endif %}
         {%endif%}
         
       </tr>
@@ -76,13 +91,18 @@
         <td>{{item2.nim.nim}}</td>
         <td>{{item2.nim.id_user.first_name}}</td>
         <td>Usulan Topik</td>
-        <td>Belum Membuat</td>
+        <td>Sudah Upload Topik</td>
         {%if item2.Tanggal_Update_Terakhir.days >= 180 %}
         <td class="text-light bg-danger">{{item2.Tanggal_Update_Terakhir.days}}</td>
         {%elif item2.Tanggal_Update_Terakhir.days > 90 %}
         <td class="text-black bg-warning">{{item2.Tanggal_Update_Terakhir.days}}</td>
         {%else%}
+        {% if  item2.Tanggal_Update_Terakhir.days < 0 %}
+        
+        <td>0</td>
+        {% else %}
         <td>{{item2.Tanggal_Update_Terakhir.days}}</td>
+        {% endif %}
         {%endif%}
         
       </tr>
@@ -99,7 +119,12 @@
         {%elif item2.Tanggal_Update_Terakhir.days > 90 %}
         <td class="text-black bg-warning">{{item2.Tanggal_Update_Terakhir.days}}</td>
         {%else%}
+        {% if  item2.Tanggal_Update_Terakhir.days < 0 %}
+        
+        <td>0</td>
+        {% else %}
         <td>{{item2.Tanggal_Update_Terakhir.days}}</td>
+        {% endif %}
         {%endif%}
         
       </tr>

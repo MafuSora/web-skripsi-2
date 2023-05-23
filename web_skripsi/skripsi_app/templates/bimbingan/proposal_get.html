@@ -81,14 +81,14 @@
     Berkas Skripsi Belum Diperiksa</a>
   </div>
 
-  <div class="container-fluid text-start">
+  {% comment %} <div class="container-fluid text-start">
     <a class="btn btn-success text-white mb-2"
     href="/proposalget_nilai">Filter
     Berkas Skripsi Sudah di Nilai</a>
     <a class="btn btn-success text-white mb-2"
     href="/proposalget_belum_nilai">Filter
     Berkas Skripsi Belum di Nilai</a>
-  </div>
+  </div> {% endcomment %}
   {%endif%}
 
 
@@ -125,7 +125,7 @@
         <th>File</th>
         <th>Keterangan</th>
         {%if user_info.2.name != "Mahasiswa" %}
-        <th>Status Penilaian</th>
+        {% comment %} <th>Status Penilaian</th> {% endcomment %}
         <th>Jumlah Bimbingan Untuk Seminar Proposal</th>
         <th>Jumlah Bimbingan Untuk Seminar Hasil</th>
         {% endif %}
@@ -148,8 +148,8 @@
         <!-- <td><embed src="{{item.File_Topik.url}}" width="500" height="375" type="application/pdf"></td> -->
         <td>{{item.keterangan}}</td>
         {%if user_info.2.name != "Mahasiswa" %}
-        <td>{{item.status_nilai}}
-          {%if item.tahap_penilaian != None %}:<br/> {%for item2 in item.tahap_penilaian%}{{forloop.counter}}. {{item2}}{%endfor%}{%endif%}</td>
+        {% comment %} <td>{{item.status_nilai}}
+          {%if item.tahap_penilaian != None %}:<br/> {%for item2 in item.tahap_penilaian%}{{forloop.counter}}. {{item2}}{%endfor%}{%endif%}</td> {% endcomment %}
         <td>{{item.jumlah_sempro}}</td>
         <td>{{item.jumlah_semhas}}</td>
         {% endif %}
@@ -160,7 +160,7 @@
           <div class="d-flex align-items-start ">
             {% comment %} <div class="row"> {% endcomment %}
               <div class="d-flex flex-column m-2">
-                <a class="btn btn-info w-100 text-black m-1 " type="button" href="{{item.file_topik.url}}">Download</a>
+                <a class="btn btn-info w-100 text-black m-1 " type="button" href="{{item.file_proposal.url}}">Download</a>
                 <a class="btn btn-success w-100 text-white m-1" type="button" href="{% url 'proposal_read' item.id_proposal %}">READ</a>  
                 
                 {%if user_info.2.name == "Manajemen Departemen" or user_info.2.name == "Kompartemen" or user_info.2.name == "Dosen" %}
@@ -214,6 +214,16 @@
                     <a class="btn btn-secondary w-100 text-white m-1" type="button" href="{% url 'bimbingan_create_dosen' item.id_proposal %}">Buat Review</a>
                   {%endif%}
                 {%endif%}
+                {%if user_info.2.name == "Manajemen Departemen" or user_info.2.name == "Admin" or user_info.2.name == "Properta"%}
+                {% if item.status == "ACC" %}
+                <a href="{%url 'dosenpembimbing_create_sekdept' item.nim.nim%}">
+                  <button type="button" class="btn btn-primary btn-md w-100 px-1 py-1 my-1" name="nim" value="{{item.nim}}" href="">ASSIGN DOSEN</button>
+                </a>
+                
+                {% else %}
+                {% endif %}
+                {%endif%}
+
               </div>
               <div class="d-flex flex-column m-2">
                 {%if user_info.2.name == "Mahasiswa" %}
@@ -279,6 +289,7 @@
     
                   {%endif%}
                 {%endif%}
+                
               </div>
             {% comment %} </div> {% endcomment %}
           </div>
@@ -298,7 +309,7 @@
         <th>File</th>
         <th>Keterangan</th>
         {%if user_info.2.name != "Mahasiswa" %}
-        <th>Status Penilaian</th>
+        {% comment %} <th>Status Penilaian</th> {% endcomment %}
         <th>Jumlah Bimbingan Untuk Seminar Proposal</th>
         <th>Jumlah Bimbingan Untuk Seminar Hasil</th>
         {% endif %}

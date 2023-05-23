@@ -1,5 +1,5 @@
 {%extends 'navbar_superuser.html' %}
-{% block title %}Tabel Jadwal Seminar Mahasiswa{% endblock %}
+{% block title %}Tabel Penilaian & Majelis Mahasiswa{% endblock %}
 
 {% load static %}
 {% load crispy_forms_tags%}
@@ -79,13 +79,13 @@
         <th>ID Jadwal</th>
         <th>NIM</th>
         <th>Mahasiswa</th>
-        <th>NIP Dosen Pembimbing 1</th>
+        <th>NIP Pembimbing 1</th>
         <th>Dosen Pembimbing 1</th>
-        <th>NIP Dosen Pembimbing 2</th>
+        <th>NIP Pembimbing 2</th>
         <th>Dosen Pembimbing 2</th>
-        <th>NIP Dosen Penguji 1</th>
+        <th>NIP Penguji 1</th>
         <th>Dosen Penguji 1</th>
-        <th>NIP Dosen Penguji 2</th>
+        <th>NIP Penguji 2</th>
         <th>Dosen Penguji 2</th>
         <th>Tahap Seminar</th>
         <th>Ruang Seminar</th>
@@ -103,35 +103,33 @@
 
         <td>{{item.id_jadwal_seminar}}</td>
         <td>{{item.mahasiswa.nim}}</td>
-        <td>{{item.mahasiswa }}</td>
-        <td>{{item.dosen_pembimbing_1.nip }}</td>
-        <td>{{item.dosen_pembimbing_1 }}</td>
-        <td>{{item.dosen_pembimbing_2.nip }}</td>
-        <td>{{item.dosen_pembimbing_2 }}</td>
-        <td>{{item.dosen_penguji_1.nip }}</td>
-        <td>{{item.dosen_penguji_1 }}</td>
-        <td>{{item.dosen_penguji_2.nip }}</td>
-        <td>{{item.dosen_penguji_2 }}</td>
+        <td>{{item.mahasiswa.id_user.first_name}}</td>
+        <td>{{item.dosen_pembimbing_1.nip.nip}}</td>
+        <td>{{item.dosen_pembimbing_1.nip.id_user.first_name}}</td>
+        <td>{{item.dosen_pembimbing_2.nip.nip}}</td>
+        <td>{{item.dosen_pembimbing_2.nip.id_user.first_name}}</td>
+        <td>{{item.dosen_penguji_1.nip.nip}}</td>
+        <td>{{item.dosen_penguji_1.nip.id_user.first_name}}</td>
+        <td>{{item.dosen_penguji_2.nip.nip}}</td>
+        <td>{{item.dosen_penguji_2.nip.id_user.first_name}}</td>
        
         <td>{{item.tahap_seminar}}</td>
         <td>{{item.ruang_seminar}}</td>
         <td>{{item.tanggal_seminar| date:"l, d F Y"}}</td>
         <td>{{item.waktu_seminar| date:"H:i"}}</td>
         <td>{{item.status_nilai}}
-          {%if item.tahap_penilaian != None %}:<br/> {%for item2 in item.tahap_penilaian%}{{forloop.counter}}. {{item2}}{%endfor%}{%endif%}</td>
+          {%if item.tahap_penilaian != None %}:<br/> {%for item2 in item.tahap_penilaian%}{{forloop.counter}}. {{item2}}<br/>{%endfor%}
+          {%endif%}
+          {% if item.status_nilai1 != None %}
+          status nilai lainnya :<br/>{{item.status_nilai1}}
+          {% else %}
+          {% endif %}
+        </td>
         <td>
           <div class="d-flex align-items-start ">
           <div class="d-flex flex-column m-2">
-          <form method="post">
-            {% csrf_token %}
             
-            
-            
-
-
-            
-            
-            {%if user_info.2.name == "Dosen" or user_info.2.name == "Kompartemen" or user_info.2.name == "Manajemen Departemen" or user_info.2.name == "Admin" or user_info.2.name == "Properta" %}
+            {%if  user_info.2.name == "Manajemen Departemen" or user_info.2.name == "Admin" or user_info.2.name == "Properta" %}
        
             
             <a class="btn w-100 text-black px-1 my-1" style='background-color:#FFB92E;' type="button"
@@ -164,34 +162,34 @@
               </div>
             </div>
             {%endif%}
-            
-
-
-      </form>
-    </div>
+          </div>
     
       {%if role == "Dosen Pembimbing" or  user_info.2.name == "Admin"  or user_info.2.name == "Properta"  %}
         {%if user_info.0 == item.dosen_pembimbing_1.nip.nip or  user_info.2.name == "Admin"  or user_info.2.name == "Properta"%}
         <div class="d-flex flex-column m-2">
-        <a class="btn btn-danger w-100 text-white my-1" type="button"
+        
+          <a class="btn btn-primary w-100 text-white my-1" type="button"
       href="{% url 'penilaian_bimbingan_dosen_1' item.id_jadwal_seminar %}">Penilaian Bimbingan Dospem 1</a>
-        <a class="btn btn-danger w-100 text-white my-1" type="button"
+        {% if item.tahap_seminar == "Seminar Proposal"%}
+      <a class="btn btn-primary w-100 text-white my-1" type="button"
       href="{% url 'penilaian_sempro_dosen_pembimbing_1' item.id_jadwal_seminar %}">Penilaian Sempro Dospem 1</a>
-        <a class="btn btn-danger w-100 text-white my-1" type="button"
+        {% else %}
+      <a class="btn btn-primary w-100 text-white my-1" type="button"
       href="{% url 'penilaian_semhas_dosen_pembimbing_1' item.id_jadwal_seminar %}">Penilaian Semhas Dospem 1</a>
+      {% endif %}
     </div>
         {%endif%}
         {%if user_info.0 == item.dosen_pembimbing_2.nip.nip or  user_info.2.name == "Admin"  or user_info.2.name == "Properta"%}
-        {%if  item.dosen_pembimbing_2 != None%}
+        {%if  item.dosen_pembimbing_2 != None %}
         <div class="d-flex flex-column m-2">
-        <a class="btn btn-danger w-100 text-white my-1" type="button"
+        <a class="btn btn-primary w-100 text-white my-1" type="button"
       href="{% url 'penilaian_bimbingan_dosen_2' item.id_jadwal_seminar %}">Penilaian Bimbingan Dospem 2</a>
-      {% if item.nama_tahap == "Seminar Proposal" %}
+      {% if item.tahap_seminar == "Seminar Proposal" %}
       
-      <a class="btn btn-danger w-100 text-white my-1" type="button"
+      <a class="btn btn-primary w-100 text-white my-1" type="button"
     href="{% url 'penilaian_sempro_dosen_pembimbing_2' item.id_jadwal_seminar %}">Penilaian Sempro Dospem 2</a>
     {% else %}
-    <a class="btn btn-danger w-100 text-white my-1" type="button"
+    <a class="btn btn-primary w-100 text-white my-1" type="button"
   href="{% url 'penilaian_semhas_dosen_pembimbing_2' item.id_jadwal_seminar %}">Penilaian Semhas Dospem 2</a>
       {% endif %}
     </div>
@@ -202,13 +200,13 @@
       {%if role == "Dosen Seminar Proposal" %}
       {%if user_info.0 == item.dosen_penguji_1.nip.nip or  user_info.2.name == "Admin"  or user_info.2.name == "Properta"%}
       <div class="d-flex flex-column m-2">
-      <a class="btn btn-danger w-100 text-white my-1" type="button"
+      <a class="btn btn-primary w-100 text-white my-1" type="button"
     href="{% url 'penilaian_sempro_dosen_1' item.id_jadwal_seminar %}">Penilaian Sempro Dosen Penguji 1</a>
       </div>
       {%endif%}
       {%if user_info.0 == item.dosen_penguji_2.nip.nip or  user_info.2.name == "Admin"  or user_info.2.name == "Properta"%}
       <div class="d-flex flex-column m-2">
-      <a class="btn btn-danger w-100 text-white my-1" type="button"
+      <a class="btn btn-primary w-100 text-white my-1" type="button"
     href="{% url 'penilaian_sempro_dosen_2' item.id_jadwal_seminar %}">Penilaian Sempro Dosen Penguji 2</a>
   </div>
       {%endif%}
@@ -217,59 +215,74 @@
       {%if role == "Dosen Seminar Hasil" %}
       {%if user_info.0 == item.dosen_penguji_1.nip.nip or  user_info.2.name == "Admin"  or user_info.2.name == "Properta" %}
       <div class="d-flex flex-column m-2">
-      <a class="btn btn-danger w-100 text-white my-1" type="button"
+      <a class="btn btn-primary w-100 text-white my-1" type="button"
     href="{% url 'penilaian_semhas_dosen_1' item.id_jadwal_seminar %}">Penilaian Semhas Dosen Penguji 1</a>
       {%endif%}
       {%if user_info.0 == item.dosen_penguji_2.nip.nip%}
 
-      <a class="btn btn-danger w-100 text-white my-1" type="button"
+      <a class="btn btn-primary w-100 text-white my-1" type="button"
     href="{% url 'penilaian_semhas_dosen_2' item.id_jadwal_seminar %}">Penilaian Semhas Dosen Penguji 2</a>
   </div>
       {%endif%}
       {%endif%}
 
-        <div class="d-flex flex-column m-2">
+       
           {%if role == "Dosen Pembimbing" or  user_info.2.name == "Admin"  or user_info.2.name == "Properta"  %}
-            {% comment %} {%if item.status == "ACC"%} {% endcomment %}
-                <a class="btn btn-danger w-100 text-white my-1" type="button"
-              href="{% url 'penilaian_bimbingan_nim' item.mahasiswa.nim %}">Review Nilai Bimbingan</a>
-                <a class="btn btn-danger w-100 text-white my-1" type="button"
-              href="{% url 'penilaian_sempro_jadwal_seminar_filter'  item.id_jadwal_seminar %}">Review Nilai Sempro Pribadi</a>
-                <a class="btn btn-danger w-100 text-white my-1" type="button"
-              href="{% url 'penilaian_semhas_jadwal_seminar_filter'  item.id_jadwal_seminar %}">Review Nilai Semhas Pribadi</a>
-                <a class="btn btn-danger w-100 text-white my-1" type="button"
-              href="{% url 'penilaian_sempro_jadwal_seminar'  item.id_jadwal_seminar %}">Review Nilai Sempro Keseluruhan</a>
-                <a class="btn btn-danger w-100 text-white my-1" type="button"
-              href="{% url 'penilaian_semhas_jadwal_seminar'  item.id_jadwal_seminar %}">Review Nilai Semhas Keseluruhan</a>
+          {% comment %} {%if item.status == "ACC"%} {% endcomment %}
+          <div class="d-flex flex-column m-2">
+            <a class="btn btn-success w-100 text-white my-1" type="button"
+            href="{% url 'penilaian_bimbingan_nim' item.mahasiswa.nim %}">Review Nilai Bimbingan</a>
+          </div>
+          {% if item.tahap_seminar == "Seminar Proposal" %}
+          <div class="d-flex flex-column m-2">
+            <a class="btn btn-success w-100 text-white my-1" type="button"
+            href="{% url 'penilaian_sempro_jadwal_seminar_filter'  item.id_jadwal_seminar %}">Review Nilai Sempro Pribadi</a>
+            <a class="btn btn-success w-100 text-white my-1" type="button"
+            href="{% url 'penilaian_sempro_jadwal_seminar'  item.id_jadwal_seminar %}">Review Nilai Sempro Keseluruhan</a>
+          </div>
+          {% else %}
+          <div class="d-flex flex-column m-2">
+          <a class="btn btn-success w-100 text-white my-1" type="button"
+          href="{% url 'penilaian_semhas_jadwal_seminar_filter'  item.id_jadwal_seminar %}">Review Nilai Semhas Pribadi</a>
+          <a class="btn btn-success w-100 text-white my-1" type="button"
+          href="{% url 'penilaian_semhas_jadwal_seminar'  item.id_jadwal_seminar %}">Review Nilai Semhas Keseluruhan</a>
+        </div>
+        {% endif %}
             {% comment %} {%endif%} {% endcomment %}
           {%elif role == "Dosen Seminar Proposal"  %}
-          <a class="btn btn-danger w-100 text-white my-1" type="button"
-          href="{% url 'penilaian_sempro_jadwal_seminar_filter'  item.id_jadwal_seminar %}">Review Nilai Sempro Pribadi</a>
-          <a class="btn btn-danger w-100 text-white my-1" type="button"
-          href="{% url 'penilaian_sempro_jadwal_seminar'  item.id_jadwal_seminar %}">Review Nilai Sempro Keseluruhan</a>
+          <div class="d-flex flex-column m-2">
+            <a class="btn btn-success w-100 text-white my-1" type="button"
+            href="{% url 'penilaian_sempro_jadwal_seminar_filter'  item.id_jadwal_seminar %}">Review Nilai Sempro Pribadi</a>
+            <a class="btn btn-success w-100 text-white my-1" type="button"
+            href="{% url 'penilaian_sempro_jadwal_seminar'  item.id_jadwal_seminar %}">Review Nilai Sempro Keseluruhan</a>
+          </div>
           {%elif role == "Dosen Seminar Hasil" %}
-          <a class="btn btn-danger w-100 text-white my-1" type="button"
+          <div class="d-flex flex-column m-2">
+          <a class="btn btn-success w-100 text-white my-1" type="button"
           href="{% url 'penilaian_semhas_jadwal_seminar_filter'  item.id_jadwal_seminar %}">Review Nilai Semhas Pribadi</a>
-          <a class="btn btn-danger w-100 text-white my-1" type="button"
+          <a class="btn btn-success w-100 text-white my-1" type="button"
           href="{% url 'penilaian_semhas_jadwal_seminar'  item.id_jadwal_seminar %}">Review Nilai Semhas Keseluruhan</a>
           {% comment %} {%elif role == "Dosen Seminar Hasil" %} {% endcomment %}
-          {%endif%}
         </div>
+          {%endif%}
         <div class="d-flex flex-column m-2">
           {%if role == "Dosen Pembimbing" or  user_info.2.name == "Admin"  or user_info.2.name == "Properta"  %}
             {% comment %} {%if item.status == "ACC"%} {% endcomment %}
             <a class="btn btn-warning w-100 text-dark my-1" type="button"
             href="{% url 'nilai_bimbingan_get_seminar' item.id_jadwal_seminar %}">Lihat Nilai Bimbingan</a>
+            {% if item.tahap_seminar == "Seminar Proposal" %}
             <a class="btn btn-warning w-100 text-dark my-1" type="button"
             href="{% url 'nilai_sempro_get_seminar'  item.id_jadwal_seminar %}">Lihat Nilai Sempro</a>
+            {% else %}
             <a class="btn btn-warning w-100 text-dark my-1" type="button"
             href="{% url 'nilai_semhas_get_seminar'  item.id_jadwal_seminar %}">Lihat Nilai Semhas</a>
-            {% comment %} {%elif role == "Dosen Seminar Proposal"  %}
+            {% endif %}
+            {%elif role == "Dosen Seminar Proposal"  %}
             <a class="btn btn-warning w-100 text-dark my-1" type="button"
-            href="{% url 'nilai_sempro_get'  item.nim.nim %}">Lihat Nilai Sempro</a>
+            href="{% url 'nilai_sempro_get_seminar'  item.id_jadwal_seminar %}">Lihat Nilai Sempro</a>
             {%elif role == "Dosen Seminar Hasil" %}
             <a class="btn btn-warning w-100 text-dark my-1" type="button"
-            href="{% url 'nilai_semhas_get'  item.nim.nim %}">Lihat Nilai Semhas</a> {% endcomment %}
+            href="{% url 'nilai_semhas_get_seminar'  item.id_jadwal_seminar %}">Lihat Nilai Semhas</a>
             {% comment %} {%elif role == "Dosen Seminar Hasil" %} {% endcomment %}
 
             {% comment %} {%endif%} {% endcomment %}
@@ -305,9 +318,13 @@
         <th>ID Jadwal</th>
         <th>NIM</th>
         <th>Mahasiswa</th>
+        <th>NIP Pembimbing 1</th>
         <th>Dosen Pembimbing 1</th>
+        <th>NIP Pembimbing 2</th>
         <th>Dosen Pembimbing 2</th>
+        <th>NIP Penguji 1</th>
         <th>Dosen Penguji 1</th>
+        <th>NIP Penguji 2</th>
         <th>Dosen Penguji 2</th>
         <th>Tahap Seminar</th>
         <th>Ruang Seminar</th>

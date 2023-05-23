@@ -23,7 +23,14 @@
                 Tabel Kompartemen</a> -->
 
         </div>
+        <h4><b>Keterangan :</b></h4>
+        <ul><li>Ketika terdapat pesan error maka tinjau kembali kesamaan pasangan dosen dan mahasiswa pada <a href="{%url 'dosenpembimbing_get' %}">tabel dosen pendamping </a></li>
+          <li>Ketika ingin mengubah role dosen yang sedang aktif sekarang lakukan secara bertahap dengan pengubahan status "Active" menjadi "Finished" terlebih dahulu lalu ubah sesuai role yang dibutuhkan</li>
+          {% comment %} <li>Merah : Tidak Terdapat Progress Selama 6 Bulan</li> {% endcomment %}
+        </ul>
+
     </form>
+   
 </div>
 {%if roledosens != None%}
 <div>

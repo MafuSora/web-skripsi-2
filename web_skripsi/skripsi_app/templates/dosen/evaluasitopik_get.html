@@ -56,14 +56,14 @@
           href="{% url 'evaluasitopik_read' item.id_evaluasi_topik %}">READ</a>
           <form method="post"> 
             {% csrf_token %}
-
+{% comment %} 
             {% with my_list=[] %}
               {% for item2 in evaluasitopiks %}
                   {% my_list.append(item2.status_topik) %}
               {% endfor %}
               {%if "ACC" in my_list%}
               {% endif %}
-            {% endwith %}
+            {% endwith %} {% endcomment %}
 
 
 

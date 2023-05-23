@@ -425,9 +425,19 @@
               </div>
               <div class="card-footer text-muted text-center align-items-center mt-3">
                 <div class="col">
+                    {% if user_info.2.name == 'Admin'  %}
                     <a href="{% url 'usulantopik_get_filter_ACC' %}" class="text-primary">
                         Menuju Tabulasi <i class="fas fa-arrow-right ml-1"></i>
                       </a>
+                      {% elif user_info.2.name == "Properta" %}
+                      <a href="{% url 'usulantopik_get_filter_ACC' %}" class="text-primary">
+                          Menuju Tabulasi <i class="fas fa-arrow-right ml-1"></i>
+                        </a>
+                    {% else %}
+                    <a href="{% url 'usulantopik_get_filter_ACC_kompartemen' %}" class="text-primary">
+                        Menuju Tabulasi <i class="fas fa-arrow-right ml-1"></i>
+                      </a>
+                    {% endif %}
                 </div>
             </div>
           </div>
@@ -503,7 +513,12 @@
                       <div class="col mr-2">
                           <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
                               Update Terakhir Bimbingan</div>
-                          <div class="h5 mb-0 font-weight-bold text-gray-800">{{mahasiswa_last_update.0}} Hari Belum Bimbingan </div>
+                              {% if mahasiswa_last_update.0 > 0 %}
+                              
+                              <div class="h5 mb-0 font-weight-bold text-gray-800">{{mahasiswa_last_update.0}} Hari Belum Bimbingan </div>
+                              {% else %}
+                              <div class="h5 mb-0 font-weight-bold text-gray-800">0 Hari Belum Bimbingan </div>
+                              {% endif %}
                       </div>
                       <div class="col-auto">
                           <i class="fas fa-calendar-times fa-2x text-gray-300"></i>
@@ -740,15 +755,21 @@
                     <thead>
                       <tr>
                         <th>ID Jadwal</th>
+                        <th>NIM</th>
                         <th>Mahasiswa</th>
+                        <th>NIP Pembimbing 1</th>
                         <th>Dosen Pembimbing 1</th>
+                        <th>NIP Pembimbing 2</th>
                         <th>Dosen Pembimbing 2</th>
+                        <th>NIP Penguji 1</th>
                         <th>Dosen Penguji 1</th>
+                        <th>NIP Penguji 2</th>
                         <th>Dosen Penguji 2</th>
                         <th>Tahap Seminar</th>
                         <th>Ruang Seminar</th>
                         <th>Tanggal Seminar</th>
                         <th>Waktu Seminar</th>
+                     
                   
                       </tr>
                     </thead>
@@ -757,12 +778,18 @@
                       {%for item in jadwal_data%}
                       <tr>
                   
-                        <td>{{item.id_jadwal}}</td>
-                        <td>{{item.mahasiswa|cut:"1"|cut:"2"|cut:"3"|cut:"4"|cut:"5"|cut:"6"|cut:"7"|cut:"8"|cut:"9"|cut:"0"|cut:"-"}}</td>
-                        <td>{{item.dosen_pembimbing_1|cut:"1"|cut:"2"|cut:"3"|cut:"4"|cut:"5"|cut:"6"|cut:"7"|cut:"8"|cut:"9"|cut:"0"|cut:"-"}}</td>
-                        <td>{{item.dosen_pembimbing_2|cut:"1"|cut:"2"|cut:"3"|cut:"4"|cut:"5"|cut:"6"|cut:"7"|cut:"8"|cut:"9"|cut:"0"|cut:"-"}}</td>
-                        <td>{{item.dosen_penguji_1|cut:"1"|cut:"2"|cut:"3"|cut:"4"|cut:"5"|cut:"6"|cut:"7"|cut:"8"|cut:"9"|cut:"0"|cut:"-"}}</td>
-                        <td>{{item.dosen_penguji_2|cut:"1"|cut:"2"|cut:"3"|cut:"4"|cut:"5"|cut:"6"|cut:"7"|cut:"8"|cut:"9"|cut:"0"|cut:"-"}}</td>
+                        <td>{{item.id_jadwal_seminar}}</td>
+                        <td>{{item.mahasiswa.nim}}</td>
+                        <td>{{item.mahasiswa.id_user.first_name}}</td>
+                        <td>{{item.dosen_pembimbing_1.nip.nip}}</td>
+                        <td>{{item.dosen_pembimbing_1.nip.id_user.first_name}}</td>
+                        <td>{{item.dosen_pembimbing_2.nip.nip}}</td>
+                        <td>{{item.dosen_pembimbing_2.nip.id_user.first_name}}</td>
+                        <td>{{item.dosen_penguji_1.nip.nip}}</td>
+                        <td>{{item.dosen_penguji_1.nip.id_user.first_name}}</td>
+                        <td>{{item.dosen_penguji_2.nip.nip}}</td>
+                        <td>{{item.dosen_penguji_2.nip.id_user.first_name}}</td>
+                       
                         <td>{{item.tahap_seminar}}</td>
                         <td>{{item.ruang_seminar}}</td>
                         <td>{{item.tanggal_seminar| date:"l, d F Y"}}</td>
@@ -773,10 +800,15 @@
                     <tfoot>
                       <tr>
                         <th>ID Jadwal</th>
+                        <th>NIM</th>
                         <th>Mahasiswa</th>
+                        <th>NIP Pembimbing 1</th>
                         <th>Dosen Pembimbing 1</th>
+                        <th>NIP Pembimbing 2</th>
                         <th>Dosen Pembimbing 2</th>
+                        <th>NIP Penguji 1</th>
                         <th>Dosen Penguji 1</th>
+                        <th>NIP Penguji 2</th>
                         <th>Dosen Penguji 2</th>
                         <th>Tahap Seminar</th>
                         <th>Ruang Seminar</th>

@@ -26,9 +26,13 @@
         <th>ID Jadwal</th>
         <th>NIM</th>
         <th>Mahasiswa</th>
+        <th>NIP Pembimbing 1</th>
         <th>Dosen Pembimbing 1</th>
+        <th>NIP Pembimbing 2</th>
         <th>Dosen Pembimbing 2</th>
+        <th>NIP Penguji 1</th>
         <th>Dosen Penguji 1</th>
+        <th>NIP Penguji 2</th>
         <th>Dosen Penguji 2</th>
         <th>Tahap Seminar</th>
         <th>Ruang Seminar</th>
@@ -43,12 +47,16 @@
       <tr>
 
         <td>{{item.id_jadwal_seminar}}</td>
-        <td>{{item.mahasiswa}}</td>
-        <td>{{item.mahasiswa}}</td>
-        <td>{{item.dosen_pembimbing_1}}</td>
-        <td>{{item.dosen_pembimbing_2}}</td>
-        <td>{{item.dosen_penguji_1}}</td>
-        <td>{{item.dosen_penguji_2}}</td>
+        <td>{{item.mahasiswa.nim}}</td>
+        <td>{{item.mahasiswa.id_user.first_name}}</td>
+        <td>{{item.dosen_pembimbing_1.nip.nip}}</td>
+        <td>{{item.dosen_pembimbing_1.nip.id_user.first_name}}</td>
+        <td>{{item.dosen_pembimbing_2.nip.nip}}</td>
+        <td>{{item.dosen_pembimbing_2.nip.id_user.first_name}}</td>
+        <td>{{item.dosen_penguji_1.nip.nip}}</td>
+        <td>{{item.dosen_penguji_1.nip.id_user.first_name}}</td>
+        <td>{{item.dosen_penguji_2.nip.nip}}</td>
+        <td>{{item.dosen_penguji_2.nip.id_user.first_name}}</td>
        
         <td>{{item.tahap_seminar}}</td>
         <td>{{item.ruang_seminar}}</td>
@@ -112,9 +120,13 @@
         <th>ID Jadwal</th>
         <th>NIM</th>
         <th>Mahasiswa</th>
+        <th>NIP Pembimbing 1</th>
         <th>Dosen Pembimbing 1</th>
+        <th>NIP Pembimbing 2</th>
         <th>Dosen Pembimbing 2</th>
+        <th>NIP Penguji 1</th>
         <th>Dosen Penguji 1</th>
+        <th>NIP Penguji 2</th>
         <th>Dosen Penguji 2</th>
         <th>Tahap Seminar</th>
         <th>Ruang Seminar</th>

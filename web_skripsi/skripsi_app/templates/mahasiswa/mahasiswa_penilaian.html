@@ -16,6 +16,7 @@
         <th>User</th>
         <th>Nama</th>
         <th>Angkatan</th>
+        <th>Semester Daftar Skripsi</th>
         <th>Status Nilai Bimbingan</th>
         <th>Penilaian Bimbingan Lengkap</th>
         <th>Status Nilai Sempro</th>
@@ -24,7 +25,6 @@
         <th>Penilaian Semhas Lengkap</th>
   
 
-        <th>Semester Daftar Skripsi</th>
         
         <th>Operation</th>
       </tr>
@@ -42,27 +42,55 @@
           
         </td>
         <td>
-          {%if item.tahap_bimbingan != None %}Penilaian Lengkap :<br/> {%for item2 in item.tahap_bimbingan%}{{forloop.counter}}. {{item2}}{%endfor%}{%endif%}
+          {%if item.tahap_bimbingan != None %}Penilaian Lengkap :<br/> {%for item2 in item.tahap_bimbingan%}{{forloop.counter}}. {{item2}}<br/>{%endfor%}{%endif%}
         </td>
         <td>{{item.status_sempro}}
           
         </td>
         <td>
-          {%if item.tahap_sempro != None %}Penilaian Lengkap :<br/> {%for item2 in item.tahap_sempro%}{{forloop.counter}}. {{item2}}{%endfor%}{%endif%}
+          {%if item.tahap_sempro != None %}Penilaian Lengkap :<br/> {%for item2 in item.tahap_sempro%}{{forloop.counter}}. {{item2}}<br/>{%endfor%}{%endif%}
         </td>
         <td>{{item.status_semhas}}
           
         </td>
         <td>
-          {%if item.tahap_semhas != None %}Penilaian Lengkap :<br/> {%for item2 in item.tahap_semhas%}{{forloop.counter}}. {{item2}}{%endfor%}{%endif%}
+          {%if item.tahap_semhas != None %}Penilaian Lengkap :<br/> {%for item2 in item.tahap_semhas%}{{forloop.counter}}. {{item2}}<br/>{%endfor%}{%endif%}
         </td>
 
         <td>
+          {% if item.status_dosen_pembimbing == "Admin" %}
+          <div class="d-flex flex-column m-2">
+            <a class="btn btn-primary m-1" type="button" href="{% url 'penilaian_bimbingan_dosen_1_by_nim' item.nim %}">Nilai Bimbingan Dospem 1</a>
+            <a class="btn btn-primary m-1" type="button" href="{% url 'penilaian_bimbingan_dosen_2_by_nim' item.nim %}">Nilai Bimbingan Dospem 2</a>
+          </div>
+          {% elif item.status_dosen_pembimbing == "Pembimbing 1" %}
+          <div class="d-flex flex-column m-2">
+            <a class="btn btn-primary m-1" type="button" href="{% url 'penilaian_bimbingan_dosen_1_by_nim' item.nim %}">Nilai Bimbingan Dospem 1</a>
+            {% comment %} <a class="btn btn-primary m-1" type="button" href="{% url 'penilaian_bimbingan_dosen_2_by_nim' item.nim %}">Nilai Bimbingan Dospem 2</a> {% endcomment %}
+          </div>
+          {% elif item.status_dosen_pembimbing == "Pembimbing 2" %}
+          <div class="d-flex flex-column m-2">
+            {% comment %} <a class="btn btn-primary m-1" type="button" href="{% url 'penilaian_bimbingan_dosen_1_by_nim' item.nim %}">Nilai Bimbingan Dospem 1</a> {% endcomment %}
+            <a class="btn btn-primary m-1" type="button" href="{% url 'penilaian_bimbingan_dosen_2_by_nim' item.nim %}">Nilai Bimbingan Dospem 2</a>
+          </div>
+          {% else %}
+
+          {% endif %}
           <div class="d-flex flex-column m-2">
           <a class="btn btn-success m-1" type="button" href="{% url 'penilaian_bimbingan_nim' item.nim %}">Nilai Bimbingan</a>
           <a class="btn btn-success m-1" type="button" href="{% url 'penilaian_sempro_nim' item.nim %}">Nilai Sempro</a>
           <a class="btn btn-success m-1" type="button" href="{% url 'penilaian_semhas_nim' item.nim %}">Nilai Semhas</a>
           <a class="btn btn-warning m-1" type="button" href="{% url 'jadwal_dosen_bimbingan_filter_nim' item.nim %}">List Seminar Mahasiswa</a>
+          {% if user_info.2.name == "Admin" %}
+          
+          <a class="btn btn-warning m-1" type="button" href="{% url 'jadwal_dosen_bimbingan_no_filter_nim' item.nim %}">List Seminar Mahasiswa Tanpa Filter</a>
+          {% elif user_info.2.name == "Properta" %}
+          <a class="btn btn-warning m-1" type="button" href="{% url 'jadwal_dosen_bimbingan_no_filter_nim' item.nim %}">List Seminar Mahasiswa Tanpa Filter</a>
+          
+          {% elif user_info.2.name == "Manajemen Departemen" %}
+          <a class="btn btn-warning m-1" type="button" href="{% url 'jadwal_dosen_bimbingan_no_filter_nim' item.nim %}">List Seminar Mahasiswa Tanpa Filter</a>
+          {% else %}
+          {% endif %}
           </div>
         </td>
 
@@ -75,9 +103,15 @@
         <th>User</th>
         <th>Nama</th>
         <th>Angkatan</th>
-
         <th>Semester Daftar Skripsi</th>
-        <th>Photo</th>
+        <th>Status Nilai Bimbingan</th>
+        <th>Penilaian Bimbingan Lengkap</th>
+        <th>Status Nilai Sempro</th>
+        <th>Penilaian Sempro Lengkap</th>
+        <th>Status Nilai Semhas</th>
+        <th>Penilaian Semhas Lengkap</th>
+  
+
         
         <th>Operation</th>
       </tr>

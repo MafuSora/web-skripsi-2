@@ -15,22 +15,19 @@
     {%csrf_token%}
     {{form|crispy}}
     {%if data != None %}
-    <div class="row container-fluid p-2">
-      <p>Preview File</p>
-      <div class="container-fluid" >
-        <div id="example1" style="height:700px;">
-          <script>
-          PDFObject.embed("{{data.file_proposal.url}}", "#example1");
-          if(PDFObject.supportsPDFs){
-            console.log("Yay, this browser supports inline PDFs.");
-          } else {
-            console.log("Boo, inline PDFs are not supported by this browser");
-}
-          
-          </script>
+    <p>Preview</p>
+        <div class="container-fluid mb-2" >
+            <div id="example1" style="height:700px;">
+                <script>
+                    PDFObject.embed("{{data.file_proposal.url}}", "#example1");
+                    if(PDFObject.supportsPDFs){
+                        console.log("Yay, this browser supports inline PDFs.");
+                    } else {
+                        console.log("Boo, inline PDFs are not supported by this browser");
+                    }
+                </script>
+            </div>
         </div>
-      </div>
-    </div>
     {%endif%}
     <div class="row container-fluid mt-4">
       <button type="submit" class="btn btn-primary btn-block mb-4">

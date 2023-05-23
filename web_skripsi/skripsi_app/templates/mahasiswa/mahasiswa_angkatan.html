@@ -21,8 +21,8 @@
       {%for item in proposals%}
       <tr>
 
-        {% comment %} <td>{{item.NIM_4}}</td> {% endcomment %}
-        <td>20{{item.NIM_5}}</td>
+        <td>{{item.NIM_4}}</td>
+        {% comment %} <td>20{{item.NIM_5}}</td> {% endcomment %}
         <td>{{item.id_proposal__nama_tahap}} : {{item.status_bimbingan}}</td>
         
         <!-- <td></td> -->
@@ -35,9 +35,9 @@
       {%for item3 in evaluasitopiks%}
       <tr>
 
-        {% comment %} <td>{{item3.NIM_4}}</td> {% endcomment %}
-        <td>20{{item3.NIM_5}}</td>
-        <td>Topik : {{item3.status_topik}}</td>
+        <td>{{item3.NIM_4}}</td>
+        {% comment %} <td>20{{item3.NIM_5}}</td> {% endcomment %}
+        {% comment %} <td>Topik : {{item3.status_topik}}</td> {% endcomment %}
         <!-- <td></td> -->
         <td>{{item3.dcount}}</td>
 
@@ -46,8 +46,8 @@
       {%for item2 in mahasiswa_topik%}
       <tr>
 
-        {% comment %} <td>{{item2.NIM_4}}</td> {% endcomment %}
-        <td>20{{item2.NIM_5}}</td>
+        <td>{{item2.NIM_4}}</td>
+        {% comment %} <td>20{{item2.NIM_5}}</td> {% endcomment %}
         <td>Belum Membuat</td>
         <!-- <td>Prog</td> -->
         <td>{{item2.dcount}}</td>
@@ -57,8 +57,8 @@
       {%for item in proposal_upload%}
       <tr>
 
-        {% comment %} <td>{{item.NIM_4}}</td> {% endcomment %}
-        <td>20{{item.NIM_5}}</td>
+        <td>{{item.NIM_4}}</td>
+        {% comment %} <td>20{{item.NIM_5}}</td> {% endcomment %}
         <td>{{item.nama_tahap}} : Belum Diperiksa Dosen</td>
         <!-- <td>Prog</td> -->
         <td>{{item.dcount}}</td>
@@ -68,8 +68,8 @@
       {%for item in usulantopiks%}
       <tr>
 
-        {% comment %} <td>{{item.NIM_4}}</td> {% endcomment %}
-        <td>20{{item.NIM_5}}</td>
+        <td>{{item.NIM_4}}</td>
+        {% comment %} <td>20{{item.NIM_5}}</td> {% endcomment %}
         <td>Topik : Sudah Upload Topik </td>
         <!-- <td>Prog</td> -->
         <td>{{item.dcount}}</td>

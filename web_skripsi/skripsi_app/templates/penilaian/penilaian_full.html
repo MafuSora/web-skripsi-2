@@ -36,7 +36,12 @@
         <td>{{item.id_detail_penilaian.nama_tahap}}</td>
         <td>{{item.id_detail_penilaian.status_kelulusan}}</td>
         <td>{{item.id_sub_cpmk}}</td>
-        <td>{{item.nilai}}</td>
+        {% if item.nilai < 70 %}
+          <td class="text-light bg-danger" >{{item.nilai}}</td>
+          {% else %}
+          <td>{{item.nilai}}</td>
+          {% endif %}
+        {% comment %} <td>{{item.nilai}}</td> {% endcomment %}
         <td>{{item.id_detail_penilaian.hasil_review}}</td>
 
         {% comment %} {%if item.photo_file == "" %}
