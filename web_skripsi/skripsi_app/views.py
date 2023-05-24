@@ -440,8 +440,8 @@ def mahasiswa_progress_get(request):
     # print(proposals_awal)
     
     # Sudah Bimbingan
-    proposals=bimbingan.objects.exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update')
-    proposals_list=list(bimbingan.objects.exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim").distinct())
+    proposals=bimbingan.objects.exclude(id_proposal__nim__in=list_nim).exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update')
+    proposals_list=list(bimbingan.objects.exclude(id_proposal__nim__in=list_nim).exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim").distinct())
     for i in range(len(proposals_list)):
         # print(lulus_list[i][0])
         list_nim.append(proposals_list[i][0])
@@ -516,16 +516,20 @@ def mahasiswa_progress_get(request):
 def mahasiswa_waktu_get(request):
     user_info = user_information(request)
     # bimbingans = bimbingan.objects.filter(id_proposal__nama_tahap="Laporan Akhir").filter(status_bimbingan="ACC")|bimbingan.objects.filter(id_proposal__nama_tahap="Laporan Akhir (BAB 4 - BAB 6)").filter(status_bimbingan="ACC")
-    bimbingans_nim = bimbingan.objects.values_list('id_proposal__nim').filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)").filter(status_bimbingan="ACC").distinct()
-    # |bimbingan.objects.values_list('id_proposal__nim').filter(id_proposal__nama_tahap="Laporan Akhir").filter(status_bimbingan="ACC").distinct()
+    # bimbingans_nim = bimbingan.objects.values_list('id_proposal__nim').filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)").filter(status_bimbingan="ACC").distinct()
+    # # |bimbingan.objects.values_list('id_proposal__nim').filter(id_proposal__nama_tahap="Laporan Akhir").filter(status_bimbingan="ACC").distinct()
 
-    bimbingans_nim_tanggal = bimbingan.objects.values(nim=F("id_proposal__nim"),TanggalUpdate=F("id_proposal__tanggal_update")).filter(id_proposal__nama_tahap="Laporan Akhir").filter(status_bimbingan="ACC").order_by("id_proposal__nim").values(NIM_mhs=F("id_proposal__nim")).annotate(TanggalUpdate=Max('id_proposal__tanggal_update'))
-    # bimbingans_nim_tanggal =bimbingan.objects.values(nim=F("id_proposal__nim"),TanggalUpdate=F("id_proposal__tanggal_update")).filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)").filter(status_bimbingan="ACC").order_by("id_proposal__nim").values(NIM_mhs=F("id_proposal__nim")).annotate(TanggalUpdate=Max('id_proposal__tanggal_update'))
-    mahasiswa_topik=usulantopik.objects.order_by("nim").filter(nim__in=bimbingans_nim)
+    # bimbingans_nim_tanggal = bimbingan.objects.values(nim=F("id_proposal__nim"),TanggalUpdate=F("id_proposal__tanggal_update")).filter(id_proposal__nama_tahap="Laporan Akhir").filter(status_bimbingan="ACC").order_by("id_proposal__nim").values(NIM_mhs=F("id_proposal__nim")).annotate(TanggalUpdate=Max('id_proposal__tanggal_update'))
+    # # bimbingans_nim_tanggal =bimbingan.objects.values(nim=F("id_proposal__nim"),TanggalUpdate=F("id_proposal__tanggal_update")).filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)").filter(status_bimbingan="ACC").order_by("id_proposal__nim").values(NIM_mhs=F("id_proposal__nim")).annotate(TanggalUpdate=Max('id_proposal__tanggal_update'))
+    # mahasiswa_topik=usulantopik.objects.order_by("nim").filter(nim__in=bimbingans_nim)
   
+    new_bimbingans_nim_tanggal = bimbingan.objects.values(nim=F("id_proposal__nim"),TanggalUpdate=F("id_proposal__tanggal_update")).filter(id_proposal__nama_tahap="Laporan Akhir").filter(status_bimbingan="ACC").order_by("id_proposal__nim").values(NIM_mhs=F("id_proposal__nim"), nama=F("id_proposal__nim__id_user__first_name"),TanggalAwal=F('id_proposal__nim__semester_daftar_skripsi__tanggal_awal_semester'),TanggalAkhir=F('id_proposal__tanggal_update')).annotate(TanggalUpdate=Max('id_proposal__tanggal_update')-Max('id_proposal__nim__semester_daftar_skripsi__tanggal_awal_semester'))
+    # new_bimbingans_nim = bimbingan.objects.values_list('id_proposal__nim').filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)").filter(status_bimbingan="ACC").distinct()
 
-    return render(request, 'mahasiswa/mahasiswa_waktu.html', {"proposals": bimbingans_nim_tanggal,
-                                                              "mahasiswa_topik":mahasiswa_topik, 
+    return render(request, 'mahasiswa/mahasiswa_waktu.html', {
+        # "proposals": bimbingans_nim_tanggal,
+        #                                                       "mahasiswa_topik":mahasiswa_topik, 
+                                                              'new_bimbingans_nim_tanggal':new_bimbingans_nim_tanggal,
                                                               "user_info": user_info})
 
 
@@ -854,10 +858,11 @@ def dashboard(request):
     lulus_list_list=list(bimbingan.objects.filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim",flat=True))
     for i in range(len(lulus_list)):
         list_nim.append(lulus_list[i][0])
-    print(list_nim)
+    total_lulus=len(list_nim)
+    # print(list_nim)
     # Sudah Bimbingan
-    proposals=bimbingan.objects.exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update')
-    proposals_list=list(bimbingan.objects.exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim").distinct())
+    proposals=bimbingan.objects.exclude(id_proposal__nim__in=list_nim).exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update')
+    proposals_list=list(bimbingan.objects.exclude(id_proposal__nim__in=list_nim).exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim").distinct())
     for i in range (len(proposals_list)):
              list_nim.append(proposals_list[i][0])
     proposals=proposals.annotate(nim_count=Count('id_proposal__nim'))
@@ -939,8 +944,8 @@ def dashboard(request):
 
 
     # Sudah Bimbingan
-    proposals=bimbingan.objects.exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update')
-    proposals_list=list(bimbingan.objects.exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim").distinct())
+    proposals=bimbingan.objects.exclude(id_proposal__nim__in=list_nim).exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update')
+    proposals_list=list(bimbingan.objects.exclude(id_proposal__nim__in=list_nim).exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim").distinct())
     # print(proposals_akhir)
     for i in range(len(proposals_list)):
         list_nim.append(proposals_list[i][0])
@@ -1783,8 +1788,8 @@ def dashboard(request):
     # print("lulus",lulus_list)
 
     # Sudah Bimbingan
-    proposals=bimbingan.objects.exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update')
-    proposals_list=list(bimbingan.objects.exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim").distinct())
+    proposals=bimbingan.objects.exclude(id_proposal__nim__in=list_nim).exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update')
+    proposals_list=list(bimbingan.objects.exclude(id_proposal__nim__in=list_nim).exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim").distinct())
  
     for i in range (len(proposals_list)):
              list_nim.append(proposals_list[i][0])
@@ -1868,17 +1873,21 @@ def dashboard(request):
     list_progress_jumlah.append(mahasiswa_topik)
     list_progress.append("Belum Membuat Topik")
     #rata rata
-    bimbingans_nim = bimbingan.objects.values_list('id_proposal__nim').filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)").filter(status_bimbingan="ACC").distinct()
-    # |bimbingan.objects.values_list('id_proposal__nim').filter(id_proposal__nama_tahap="Laporan Akhir (BAB 4 - BAB 6)").filter(status_bimbingan="ACC").distinct()
-    bimbingans_nim_tanggal = bimbingan.objects.values(nim=F("id_proposal__nim"),TanggalUpdate=F("id_proposal__tanggal_update")).filter(id_proposal__nama_tahap="Laporan Akhir").filter(status_bimbingan="ACC").order_by("id_proposal__nim").values(NIM_mhs=F("id_proposal__nim")).annotate(TanggalUpdate=Max('id_proposal__tanggal_update'))
-    # bimbingans_nim_tanggal =bimbingan.objects.values(nim=F("id_proposal__nim"),TanggalUpdate=F("id_proposal__tanggal_update")).filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)").filter(status_bimbingan="ACC").order_by("id_proposal__nim").values(NIM_mhs=F("id_proposal__nim")).annotate(TanggalUpdate=Max('id_proposal__tanggal_update'))
-    mahasiswa_topik_tanggal=usulantopik.objects.order_by("nim").filter(nim__in=bimbingans_nim)
-
+    # bimbingans_nim = bimbingan.objects.values_list('id_proposal__nim').filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)").filter(status_bimbingan="ACC").distinct()
+    
+    # # |bimbingan.objects.values_list('id_proposal__nim').filter(id_proposal__nama_tahap="Laporan Akhir (BAB 4 - BAB 6)").filter(status_bimbingan="ACC").distinct()
+    # bimbingans_nim_tanggal = bimbingan.objects.values(nim=F("id_proposal__nim"),TanggalUpdate=F("id_proposal__tanggal_update")).filter(id_proposal__nama_tahap="Laporan Akhir").filter(status_bimbingan="ACC").order_by("id_proposal__nim").values(NIM_mhs=F("id_proposal__nim")).annotate(TanggalUpdate=Max('id_proposal__tanggal_update'))
+    # # bimbingans_nim_tanggal =bimbingan.objects.values(nim=F("id_proposal__nim"),TanggalUpdate=F("id_proposal__tanggal_update")).filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)").filter(status_bimbingan="ACC").order_by("id_proposal__nim").values(NIM_mhs=F("id_proposal__nim")).annotate(TanggalUpdate=Max('id_proposal__tanggal_update'))
+    # mahasiswa_topik_tanggal=usulantopik.objects.order_by("nim").filter(nim__in=bimbingans_nim)
+    new_bimbingans_nim_tanggal = bimbingan.objects.values(nim=F("id_proposal__nim"),TanggalUpdate=F("id_proposal__tanggal_update")).filter(id_proposal__nama_tahap="Laporan Akhir").filter(status_bimbingan="ACC").order_by("id_proposal__nim").values(NIM_mhs=F("id_proposal__nim"), nama=F("id_proposal__nim__id_user__first_name"),TanggalAwal=F('id_proposal__nim__semester_daftar_skripsi__tanggal_awal_semester'),TanggalAkhir=F('id_proposal__tanggal_update')).annotate(TanggalUpdate=Max('id_proposal__tanggal_update')-Max('id_proposal__nim__semester_daftar_skripsi__tanggal_awal_semester'))
+    max_mhs_lulus=new_bimbingans_nim_tanggal.aggregate(Max('TanggalUpdate'))['TanggalUpdate__max']
+    min_mhs_lulus=new_bimbingans_nim_tanggal.aggregate(Min('TanggalUpdate'))['TanggalUpdate__min']
     # Jadwal Data
     jadwal_data=jadwal_seminar.objects.filter(tanggal_seminar__gte=datetime.datetime.now().date())
 
 
     return render(request, 'dashboard.html', { "total_mahasiswa":total_mahasiswa,
+                                              'total_lulus':total_lulus,
                                               "list_angkatan_unique":list_angkatan_unique,
                                               "list_jumlah_angkatan":list_jumlah_angkatan,
                                               "jumlah_diatas_3_bulan_dosen":jumlah_diatas_3_bulan_dosen,
@@ -1899,8 +1908,11 @@ def dashboard(request):
                                               "last_topik":last_topik,
                                               "last_bimbingan":last_bimbingan,
                                               "mahasiswa_last_update":mahasiswa_last_update,
-                                              "bimbingans_nim_tanggal":bimbingans_nim_tanggal,
-                                              "mahasiswa_topik_tanggal":mahasiswa_topik_tanggal,
+                                            #   "bimbingans_nim_tanggal":bimbingans_nim_tanggal,
+                                            #   "mahasiswa_topik_tanggal":mahasiswa_topik_tanggal,
+                                              'new_bimbingans_nim_tanggal':new_bimbingans_nim_tanggal,
+                                              'max_mhs_lulus':max_mhs_lulus,
+                                              'min_mhs_lulus':min_mhs_lulus,
                                               "list_progress":list_progress,
                                               "list_progress_jumlah":list_progress_jumlah,
                                               "user_info": user_info})
@@ -4392,7 +4404,7 @@ def dosenpembimbing_create_sekdept(request, id):
                     email_list,
                     fail_silently=False,
                     )
-                return redirect("../roledosenget")
+                return redirect(f"../roledosencreate/{id}")
     else:
         form = RoleDosenFormSekdept()
         data_roledosen=roledosen.objects.all()
@@ -4754,7 +4766,7 @@ def dosenpembimbing_update(request, id):
                 #     models.notifikasi.nip=i.nip
                 #     models.notifikasi.messages=f"Terdapat Input Usulan Topik Baru Oleh {create_usulantopik.nim} pada {tanggal} Jam {Jam}"
                 #     notifikasi.save()
-                    return redirect("../roledosenget")
+                    return redirect(f"../roledosen_update/{id}")
 
         else:
             form = RoleDosenForm(instance=dosenpembimbing_data)
@@ -4798,7 +4810,7 @@ def dosenpembimbing_update(request, id):
                         email_list,
                         fail_silently=False,
                         )
-                return redirect("../roledosenget")
+                return redirect(f"../roledosen_update/{id}")
 
         else:
             form = RoleDosenFormUpdateSekdept(instance=dosenpembimbing_data)
@@ -15477,8 +15489,8 @@ def mahasiswa_jumlah_get(request):
 #     # print("lulus",lulus_list)
 
 #     # Sudah Bimbingan
-#     proposals=bimbingan.objects.exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update')
-#     proposals_list=list(bimbingan.objects.exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim").distinct())
+#     proposals=bimbingan.objects.exclude(id_proposal__nim__in=list_nim).exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update')
+#     proposals_list=list(bimbingan.objects.exclude(id_proposal__nim__in=list_nim).exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim").distinct())
  
 #     for i in range (len(proposals_list)):
 #              list_nim.append(proposals_list[i][0])
@@ -15571,8 +15583,8 @@ def mahasiswa_jumlah_get(request):
     # print("lulus",lulus_list)
 
     # Sudah Bimbingan
-    proposals=bimbingan.objects.exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update')
-    proposals_list=list(bimbingan.objects.exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim").distinct())
+    proposals=bimbingan.objects.exclude(id_proposal__nim__in=list_nim).exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update')
+    proposals_list=list(bimbingan.objects.exclude(id_proposal__nim__in=list_nim).exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim").distinct())
  
     for i in range (len(proposals_list)):
              list_nim.append(proposals_list[i][0])
@@ -15680,10 +15692,11 @@ def mahasiswa_jumlah_get_progress(request):
     for i in range(len(lulus_list)):
         list_nim.append(lulus_list[i][0])
     # print("lulus",lulus_list)
+    
 
     # Sudah Bimbingan
-    proposals=bimbingan.objects.exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update')
-    proposals_list=list(bimbingan.objects.exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim").distinct())
+    proposals=bimbingan.objects.exclude(id_proposal__nim__in=list_nim).exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update')
+    proposals_list=list(bimbingan.objects.exclude(id_proposal__nim__in=list_nim).exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim").distinct())
  
     for i in range (len(proposals_list)):
              list_nim.append(proposals_list[i][0])
@@ -15782,8 +15795,8 @@ def mahasiswa_jumlah_get_tahun(request):
         list_nim.append(lulus_list[i][0])
 
     # Sudah Bimbingan
-    proposals=bimbingan.objects.exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update')
-    proposals_list=list(bimbingan.objects.exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim").distinct())
+    proposals=bimbingan.objects.exclude(id_proposal__nim__in=list_nim).exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update')
+    proposals_list=list(bimbingan.objects.exclude(id_proposal__nim__in=list_nim).exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim").distinct())
     for i in range (len(proposals_list)):
              list_nim.append(proposals_list[i][0])
     proposals=proposals.annotate(nim_count=Count('id_proposal__nim'))
@@ -15870,8 +15883,8 @@ def mahasiswa_progress_by_bulan(request):
         list_nim.append(lulus_list[i][0])
 
     # Sudah Bimbingan
-    proposals=bimbingan.objects.exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update')
-    proposals_list=list(bimbingan.objects.exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim").distinct())
+    proposals=bimbingan.objects.exclude(id_proposal__nim__in=list_nim).exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update')
+    proposals_list=list(bimbingan.objects.exclude(id_proposal__nim__in=list_nim).exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim").distinct())
     for i in range(len(proposals_list)):
 
         list_nim.append(proposals_list[i][0])
@@ -15964,9 +15977,9 @@ def mahasiswa_progress_by_bulan_dosen(request):
         list_nim.append(lulus_list[i][0])
 
     # Sudah Bimbingan
-    proposals=bimbingan.objects.exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update')
+    proposals=bimbingan.objects.exclude(id_proposal__nim__in=list_nim).exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update')
     proposals=proposals.filter(id_proposal__nim__nim__in=nim_list)
-    proposals_list=list(bimbingan.objects.exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim").distinct())
+    proposals_list=list(bimbingan.objects.exclude(id_proposal__nim__in=list_nim).exclude(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim").distinct())
     for i in range(len(proposals_list)):
 
         list_nim.append(proposals_list[i][0])

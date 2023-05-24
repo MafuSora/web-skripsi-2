@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     # "django.contrib.staticfiles",
     # gdrive storage
     'gdstorage',
+    # 'django.core.validators',
+    # 'FileExtensionValidator',
 
 
 ]
@@ -149,6 +151,8 @@ DATABASES = {
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
+
+# AUTH_USER_MODEL = 'skripsi_app.CustomUser'
 
 AUTH_PASSWORD_VALIDATORS = [
     {

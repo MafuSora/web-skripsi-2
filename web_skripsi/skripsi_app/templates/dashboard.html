@@ -605,45 +605,18 @@
                           </tr>
                         </thead>
                         <tbody hidden>
-                          {%for item in bimbingans_nim_tanggal%}
-                          {%for item2 in mahasiswa_topik_tanggal%}
-                          {% if forloop.counter == forloop.parentloop.counter  %}
-                          <tr>
-                    
-                            {% comment %} <td>{{item.NIM_mhs}}</td> {% endcomment %}
-                            <td>{{item2.nim.nim}}</td>
-                            <td>{{item2.nim.id_user.first_name}}</td>
-                            <td>{{item2.nim.semester_daftar_skripsi.tanggal_awal_semester}}</td>
-                            <td>{{item.TanggalUpdate}}</td>
-                            {% comment %} <td>{{item2.nim.semester_daftar_skripsi.tanggal_awal_semester-item.TanggalUpdate}}</td> {% endcomment %}
+                            {% for item in new_bimbingans_nim_tanggal %}
+                            <tr>
+                      
                             
-                            <!-- <td></td> -->
-                            <td id="result{{forloop.counter}}" class="avg">
-                             
-                            </td>
-                            <script>
-                              {% comment %} var date = new Date(Number("{{item2.nim.semester_daftar_skripsi.tanggal_awal_semester|date:'y'}}"),Number("{{ item2.nim.semester_daftar_skripsi.tanggal_awal_semester|date:'m' }}"),Number("{{ item2.nim.semester_daftar_skripsi.tanggal_awal_semester|date:'d' }}"));
-                              var date1 = new Date("{{ item.TanggalUpdate|date:'y' }}","{{ item.TanggalUpdate|date:'m' }}","{{ item.TanggalUpdate|date:'d' }}");
-                              var result2 = document.getElementById("result{{forloop.counter}}");
-                              var day = new Date(date1.getTime() - date.getTime()); {% endcomment %}
-                    
-                              var date = new Date(Number("{{item2.nim.semester_daftar_skripsi.tanggal_awal_semester|date:'y'}}"),Number("{{ item2.nim.semester_daftar_skripsi.tanggal_awal_semester|date:'m' }}"),Number("{{ item2.nim.semester_daftar_skripsi.tanggal_awal_semester|date:'d' }}"));
-                              var date1 = new Date("{{ item.TanggalUpdate|date:'y' }}","{{ item.TanggalUpdate|date:'m' }}","{{ item.TanggalUpdate|date:'d' }}");
-                              var result2 = document.getElementById("result{{forloop.counter}}");
-                              var day = new Date(date1.getTime() - date.getTime());
-                              // date.setTime(day);
-                              result2.innerHTML += (day/(1000*3600*24))-1;
-                              // day.getUTCDate() - 1
-                              
-                            </script>
-                            
-                    
-                          </tr>
-                         
-                          {%endif%}
-                          
-                          {% endfor %}
-                          {% endfor %}
+                              <td>{{item.NIM_mhs}}</td>
+                              <td>{{item.nama}}</td>
+                              <td>{{item.TanggalAwal}}</td>
+                              <td>{{item.TanggalAkhir}}</td>
+                              <td id="result{{forloop.counter}}" class="avg">{{item.TanggalUpdate.days}}</td>
+                            </tr>
+                            {% endfor %}
+                        
                          
                     
                         </tbody>
@@ -700,20 +673,25 @@
 
       <!-- Area Chart -->
       <div class="col-xl-6 col-lg-6">
-          <div class="card shadow mb-4">
-              <!-- Card Header - Dropdown -->
-              <div
-                  class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                  <h6 class="m-0 font-weight-bold text-primary">Earnings Overview</h6>
-              
-              </div>
-              <!-- Card Body -->
-              <div class="card-body">
-                {% comment %} <div class="card chart-container">
-                    <canvas id="myChart"></canvas>
-                </div> {% endcomment %}
-              </div>
+        <div class="card shadow mb-4" style="border: none; box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);">
+          <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between" style="background-color: #f8f9fc;">
+            <h6 class="m-0 font-weight-bold text-primary">Rangkuman Penyelesaian Skripsi</h6>
           </div>
+          <div class="card-body">
+            <div class="scorecard text-center" style="padding: 15px; background-color: #ffffff; border: 1px solid #e3e6f0; border-radius: 5px; margin-bottom: 15px;">
+              <h2 class="text-center"style="font-weight: bold; margin-bottom: 10px;">{{total_lulus}}</h2>
+              <p style="font-size: 20px; color: #6c757d;">Total Mahasiswa Lulus</p>
+            </div>
+            <div class="scorecard text-center" style="padding: 15px; background-color: #ffffff; border: 1px solid #e3e6f0; border-radius: 5px; margin-bottom: 15px;">
+              <h2 style=" font-weight: bold; margin-bottom: 10px;">{{max_mhs_lulus.days}} Hari</h2>
+              <p style="font-size: 20px; color: #6c757d;">Terlama Menyelesaikan Skripsi</p>
+            </div>
+            <div class="scorecard text-center" style="padding: 15px; background-color: #ffffff; border: 1px solid #e3e6f0; border-radius: 5px; margin-bottom: 15px;">
+              <h2 style=" font-weight: bold; margin-bottom: 10px;">{{min_mhs_lulus.days}} Hari</h2>
+              <p style="font-size: 20px; color: #6c757d;">Tercepat Menyelesaikan Skripsi</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Pie Chart -->

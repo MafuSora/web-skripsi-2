@@ -62,9 +62,9 @@ urlpatterns = [
     path('dosencreate/', views.dosen_create, name='dosen_create'),
     #     path('createdosen2/', views.create_dosen2, name='create_dosen2'),
     path('dosenget/', views.dosen_get, name='dosen_get'),
-    path('dosen_read/<int:id>', views.dosen_read, name='dosen_read'),
-    path('dosen_update/<int:id>', views.dosen_update, name='dosen_update'),
-    path('dosen_delete/<int:id>',
+    path('dosen_read/<str:id>', views.dosen_read, name='dosen_read'),
+    path('dosen_update/<str:id>', views.dosen_update, name='dosen_update'),
+    path('dosen_delete/<str:id>',
          views.dosen_delete, name='dosen_delete'),
 
     # mahasiswa
@@ -77,10 +77,10 @@ urlpatterns = [
     path('mahasiswaprogressbulan/dosen', views.mahasiswa_progress_by_bulan_dosen, name='mahasiswa_progress_by_bulan_dosen'),
     path('mahasiswawaktu/', views.mahasiswa_waktu_get, name='mahasi swa_waktu_get'),
     
-    path('mahasiswa_read/<int:id>', views.mahasiswa_read, name='mahasiswa_read'),
-    path('mahasiswa_update/<int:id>',
+    path('mahasiswa_read/<str:id>', views.mahasiswa_read, name='mahasiswa_read'),
+    path('mahasiswa_update/<str:id>',
          views.mahasiswa_update, name='mahasiswa_update'),
-    path('mahasiswa_delete/<int:id>',
+    path('mahasiswa_delete/<str:id>',
          views.mahasiswa_delete, name='mahasiswa_delete'),
 
     # komartemen dosen
@@ -188,7 +188,7 @@ urlpatterns = [
          views.dosenpembimbing_get, name='dosenpembimbing_get'),
     path('roledosen_update/<int:id>',
          views.dosenpembimbing_update, name='dosenpembimbing_update'),
-    path('roledosen_delete/<int:id>',
+    path('roledosen_delete/int:id>',
          views.dosenpembimbing_delete, name='dosenpembimbing_delete'),
 
     # bimbingan
@@ -305,9 +305,9 @@ urlpatterns = [
          views.penilaian_bimbingan_dosen_1, name='penilaian_bimbingan_dosen_1'),
      path('penilaian_bimbingan_dosen_2/<int:id_jadwal_seminar>',
          views.penilaian_bimbingan_dosen_2, name='penilaian_bimbingan_dosen_2'),
-     path('penilaian_bimbingan_dosen_1_by_nim/<int:nim>',
+     path('penilaian_bimbingan_dosen_1_by_nim/<str:nim>',
          views.penilaian_bimbingan_dosen_1_by_nim, name='penilaian_bimbingan_dosen_1_by_nim'),
-     path('penilaian_bimbingan_dosen_2_by_nim/<int:nim>',
+     path('penilaian_bimbingan_dosen_2_by_nim/<str:nim>',
          views.penilaian_bimbingan_dosen_2_by_nim, name='penilaian_bimbingan_dosen_2_by_nim'),
      path('penilaian_semhas_dosen_pembimbing_1/<int:id_jadwal_seminar>',
          views.penilaian_semhas_dosen_pembimbing_1, name='penilaian_semhas_dosen_pembimbing_1'),
@@ -320,9 +320,9 @@ urlpatterns = [
      path('penilaian_semhas_dosen_2/<int:id_jadwal_seminar>',
          views.penilaian_semhas_dosen_2, name='penilaian_semhas_dosen_2'),
      
-     path('penilaian_no_list_mahasiswa/<int:nim>',
+     path('penilaian_no_list_mahasiswa/<str:nim>',
          views.jadwal_dosen_bimbingan_no_filter_nim, name='jadwal_dosen_bimbingan_no_filter_nim'),
-     path('penilaian_list_mahasiswa/<int:nim>',
+     path('penilaian_list_mahasiswa/<str:nim>',
          views.jadwal_dosen_bimbingan_filter_nim, name='jadwal_dosen_bimbingan_filter_nim'),
      path('penilaian_list/',
          views.penilaian_list, name='penilaian_list'),
@@ -349,14 +349,14 @@ urlpatterns = [
      path('penilaian_get_bimbingan/',
          views.penilaian_bimbingan, name='penilaian_bimbingan'),
      
-     path('penilaian_get_sempro/<int:nim>',
+     path('penilaian_get_sempro/<str:nim>',
          views.penilaian_sempro_nim, name='penilaian_sempro_nim'),
-     path('penilaian_get_semhas/<int:nim>',
+     path('penilaian_get_semhas/<str:nim>',
          views.penilaian_semhas_nim, name='penilaian_semhas_nim'),
      
-     path('penilaian_get_sempro_filter/<int:nim>',
+     path('penilaian_get_sempro_filter/<str:nim>',
          views.penilaian_sempro_nim_filter, name='penilaian_sempro_nim_filter'),
-     path('penilaian_get_semhas_filter/<int:nim>',
+     path('penilaian_get_semhas_filter/<str:nim>',
          views.penilaian_semhas_nim_filter, name='penilaian_semhas_nim_filter'),
      
      
@@ -370,15 +370,15 @@ urlpatterns = [
      path('penilaian_get_semhas_filter/seminar/<int:id_jadwal_seminar>',
          views.penilaian_semhas_jadwal_seminar_filter, name='penilaian_semhas_jadwal_seminar_filter'),
      
-     path('penilaian_get_bimbingan/<int:nim>',
+     path('penilaian_get_bimbingan/<str:nim>',
          views.penilaian_bimbingan_nim, name='penilaian_bimbingan_nim'),
 
      # nilai
-     path('nilai_sempro/<int:nim>',
+     path('nilai_sempro/<str:nim>',
          views.nilai_sempro_get, name='nilai_sempro_get'),
-     path('nilai_semhas/<int:nim>',
+     path('nilai_semhas/<str:nim>',
          views.nilai_semhas_get, name='nilai_semhas_get'),
-     path('nilai_bimbingan/<int:nim>',
+     path('nilai_bimbingan/<str:nim>',
          views.nilai_bimbingan_get, name='nilai_bimbingan_get'),
      
      # nilai seminar

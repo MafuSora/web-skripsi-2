@@ -3,11 +3,15 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.timezone import now
 from gdstorage.storage import GoogleDriveStorage
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator,FileExtensionValidator
+# from django.core.validators import 
 
 # Define Google Drive Storage
 gd_storage = GoogleDriveStorage()
 # Create your models here.
+
+# class CustomUser(User):
+#     first_name = models.CharField(max_length=120)
 
 class jadwal_semester(models.Model):
     id_jadwal_semester = models.BigAutoField(primary_key=True)
@@ -22,7 +26,7 @@ class jadwal_semester(models.Model):
 
 
 class mahasiswa(models.Model):
-    nim = models.BigIntegerField(primary_key=True)
+    nim = models.CharField(primary_key=True,max_length=40)
     semester_daftar_skripsi = models.ForeignKey(
         jadwal_semester, null=True, on_delete= models.SET_NULL)
     angkatan=models.IntegerField()
@@ -35,7 +39,7 @@ class mahasiswa(models.Model):
 
 
 class dosen(models.Model):
-    nip = models.BigIntegerField(primary_key=True)
+    nip = models.CharField(primary_key=True,max_length=40)
     id_user = models.OneToOneField(User, on_delete=models.CASCADE)
     photo_file = models.ImageField(upload_to="photo_dosen/", blank=True, storage=gd_storage)
 
@@ -70,7 +74,7 @@ class usulantopik(models.Model):
     permintaan_dosen_1 = models.ForeignKey(dosen, on_delete=models.DO_NOTHING)
     permintaan_dosen_2 = models.CharField(max_length=100,null=True)
     judul_topik = models.CharField(max_length=60)
-    file_topik = models.FileField(upload_to="topik_mahasiswa/", storage=gd_storage)
+    file_topik = models.FileField(upload_to="topik_mahasiswa/", storage=gd_storage,validators=[FileExtensionValidator(['pdf'])])
     keterangan = models.TextField(blank=True)
     tanggal_buat = models.DateTimeField(auto_now_add=True)
     tanggal_update = models.DateTimeField(auto_now=True)
@@ -214,7 +218,7 @@ class proposal(models.Model):
     nama_tahap = models.CharField(choices=status_choices, max_length=60)
     judul_proposal = models.CharField(max_length=60)
     file_proposal = models.FileField(
-        upload_to="proposal_mahasiswa/", storage=gd_storage)
+        upload_to="proposal_mahasiswa/", storage=gd_storage,validators=[FileExtensionValidator(['pdf'])])
     keterangan = models.TextField(blank=True)
     tanggal_buat = models.DateTimeField(auto_now_add=True)
     tanggal_update = models.DateTimeField(auto_now=True)

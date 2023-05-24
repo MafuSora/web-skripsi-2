@@ -11,8 +11,14 @@
     <h1 class="h2">Update User</h1>
 
     {%csrf_token%}
+    {% comment %} {{form|crispy}} {% endcomment %}
     {{form.username|as_crispy_field}}
+    {% if user_info.2.name == "Admin" or user_info.2.name == "Properta"  %}
+    
     {{form.email|as_crispy_field}}
+    {% comment %} {{form.email|as_crispy_field}} {% endcomment %}
+    {% else %}
+    {% endif %}
     {{form.first_name|as_crispy_field}}
 
     <div class="row container-fluid">

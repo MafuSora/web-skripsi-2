@@ -23,15 +23,20 @@ tanggalan=datetime.datetime.now()
 tahun=tanggalan.strftime("%Y")
 class RegistrationForm(UserCreationForm):
     email = forms.EmailField(required=True, validators=[validate_email])
-    first_name = forms.CharField(max_length=30, required=True,label='Full Name')
+    first_name = forms.CharField(max_length=120, required=True,label='Nama Lengkap')
     class Meta:
         model = User
         fields = ['first_name',  "email", "username",
                   "password1", "password2"]
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['username'].label = 'Username'
+        self.fields['first_name'].label = 'Nama Lengkap'
+        # self.fields['id_user'].label = 'Username'
 
 
 class NimForm(forms.ModelForm):
-
+    nim=forms.CharField(validators=[RegexValidator(r'^\S+$', 'Tidak boleh ada spasi')])
     angkatan = forms.IntegerField(
         validators=[MinValueValidator(2004),MaxValueValidator(int(tahun))])
     class Meta:
@@ -44,15 +49,21 @@ class NimForm(forms.ModelForm):
 
 class CreateUserForm(UserCreationForm):
     email = forms.EmailField(required=True, validators=[validate_email])
-    first_name = forms.CharField(max_length=30, required=True,label='Full Name')
+    first_name = forms.CharField(max_length=120, required=True,label='Nama Lengkap')
     class Meta:
         model = User
         fields = ['first_name', "email", "username",
                   "password1", "password2"]
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['username'].label = 'Username'
+        self.fields['first_name'].label = 'Nama Lengkap'
+        # self.fields['id_user'].label = 'Username'
 
 
 class NipForm(forms.ModelForm):
     # photo_file = forms.ImageField()
+    nip=forms.CharField(validators=[RegexValidator(r'^\S+$', 'Tidak boleh ada spasi')])
     class Meta:
         
         model = dosen
@@ -64,19 +75,32 @@ class NipForm(forms.ModelForm):
 
 class UpdateAdminUserForm(UserChangeForm):
     email = forms.EmailField(required=True, validators=[validate_email])
-    first_name = forms.CharField(max_length=30, required=True,label='Full Name')
+    first_name = forms.CharField(max_length=120, required=True,label='Nama Lengkap')
     class Meta:
         model = User
         fields = ["username", "email", "first_name"]
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['username'].label = 'Username'
+        self.fields['first_name'].label = 'Nama Lengkap'
+        
 class UpdateUserForm(UserChangeForm):
     # email = forms.EmailField(required=True, validators=[validate_email])
     # first_name = forms.CharField(max_length=30, required=True,label='Full Name')
     class Meta:
         model = User
-        fields = ["username"]
+        fields = ["username",
+                #   , "email",
+                "first_name"
+                  ]
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['username'].label = 'Username'
+        self.fields['first_name'].label = 'Nama Lengkap'
 
 # dosen
 class UpdateAdminDosenForm(forms.ModelForm):
+    nip=forms.CharField(validators=[RegexValidator(r'^\S+$', 'Tidak boleh ada spasi')])
     class Meta:
         model = dosen
         fields = ["nip","id_user","photo_file"]
@@ -87,6 +111,7 @@ class UpdateAdminDosenForm(forms.ModelForm):
 
 
 class DosenForm(forms.ModelForm):
+    nip=forms.CharField(validators=[RegexValidator(r'^\S+$', 'Tidak boleh ada spasi')])
     class Meta:
         model = dosen
         fields = ["nip", "id_user", "photo_file"]
@@ -113,7 +138,7 @@ class KompartemenForm(forms.ModelForm):
 
 
 class MahasiswaForm(forms.ModelForm):
-    
+    nim=forms.CharField(validators=[RegexValidator(r'^\S+$', 'Tidak boleh ada spasi')]) 
     angkatan = forms.IntegerField(
         validators=[MinValueValidator(2004),MaxValueValidator(int(tahun))])
     class Meta:
@@ -127,7 +152,7 @@ class MahasiswaForm(forms.ModelForm):
 
 
 class UpdateAdminMahasiswaForm(forms.ModelForm):
-
+    nim=forms.CharField(validators=[RegexValidator(r'^\S+$', 'Tidak boleh ada spasi')])
     angkatan = forms.IntegerField(
         validators=[MinValueValidator(2004),MaxValueValidator(int(tahun))])
     class Meta:
@@ -147,6 +172,7 @@ class UpdateMahasiswaForm(forms.ModelForm):
 
 
 class KompartemenDosenForm(forms.ModelForm):
+    
     class Meta:
         model = kompartemendosen
         fields = ["nip", "id_kompartemen"]
