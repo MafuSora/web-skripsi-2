@@ -14532,7 +14532,7 @@ def tabulasi_penilaian_sudah_lengkap_semhas(request):
             
     return render(request, 'mahasiswa/mahasiswa_penilaian.html', {"mahasiswa_data": mahasiswa_data, "user_info": user_info})
 
-# tbel penilaian dosen pembimbing dengan mengikutkan dosen yang sudah finished membimbbing
+# tbel penilaian dosen pembimbing dengan mengikutkan dosen yang tanpa filter active finish
 @login_required(login_url="/login")
 @role_required(allowed_roles=['Admin','Manajemen Departemen','Properta'])
 def jadwal_dosen_bimbingan_no_filter_nim(request,nim):
@@ -14705,7 +14705,7 @@ def jadwal_dosen_bimbingan_no_filter_nim(request,nim):
             
             
     return render(request, 'dosen/jadwal_penilaian.html', {"jadwals": jadwal_data, "user_info": user_info,"role":role})
-
+# tbel penilaian dosen pembimbing dengan mengikutkan dosen filter active dengan nim
 @login_required(login_url="/login")
 @role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
 def jadwal_dosen_bimbingan_filter_nim(request,nim):
