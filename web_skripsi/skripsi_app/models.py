@@ -14,13 +14,20 @@ gd_storage = GoogleDriveStorage()
 #     first_name = models.CharField(max_length=120)
 
 class jadwal_semester(models.Model):
+    SEMESTER_OPTIONS = [
+        ('Semester Ganjil', 'Semester Ganjil'),
+        ('Semester Genap', 'Semester Genap'),
+        
+    ]
     id_jadwal_semester = models.BigAutoField(primary_key=True)
-    nama_semester = models.CharField(max_length=100,null=True)
+    nama_semester = models.CharField(
+        choices=SEMESTER_OPTIONS, max_length=60)
+    tahun_semester = models.CharField(max_length=100)
     tanggal_awal_semester = models.DateField(default=now,null=True)
     tanggal_akhir_semester = models.DateField(default=now,null=True)
 
     def __str__(self):
-        return str(self.nama_semester)
+        return str(self.nama_semester)+" "+str(self.tahun_semester)
     
     
 
@@ -103,7 +110,7 @@ class evaluasitopik(models.Model):
     # choices
     status_topik = models.CharField(
         choices=status_choices, max_length=60, default=SUBMIT)
-    catatan = models.TextField(blank=True)
+    catatan = models.TextField()
     tanggal_buat = models.DateTimeField(auto_now_add=True)
     tanggal_update = models.DateTimeField(auto_now=True)
 
@@ -208,10 +215,10 @@ class proposal(models.Model):
     laporan_akhir = 'Laporan Akhir'
     laporan_akhir_revisi = 'Laporan Akhir (Revisi Seminar Hasil)'
     status_choices = [
-        (proposal_awal, 'Proposal Awal (BAB 1 - BAB 3)'),
-        (proposal_awal_revisi, 'Proposal Awal (BAB 1 - BAB 3) Revisi Seminar Proposal'),
-        (laporan_akhir, 'Laporan Akhir (BAB 1 - BAB 5)'),
-        (laporan_akhir_revisi, 'Laporan Akhir (BAB 1 - BAB 5) Revisi Seminar Hasil'),  
+        (proposal_awal, 'Proposal Awal '),
+        (proposal_awal_revisi, 'Proposal Awal (Revisi Seminar Proposal)'),
+        (laporan_akhir, 'Laporan Akhir '),
+        (laporan_akhir_revisi, 'Laporan Akhir (evisi Seminar Hasil)'),  
     ]
     id_proposal = models.BigAutoField(primary_key=True)
     nim = models.ForeignKey(mahasiswa, on_delete=models.CASCADE)
@@ -261,7 +268,7 @@ class cpmk(models.Model):
     id_nama_semester=models.ForeignKey(
         jadwal_semester, null=True, on_delete= models.SET_NULL)
     tahun_angkatan=models.IntegerField()
-    keterangan_sub_cpmk = models.TextField(blank=True)
+    # keterangan_sub_cpmk = models.TextField(blank=True)
     # id_cpmk = models.CharField(primary_key=True,max_length=60)
     keterangan_cpmk = models.TextField(blank=True)
     

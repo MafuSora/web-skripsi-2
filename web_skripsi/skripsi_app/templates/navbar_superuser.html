@@ -436,6 +436,9 @@
                     
                 </li>
                 <!-- Jadwal Seminar -->
+                {% if  user_info.2.name == 'Admin' %}
+                
+
                 <li>
                     <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#layoutsSeminar">
                         <span class="me-2"><i class="bi bi-layout-split"></i></span>
@@ -464,6 +467,8 @@
                         </ul>
                     </div>
                 </li>
+                
+                {% endif %}
                 <!-- Jadwal semester -->
                 <li>
                     <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#layoutsSemester">

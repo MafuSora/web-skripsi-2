@@ -9,13 +9,13 @@
 <div class="container">
   <h2>Tabel Daftar Evaluasi Topik</h2>
   <br>
-  <div class=" container-fluid text-end ">
+  <div class=" container-fluid text-start">
     <a class="btn btn-success text-white my-3" href="/evaluasitopikget">Tanpa Filter</a>
     {%if user_info.2.name != "Mahasiswa"%}
-    <a class="btn btn-success text-white my-3" href="{% url 'evaluasitopik_get_sudah_ACC'  %}">Filter ACC</a>
-    <a class="btn btn-success text-white my-3" href="{% url 'evaluasitopik_get_sudah_revisi'  %}">Filter Revisi</a>
-    <a class="btn btn-success text-white my-3" href="{% url 'evaluasitopik_get_sudah_evaluasi'  %}">Filter Sudah Evaluasi</a>
-    <a class="btn btn-success text-white my-3" href="/evaluasitopikgetrevise">Filter Belum Evaluasi</a>
+    <a class="btn btn-success text-white my-3" href="{% url 'evaluasitopik_get_sudah_ACC'  %}">Filter Evaluasi Topik Sudah ACC</a>
+    <a class="btn btn-success text-white my-3" href="{% url 'evaluasitopik_get_sudah_revisi'  %}">Filter Evaluasi Topik Sudah di Revisi</a>
+    <a class="btn btn-success text-white my-3" href="{% url 'evaluasitopik_get_sudah_evaluasi'  %}">Filter Evaluasi Topik Sudah ACC dan Revisi</a>
+    <a class="btn btn-success text-white my-3" href="/evaluasitopikgetrevise">Filter Evaluasi Topik Belum Evaluasi</a>
     {%endif%}
   </div>
 
@@ -67,36 +67,42 @@
 
 
 
-
             {%if user_info.2.name == "Kompartemen" or user_info.2.name == "Admin" or user_info.2.name == "Properta" %}
-            <a class="btn w-100 text-black px-1 my-1" style='background-color:#FFB92E;' type="button"
-              href="{% url 'evaluasitopik_update' item.id_evaluasi_topik %}">UPDATE</a>
-            <br>
-            <a class="btn btn-danger btn-md w-100 px-1 my-1" type="button" data-bs-toggle="modal"
-              data-bs-target="#staticBackdrop{{item.id_evaluasi_topik}}">DELETE</a>
+            {% if item.status_topik == "Selesai Assign Dosen Kompartemen" %}
 
-            <!-- Modal -->
-            <div class="modal fade" id="staticBackdrop{{item.id_evaluasi_topik}}" data-bs-backdrop="static" data-bs-keyboard="false"
-              tabindex="-1" aria-labelledby="staticBackdropLabel{{item.id_evaluasi_topik}}" aria-hidden="true" name="{{item.id_evaluasi_topik}}">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="staticBackdropLabel{{item.id_evaluasi_topik}}">Apakah
-                      anda yakin akan
-                      menghapus
-                      evaluasi topik dengan id {{item.id_evaluasi_topik}} & dan judul proposal {{item.id_usulan_topik.judul_topik}} ?</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">
-                    Data tidak akan dikembalikan ketika telah menekan tombol "Ya"
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
-                    <a type="button" class="btn btn-danger" href="{%url 'evaluasitopik_delete' item.id_evaluasi_topik%}">Ya</a>
-                  </div>
+            {% elif item.status_topik == "Menunggu Dosen Kompartemen" %}
+            
+            {% else %}
+            <a class="btn w-100 text-black px-1 my-1" style='background-color:#FFB92E;' type="button"
+            href="{% url 'evaluasitopik_update' item.id_evaluasi_topik %}">UPDATE</a>
+          <br>
+          <a class="btn btn-danger btn-md w-100 px-1 my-1" type="button" data-bs-toggle="modal"
+            data-bs-target="#staticBackdrop{{item.id_evaluasi_topik}}">DELETE</a>
+
+          <!-- Modal -->
+          <div class="modal fade" id="staticBackdrop{{item.id_evaluasi_topik}}" data-bs-backdrop="static" data-bs-keyboard="false"
+            tabindex="-1" aria-labelledby="staticBackdropLabel{{item.id_evaluasi_topik}}" aria-hidden="true" name="{{item.id_evaluasi_topik}}">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="staticBackdropLabel{{item.id_evaluasi_topik}}">Apakah
+                    anda yakin akan
+                    menghapus
+                    evaluasi topik dengan id {{item.id_evaluasi_topik}} & dan judul proposal {{item.id_usulan_topik.judul_topik}} ?</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  Data tidak akan dikembalikan ketika telah menekan tombol "Ya"
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
+                  <a type="button" class="btn btn-danger" href="{%url 'evaluasitopik_delete' item.id_evaluasi_topik%}">Ya</a>
                 </div>
               </div>
             </div>
+          </div>
+            {% endif %}
+         
             {%endif%}
           </form>
         </td>

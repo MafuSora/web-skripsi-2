@@ -265,6 +265,7 @@
             </div>
           </div>
       </div>
+
       {% endif %}
       {% if user_info.2.name == 'Manajemen Departemen' or user_info.2.name == 'Dosen' or user_info.2.name == 'Kompartemen' or user_info.2.name == 'Admin' or user_info.2.name == "Properta" %}
       <!-- Earnings (Monthly) Card Example -->
@@ -294,6 +295,54 @@
             </div>
           </div>
       </div>
+      {% comment %} <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-success shadow h-100 pt-2">
+              <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                          <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                              Jumlah Penilaian Pembimbing yang Masih Kosong</div>
+                          <div class="h5 mb-0 font-weight-bold text-gray-800">{{jumlah_belum_seminar_pembimbing}}</div>
+                      </div>
+                      <div class="col-auto">
+                          <i class="fas fa-file-circle-check fa-2x text-gray-300"></i>
+                      </div>
+                  </div>
+              </div>
+              <div class="card-footer text-muted text-center align-items-center mt-3">
+                <div class="col">
+                    <a href="{% url 'jadwal_dosen_bimbingan_belum_dinilai_2' %}" class="text-danger">
+                        Menuju Penilaian <i class="fas fa-arrow-right ml-1"></i>
+                      </a>
+                   
+                </div>
+            </div>
+          </div>
+      </div> {% endcomment %}
+      {% comment %} <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-success shadow h-100 pt-2">
+              <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                          <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                              Jumlah Penilaian Pembimbing yang Masih Kosong</div>
+                          <div class="h5 mb-0 font-weight-bold text-gray-800">{{jumlah_belum_penilaian_pembimbing}}</div>
+                      </div>
+                      <div class="col-auto">
+                          <i class="fas fa-file-circle-check fa-2x text-gray-300"></i>
+                      </div>
+                  </div>
+              </div>
+              <div class="card-footer text-muted text-center align-items-center mt-3">
+                <div class="col">
+                    <a href="{% url 'tabulasi_penilaian_belum_lengkap_bimbingan' %}" class="text-danger">
+                        Menuju Penilaian <i class="fas fa-arrow-right ml-1"></i>
+                      </a>
+                   
+                </div>
+            </div>
+          </div>
+      </div> {% endcomment %}
       <!-- Earnings (Monthly) Card Example -->
       <div class="col-xl-3 col-md-6 mb-4">
         <div class="card border-left-success shadow h-100">

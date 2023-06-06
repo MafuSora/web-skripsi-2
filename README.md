@@ -206,3 +206,21 @@ DATABASES = {
 ## RUN UNIT TESTING : Same Folder
 
 > ``python manage.py test name_file``
+
+# COVERAGE TEST
+
+> ```
+> pip install coverage
+> coverage run --source "module_will_be_tested" manage.py test -v 2
+>
+> coverage report
+> ```
+
+# REPORT COVERAGE : HTML
+
+`coverage html`
+
+# For Debugging
+
+1. Make Sure See The Cronologist Email Report On Web Skripsi Gmail Account or ask the chronologist to person who got error
+2. On Django Don't Forget To turn off `DEBUG=False` To `DEBUG=True`

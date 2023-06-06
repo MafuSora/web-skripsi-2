@@ -1,19 +1,27 @@
+# Library Validator
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
+from django.core.validators import validate_email,MaxValueValidator,MinValueValidator,MinLengthValidator,MaxLengthValidator
+
+# library form
 from django import forms
 # from django.db import models
+
+# User Form
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+
+
+# Model Reference
 from django.contrib.auth.models import User
 # , Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from .models import cpmk,jadwal_seminar,penilaian, bimbingan,notifikasi, detailpenilaian, evaluasitopik, proposal,notifikasi, roledosen, usulantopik, dosen, kompartemen, mahasiswa, kompartemendosen,jadwal_semester, sub_cpmk
 # from .widget import DatePickerInput, TimePickerInput, DateTimePickerInput
+
+# widget library
 from .widget import DatePickerInput, TimePickerInput
 # , DateTimePickerInput
 # from django.forms.widgets import TimeInput
-# User Form
-from django.core.validators import validate_email,MaxValueValidator,MinValueValidator
-
 
 # Function untuk menampilkan waktu
 import time,datetime
@@ -21,8 +29,14 @@ import time,datetime
 # menampilakan tanggal
 tanggalan=datetime.datetime.now()
 tahun=tanggalan.strftime("%Y")
+
+
+# User Form
+def ubac_email_validator(value):
+    if not value.endswith('ub.ac.id'):
+        raise ValidationError('Alamat email harus menggunakan domain email ub.ac.id')
 class RegistrationForm(UserCreationForm):
-    email = forms.EmailField(required=True, validators=[validate_email])
+    email = forms.EmailField(required=True, validators=[validate_email, ubac_email_validator])
     first_name = forms.CharField(max_length=120, required=True,label='Nama Lengkap')
     class Meta:
         model = User
@@ -60,19 +74,6 @@ class CreateUserForm(UserCreationForm):
         self.fields['first_name'].label = 'Nama Lengkap'
         # self.fields['id_user'].label = 'Username'
 
-
-class NipForm(forms.ModelForm):
-    # photo_file = forms.ImageField()
-    nip=forms.CharField(validators=[RegexValidator(r'^\S+$', 'Tidak boleh ada spasi')])
-    class Meta:
-        
-        model = dosen
-        fields = ['nip', "photo_file"]
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['nip'].label = 'NIP'
-
-
 class UpdateAdminUserForm(UserChangeForm):
     email = forms.EmailField(required=True, validators=[validate_email])
     first_name = forms.CharField(max_length=120, required=True,label='Nama Lengkap')
@@ -98,7 +99,21 @@ class UpdateUserForm(UserChangeForm):
         self.fields['username'].label = 'Username'
         self.fields['first_name'].label = 'Nama Lengkap'
 
-# dosen
+class NipForm(forms.ModelForm):
+    # photo_file = forms.ImageField()
+    nip=forms.CharField(validators=[RegexValidator(r'^\S+$', 'Tidak boleh ada spasi')])
+    class Meta:
+        
+        model = dosen
+        fields = ['nip', "photo_file"]
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['nip'].label = 'NIP'
+
+
+
+
+# Form dosen
 class UpdateAdminDosenForm(forms.ModelForm):
     nip=forms.CharField(validators=[RegexValidator(r'^\S+$', 'Tidak boleh ada spasi')])
     class Meta:
@@ -273,6 +288,9 @@ class UsulanTopikForm(forms.ModelForm):
 
 
 class EvaluasiTopikFormFull(forms.ModelForm):
+    catatan= forms.CharField(widget=forms.Textarea, validators=[
+        MinLengthValidator(200, 'Panjang karakter minimum adalah 200.')
+    ])
     class Meta:
         model = evaluasitopik
         fields = ["id_dosen_kompartemen", "id_usulan_topik",
@@ -304,7 +322,7 @@ class EvaluasiTopikFormKompartemen(forms.ModelForm):
 #         model = DosenPembimbing
 #         fields = ["nip", "nim", "Role"]
 
-
+# Form Proposal
 class ProposalFormFull(forms.ModelForm):
     class Meta:
         model = proposal
@@ -313,13 +331,21 @@ class ProposalFormFull(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['nim'].label = 'Mahasiswa'
+        self.fields['judul_proposal'].label = 'Judul Berkas Skripsi'
+        self.fields['file_proposal'].label = 'File Berkas Skripsi'
 class ProposalForm(forms.ModelForm):
     class Meta:
         model = proposal
         fields = [  "nama_tahap", "judul_proposal",
-                  "file_proposal", "keterangan"
+                  "file_proposal", "keterangan"]
+                  
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        self.fields['judul_proposal'].label = 'Judul Berkas Skripsi'
+        self.fields['file_proposal'].label = 'File Berkas Skripsi'
 
-]
+
 class ProposalFormRead(forms.ModelForm):
     class Meta:
         model = proposal
@@ -328,8 +354,10 @@ class ProposalFormRead(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['nim'].label = 'Mahasiswa'
+        self.fields['judul_proposal'].label = 'Judul Berkas Skripsi'
+        self.fields['file_proposal'].label = 'File Berkas Skripsi'
 
-
+# Form Role Dosen
 class RoleDosenForm(forms.ModelForm):
     class Meta:
         model = roledosen
@@ -358,7 +386,7 @@ class RoleDosenFormUpdateSekdept(forms.ModelForm):
         self.fields['nip'].label = 'Dosen'
         self.fields['nim'].label = 'Mahasiswa'
 
-
+# Form Detail Penilaian
 class DetailPenilaianForm(forms.ModelForm):
     class Meta:
         model = detailpenilaian
@@ -398,6 +426,7 @@ class DetailPenilaianDosenForm(forms.ModelForm):
             # "id_jadwal_seminar",
             "status_kelulusan","hasil_review"]
 
+# Form Bimbingan
 class BimbinganForm(forms.ModelForm):
     class Meta:
         model = bimbingan
@@ -421,14 +450,7 @@ class BimbinganFormDosenUpdate(forms.ModelForm):
         model = bimbingan
         fields = [ "status_bimbingan", "catatan"]
 
-
-# class SubCPMKForm(forms.ModelForm):
-#     class Meta:
-#         model = sub_cpmk
-#         fields = ["keterangan_sub_cpmk","cpmk_utama","keterangan_cpmk_utama", "bobot_persen_sempro","bobot_sempro","bobot_persen_semhas","bobot_semhas","bobot_persen_pembimbing","bobot_pembimbing"]
-
-
-
+# Form Penilaian 
 class PenilaianForm(forms.ModelForm):
     # sub_cpmk_2= forms.CharField(disabled=True)
     
@@ -470,21 +492,69 @@ class PenilaianForm(forms.ModelForm):
         # widgets = {
         #     'id_sub_cpmk': forms.ModelChoiceField(queryset=sub_cpmk.objects.all(),widget=forms.Select(attrs={'disabled': 'disabled', 'selected': 'selected'}))
         # }
+        
+# Form Sub CMK 
 class SubCPMKForm(forms.ModelForm):
     tahun_angkatan=forms.IntegerField(validators=[MinValueValidator(2004),MaxValueValidator(int(tahun)+1)])
     id_sub_cpmk=forms.CharField(validators=[RegexValidator(r'^\S+$', 'Tidak boleh ada spasi')])
+    bobot_sempro=forms.FloatField(validators=[MaxValueValidator(1)])
+    bobot_semhas=forms.FloatField(validators=[MaxValueValidator(1)])
+    bobot_pembimbing=forms.FloatField(validators=[MaxValueValidator(1)])
+    # bobot_persen_sempro=forms.CharField(validators=[RegexValidator(r'^[\d%]*$', 'Hanya angka dan simbol persen (%) yang diperbolehkan.'),MaxLengthValidator(4, 'Harus terdiri dari tepat 4 Karakter.')])
+    # bobot_persen_semhas=forms.CharField(validators=[RegexValidator(r'^[\d%]*$', 'Hanya angka dan simbol persen (%) yang diperbolehkan.'),MaxLengthValidator(4, 'Harus terdiri dari tepat 4 Karakter.')])
+    # bobot_persen_pembimbing=forms.CharField(validators=[
+    #     RegexValidator(r'^[\d/]+$', 'Hanya angka dan simbol persen (%) yang diperbolehkan.'),
+    #     MaxLengthValidator(4, 'Harus terdiri dari tepat 4 karakter.'),
+    # ])
+    bobot_persen_sempro=forms.CharField(validators=[RegexValidator(r'^[\d%]+$', 'Hanya angka dan simbool persen  yang diperbolehkan.'),MaxLengthValidator(4, 'Harus terdiri dari tepat 4 Karakter.')])
+    bobot_persen_semhas=forms.CharField(validators=[RegexValidator(r'^[\d%]+$', 'Hanya angka dan simbool persen  yang diperbolehkan.'),MaxLengthValidator(4, 'Harus terdiri dari tepat 4 Karakter.')])
+    bobot_persen_pembimbing=forms.CharField(validators=[RegexValidator(r'^[\d%]+$', 'Hanya angka dan simbool persen  yang diperbolehkan.'),MaxLengthValidator(4, 'Harus terdiri dari tepat 4 Karakter.')])
     class Meta:
         
         model = sub_cpmk
         fields = ["id_sub_cpmk",'id_nama_semester',"tahun_angkatan","keterangan_sub_cpmk",
-                  "id_cpmk", 
-                  "bobot_persen_sempro","bobot_sempro","bobot_persen_semhas","bobot_semhas","bobot_persen_pembimbing","bobot_pembimbing"]
+                  "id_cpmk","bobot_persen_sempro","bobot_sempro","bobot_persen_semhas","bobot_semhas","bobot_persen_pembimbing","bobot_pembimbing"]
         # ,"id_nama_semester"
+        
+    def clean(self):
+        cleaned_data = super().clean()
+        my_text_value_1 = cleaned_data.get('bobot_persen_sempro')
+        my_text_value_2 = cleaned_data.get('bobot_persen_semhas')
+        my_text_value_3 = cleaned_data.get('bobot_persen_pembimbing')
+        print(cleaned_data)
+        print(my_text_value_1)
+        print(my_text_value_2)
+        print(my_text_value_3)
+        if my_text_value_1 and my_text_value_1.count('%') != 1 :
+                raise forms.ValidationError("Harus hanya terdapat tepat satu persen (%) dalam nilai.")
+        if my_text_value_2 and my_text_value_2.count('%')!=1 :
+                raise forms.ValidationError("Harus hanya terdapat tepat satu persen (%) dalam nilai.")
+        if my_text_value_3  and my_text_value_3.count('%')!=1:
+                raise forms.ValidationError("Harus hanya terdapat tepat satu persen (%) dalam nilai.")
+        if my_text_value_1 and '%' in my_text_value_1:
+            # Validasi tambahan jika garis miring ada di dalam nilai
+            # Contoh: Memastikan garis miring tidak di awal atau akhir nilai
+            if my_text_value_1.startswith('%') or my_text_value_1.endswith('%'):
+                raise forms.ValidationError("Persen (%) tidak boleh berada di awal atau akhir nilai.")
+        if my_text_value_2 and '%' in my_text_value_2:
+            # Validasi tambahan jika garis miring ada di dalam nilai
+            # Contoh: Memastikan garis miring tidak di awal atau akhir nilai
+            if my_text_value_2.startswith('%') or my_text_value_2.endswith('%'):
+                raise forms.ValidationError("Persen (%) tidak boleh berada di awal atau akhir nilai.")
+        if my_text_value_3 and '%' in my_text_value_3:
+            # Validasi tambahan jika garis miring ada di dalam nilai
+            # Contoh: Memastikan garis miring tidak di awal atau akhir nilai
+            if my_text_value_3.startswith('%') or my_text_value_3.endswith('%'):
+                raise forms.ValidationError("Persen (%) tidak boleh berada di awal atau akhir nilai.")
+        return cleaned_data
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['id_nama_semester'].label = 'Nama Semester'
         self.fields['id_sub_cpmk'].label = 'Sub CPMK'
         self.fields['id_cpmk'].label = 'CPMK'
+        
+        
+   
         # self.fields['keterangan_cpmk_utama'].label = 'Keterangan CPMK'
     # def clean_my_field(self):
     #     data = self.cleaned_data['id_sub_cpmk']
@@ -492,6 +562,7 @@ class SubCPMKForm(forms.ModelForm):
     #         raise ValidationError("Field tidak boleh mengandung spasi")
         # return data
 
+# Form CPMK 
 class CPMKForm(forms.ModelForm):
     tahun_angkatan = forms.IntegerField(validators=[MinValueValidator(2004),MaxValueValidator(int(tahun)+1)])
     id_cpmk=forms.CharField(validators=[RegexValidator(r'^\S+$', 'Tidak boleh ada spasi')])
@@ -512,6 +583,7 @@ class CPMKForm(forms.ModelForm):
 #         model = penilaian
 #         fields = ["id_sub_cpmk", "nilai" ]
 
+# Form Notifikasi
 class NotifikasiForm(forms.ModelForm):
     class Meta:
         model = notifikasi
@@ -519,7 +591,7 @@ class NotifikasiForm(forms.ModelForm):
 
 
 
-
+# Form Jadwal Seminar
 class JadwalForm(forms.ModelForm):
 
     dosen_pembimbing_1= forms.ModelChoiceField(queryset=roledosen.objects.filter(role="Pembimbing 1").filter(status="Active"),required=True)
@@ -649,11 +721,31 @@ class JadwalFormTanpaFilter(forms.ModelForm):
         return cleaned_data  
    
 
-
+# Form Jadwal Semester
 class JadwalSemesterForm(forms.ModelForm):
+    # OPTIONS = [
+    #     ('Semester Ganjil', 'Semester Ganjil'),
+    #     ('Semester Genap', 'Semester Genap'),
+        
+    # ]
+    # my_choice = forms.ChoiceField(choices=OPTIONS, label= "Nama Semester")
+    tahun_semester=forms.CharField(validators=[RegexValidator(r'^[\d/]+$', 'Hanya angka dan garis miring yang diperbolehkan.'),MinLengthValidator(9, 'Harus terdiri dari tepat 9 Karakter.'),MaxLengthValidator(9, 'Harus terdiri dari tepat 9 Karakter.')])
     tanggal_awal_semester= forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
     tanggal_akhir_semester= forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
     class Meta:
         model = jadwal_semester
-        fields = ["nama_semester","tanggal_awal_semester","tanggal_akhir_semester"]
+        fields = ["nama_semester","tahun_semester","tanggal_awal_semester","tanggal_akhir_semester"]
+    def clean(self):
+        cleaned_data = super().clean()
+        my_text_value = cleaned_data.get('tahun_semester')
+        if my_text_value and my_text_value.count('/') != 1:
+                raise forms.ValidationError("Harus hanya terdapat tepat satu garis miring (/) dalam nilai.")
+        if my_text_value and '/' in my_text_value:
+            # Validasi tambahan jika garis miring ada di dalam nilai
+            # Contoh: Memastikan garis miring tidak di awal atau akhir nilai
+            if my_text_value.startswith('/') or my_text_value.endswith('/'):
+                raise forms.ValidationError("Garis miring (/) tidak boleh berada di awal atau akhir nilai.")
+        return cleaned_data
+
+   
 

@@ -13,20 +13,20 @@
   {%elif role == "Dosen Pembimbing" %}
   <h2>Tabel Berkas Skripsi Dosen Pembimbing</h2>
   <div class="container-fluid text-start"><a class="btn btn-success text-white mb-2"
-    href="/proposalget/pembimbing">Tanpa Filter
+    href="/proposalget/pembimbing">Tampilkan Berkas Skripsi Tanpa Filter
      </a></div>
   <div class="container-fluid text-start">
     <a class="btn btn-success text-white mb-2"
-    href="/proposalget/pembimbing/acc">Filter
+    href="/proposalget/pembimbing/acc">Filter Berkas Skripsi
     Belum Diperiksa </a>
     <a class="btn btn-success text-white mb-2"
-    href="/proposalget/pembimbing/sudah_diperiksa">Filter
-    Sudah Diperiksa </a>
+    href="/proposalget/pembimbing/sudah_diperiksa">Filter Berkas Skripsi
+    Sudah Diperiksa (ACC & Revisi) </a>
     <a class="btn btn-success text-white mb-2"
-    href="/proposalget/pembimbing/sudah_acc">Filter
+    href="/proposalget/pembimbing/sudah_acc">Filter Berkas Skripsi dengan Status
     ACC </a>
     <a class="btn btn-success text-white mb-2"
-    href="/proposalget/pembimbing/revisi">Filter
+    href="/proposalget/pembimbing/revisi">Filter Berkas Skripsi dengan Status 
     Revisi </a>
   </div>
   {% comment %} <div class="container-fluid text-start"><a class="btn btn-success text-white mb-2"
@@ -66,16 +66,16 @@
   {%else%}
   <h2>Tabel Berkas Skripsi</h2>
   <div class="container-fluid text-start"><a class="btn btn-success text-white mb-2"
-    href="/proposalget/">Tanpa Filter
+    href="/proposalget/">Tampilkan Berkas Skripsi Tanpa Filter
      </a></div>
   <div class="container-fluid text-start">
 
     <a class="btn btn-success text-white mb-2"
     href="/proposalget_acc">Filter
-    Berkas Skripsi ACC</a>
+    Berkas Skripsi dengan Status ACC</a>
     <a class="btn btn-success text-white mb-2"
     href="/proposalget_revisi">Filter
-    Berkas Skripsi Revisi</a>
+    Berkas Skripsi dengan Status Revisi</a>
     <a class="btn btn-success text-white mb-2"
     href="/proposalget_diperiksa">Filter
     Berkas Skripsi Belum Diperiksa</a>
@@ -100,7 +100,7 @@
 
   <div class="container-fluid text-start">
     <a class="btn btn-success text-white my-1"
-    href="/proposalget5">Tabel Proposal ACC 5 tahun Ke Belakang
+    href="/proposalget5">Tabel Berkas Skripsi ACC 5 tahun Ke Belakang
     </a>
     <a class="btn btn-success text-white my-1"
     href="/proposalget5/sempro">Proposal Awal

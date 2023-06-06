@@ -16,17 +16,34 @@
     href="{% url 'jadwal_dosen_bimbingan_tanpa_filter' %}">Tanpa Filter
     </a>
     <a class="btn btn-success text-white mb-2"
-    href="{% url 'jadwal_dosen_bimbingan' %}"> Filter Dosen Aktif
+    href="{% url 'jadwal_dosen_bimbingan' %}"> Filter Dosen Aktif Menjabat
     </a>
     <a class="btn btn-success text-white mb-2"
-    href="{% url 'jadwal_dosen_bimbingan_belum_dinilai' %}">Filter
-    Penilaian Kosong</a>
+    href="{% url 'jadwal_dosen_bimbingan_sudah_dinilai' %}">Filter
+    Penilaian Lengkap</a>
     <a class="btn btn-success text-white mb-2"
     href="{% url 'jadwal_dosen_bimbingan_sebagian_dinilai' %}">Filter
     Penilaian Sebagian Lengkap</a>
     <a class="btn btn-success text-white mb-2"
-    href="{% url 'jadwal_dosen_bimbingan_sudah_dinilai' %}">Filter
+    href="{% url 'jadwal_dosen_bimbingan_belum_dinilai' %}">Filter
+    Penilaian Kosong</a>
+
+
+  </div>
+  <div class="container-fluid text-start">
+    <a class="btn btn-success text-white mb-2"
+    href="{% url 'jadwal_dosen_bimbingan_tanpa_filter_2' %}">Tanpa Filter
+    </a>
+    <a class="btn btn-success text-white mb-2"
+    href="{% url 'jadwal_dosen_bimbingan_2' %}"> Filter Dosen Aktif Menjabat
+    </a>
+
+    <a class="btn btn-success text-white mb-2"
+    href="{% url 'jadwal_dosen_bimbingan_sudah_dinilai_2' %}">Filter
     Penilaian Lengkap</a>
+    <a class="btn btn-success text-white mb-2"
+    href="{% url 'jadwal_dosen_bimbingan_belum_dinilai_2' %}">Filter
+    Penilaian Kosong</a>
   </div>
   {%elif role == "Dosen Seminar Proposal" %}
   <h2>Tabel Penilaian Dosen Seminar Proposal</h2>

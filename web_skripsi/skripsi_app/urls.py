@@ -75,7 +75,11 @@ urlpatterns = [
     path('mahasiswaprogress/', views.mahasiswa_progress_get, name='mahasiswa_progress_get'),
     path('mahasiswaprogressbulan/', views.mahasiswa_progress_by_bulan, name='mahasiswa_progress_by_bulan'),
     path('mahasiswaprogressbulan/dosen', views.mahasiswa_progress_by_bulan_dosen, name='mahasiswa_progress_by_bulan_dosen'),
-    path('mahasiswawaktu/', views.mahasiswa_waktu_get, name='mahasi swa_waktu_get'),
+    path('mahasiswawaktu/', views.mahasiswa_waktu_get, name='mahasiswa_waktu_get'),
+    path('mahasiswawaktu/usulan/acc-revisi-semhas', views.mahasiswa_waktu_get_usulan, name='mahasiswa_waktu_get_usulan'),
+    path('mahasiswawaktu/evaluasi/acc-sempro', views.mahasiswa_waktu_get_evaluasi, name='mahasiswa_waktu_get_evaluasi'),
+    path('mahasiswawaktu/acc-revisi-sempro/acc-revisi-semhas', views.mahasiswa_waktu_get_berkas, name='mahasiswa_waktu_get_berkas'),
+    path('mahasiswawaktu/durasi-evaluasi', views.mahasiswa_waktu_get_kompartemen, name='mahasiswa_waktu_get_kompartemen'),
     
     path('mahasiswa_read/<str:id>', views.mahasiswa_read, name='mahasiswa_read'),
     path('mahasiswa_update/<str:id>',
@@ -188,7 +192,7 @@ urlpatterns = [
          views.dosenpembimbing_get, name='dosenpembimbing_get'),
     path('roledosen_update/<int:id>',
          views.dosenpembimbing_update, name='dosenpembimbing_update'),
-    path('roledosen_delete/int:id>',
+    path('roledosen_delete/<int:id>',
          views.dosenpembimbing_delete, name='dosenpembimbing_delete'),
 
     # bimbingan
@@ -421,19 +425,46 @@ urlpatterns = [
      
      path('tabulasi_penilaian/',
          views.tabulasi_penilaian, name='tabulasi_penilaian'),
+     
+     path('tabulasi_penilaian/bimbingan/belum',
+         views.tabulasi_penilaian_belum_lengkap_bimbingan, name='tabulasi_penilaian_belum_lengkap_bimbingan'),
+     path('tabulasi_penilaian/bimbingan/sudah',
+         views.tabulasi_penilaian_sudah_lengkap_bimbingan, name='tabulasi_penilaian_sudah_lengkap_bimbingan'),
+     path('tabulasi_penilaian/sempro/belum',
+         views.tabulasi_penilaian_belum_lengkap_sempro, name='tabulasi_penilaian_belum_lengkap_sempro'),
+     path('tabulasi_penilaian/sempro/sudah',
+         views.tabulasi_penilaian_sudah_lengkap_sempro, name='tabulasi_penilaian_sudah_lengkap_sempro'),
+     path('tabulasi_penilaian/semhas/belum',
+         views.tabulasi_penilaian_belum_lengkap_semhas, name='tabulasi_penilaian_belum_lengkap_semhas'),
+     path('tabulasi_penilaian/semhas/sudah',
+         views.tabulasi_penilaian_sudah_lengkap_semhas, name='tabulasi_penilaian_sudah_lengkap_semhas'),
+     
      path('tabulasi_penilaian_no_filter/',
          views.tabulasi_penilaian_no_filter, name='tabulasi_penilaian_no_filter'),
      
      path('jadwal_bimbingan/',
          views.jadwal_dosen_bimbingan_tanpa_filter, name='jadwal_dosen_bimbingan_tanpa_filter'),
+     path('jadwal_bimbingan_2/',
+         views.jadwal_dosen_bimbingan_tanpa_filter_2, name='jadwal_dosen_bimbingan_tanpa_filter_2'),
+     # jadwal_dosen_bimbingan_tanpa_filter_2
      path('jadwal_bimbingan/all',
          views.jadwal_dosen_bimbingan, name='jadwal_dosen_bimbingan'),
+     path('jadwal_bimbingan_2/all',
+         views.jadwal_dosen_bimbingan_2, name='jadwal_dosen_bimbingan_2'),
+     # jadwal_dosen_bimbingan_2
      path('jadwal_bimbingan/nilai',
          views.jadwal_dosen_bimbingan_sudah_dinilai, name='jadwal_dosen_bimbingan_sudah_dinilai'),
+     path('jadwal_bimbingan_2/nilai',
+         views.jadwal_dosen_bimbingan_sudah_dinilai_2, name='jadwal_dosen_bimbingan_sudah_dinilai_2'),
+     # jadwal_dosen_bimbingan_sudah_dinilai_2
      path('jadwal_bimbingan/sebagian',
          views.jadwal_dosen_bimbingan_sebagian_dinilai, name='jadwal_dosen_bimbingan_sebagian_dinilai'),
      path('jadwal_bimbingan/belum',
          views.jadwal_dosen_bimbingan_belum_dinilai, name='jadwal_dosen_bimbingan_belum_dinilai'),
+     path('jadwal_bimbingan_2/belum',
+         views.jadwal_dosen_bimbingan_belum_dinilai_2, name='jadwal_dosen_bimbingan_belum_dinilai_2'),
+     
+     # jadwal_dosen_bimbingan_belum_dinilai_2
 
      path('jadwal_sempro/',
          views.jadwal_dosen_sempro_tanpa_filter, name='jadwal_dosen_sempro_tanpa_filter'),

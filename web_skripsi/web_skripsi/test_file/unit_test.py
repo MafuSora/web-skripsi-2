@@ -1,5 +1,5 @@
 from django.test import TestCase
-from ...skripsi_app.models import jadwal_seminar,cpmk, jadwal_semester, kompartemen, mahasiswa, dosen,kompartemendosen,usulantopik,evaluasitopik,roledosen,detailpenilaian,sub_cpmk,notifikasi,bimbingan,proposal,penilaian
+from skripsi_app.models import jadwal_seminar,cpmk, jadwal_semester, kompartemen, mahasiswa, dosen,kompartemendosen,usulantopik,evaluasitopik,roledosen,detailpenilaian,sub_cpmk,notifikasi,bimbingan,proposal,penilaian
 from django.core.files import File
 from django.contrib.auth.models import User,Group
 from datetime import datetime
@@ -45,41 +45,12 @@ class UserTest(TestCase):
         user = User.objects.get(id=self.test_user.id)
         user.delete()
         self.assertEqual(User.objects.count(), 0)
-class cpmk_utamaTestCase(TestCase):
-    def setUp(self):
-        self.cpmk_utama_obj = cpmk.objects.create(
-            id_cpmk="CPMK-001",
-            keterangan_cpmk="Deskripsi cpmk_utama pertama"
-        )
-
-    def test_cpmk_utama_creation(self):
-        self.assertTrue(isinstance(self.cpmk_utama_obj, cpmk))
-        self.assertEqual(self.cpmk_utama_obj.__str__(), "CPMK-001-Deskripsi cpmk_utama pertama")
-
-    def test_cpmk_utama_update(self):
-        self.cpmk_utama_obj.id_cpmk = "CPMK-002"
-        self.cpmk_utama_obj.keterangan_cpmk = "Deskripsi cpmk_utama kedua"
-        self.cpmk_utama_obj.save()
-
-        self.assertEqual(self.cpmk_utama_obj.__str__(), "CPMK-002-Deskripsi cpmk_utama kedua")
         
-    def test_read_cpmk(self):
-        cpmk1 = cpmk.objects.get(id_cpmk='CPMK-001')
-        self.assertEqual(cpmk1.keterangan_cpmk, 'Deskripsi cpmk_utama pertama')
-        cpmk.objects.create(id_cpmk='CPMK002', keterangan_cpmk='Deskripsi cpmk_utama kedua')
-        cpmks = cpmk.objects.all()
-        self.assertEqual(len(cpmks), 2)
-
-    def test_cpmk_utama_deletion(self):
-        self.cpmk_utama_obj.delete()
-        self.assertFalse(cpmk.objects.filter(id_cpmk="CPMK-001").exists())
-
-
-
 class JadwalSemesterModelTestCase(TestCase):
     def setUp(self):
         self.jadwal = jadwal_semester.objects.create(
             nama_semester='Semester Ganjil',
+            tahun_semester=2024,
             tanggal_awal_semester='2023-08-01',
             tanggal_akhir_semester='2023-12-31',
         )
@@ -87,6 +58,7 @@ class JadwalSemesterModelTestCase(TestCase):
     def test_create_jadwal_semester(self):
         jadwal_baru = jadwal_semester.objects.create(
             nama_semester='Semester Genap',
+            tahun_semester=2024,
             tanggal_awal_semester='2024-01-01',
             tanggal_akhir_semester='2024-05-31',
         )
@@ -105,6 +77,49 @@ class JadwalSemesterModelTestCase(TestCase):
     def test_delete_jadwal_semester(self):
         self.jadwal.delete()
         self.assertEqual(jadwal_semester.objects.count(), 0)
+
+
+     
+class cpmk_utamaTestCase(TestCase):
+    def setUp(self):
+        self.jadwal = jadwal_semester.objects.create(nama_semester='Semester 1',tahun_semester=2024, tanggal_awal_semester='2023-01-01', tanggal_akhir_semester='2023-06-30')
+        self.cpmk_utama_obj = cpmk.objects.create(
+            id_cpmk="CPMK-001",
+            keterangan_cpmk="Deskripsi cpmk_utama pertama",
+            tahun_angkatan=2019,
+            id_nama_semester=self.jadwal
+            
+        )
+
+    def test_cpmk_utama_creation(self):
+        cpmk.objects.create(
+            id_cpmk="new_id",
+            id_nama_semester=self.jadwal,
+            tahun_angkatan=2024,
+            keterangan_cpmk="new_keterangan"
+        )
+        new_cpmk = cpmk.objects.get(id_cpmk="new_id")
+        self.assertEqual(new_cpmk.__str__(), "new_id-2024-Semester 1 2024-new_keterangan")
+
+    def test_cpmk_utama_update(self):
+        self.cpmk_utama_obj.id_cpmk = "CPMK-002"
+        self.cpmk_utama_obj.keterangan_cpmk = "Deskripsi cpmk_utama kedua"
+        self.cpmk_utama_obj.save()
+
+        self.assertEqual(self.cpmk_utama_obj.__str__(), "CPMK-002-2019-Semester 1 2024-Deskripsi cpmk_utama kedua")
+        
+    def test_read_cpmk(self):
+        cpmk1 = cpmk.objects.get(id_cpmk='CPMK-001')
+        self.assertEqual(cpmk1.keterangan_cpmk, 'Deskripsi cpmk_utama pertama')
+        
+        cpmk.objects.create(id_cpmk='CPMK002',id_nama_semester=self.jadwal,
+            tahun_angkatan=2024, keterangan_cpmk='Deskripsi cpmk_utama kedua')
+        cpmks = cpmk.objects.all()
+        self.assertEqual(len(cpmks), 2)
+
+    def test_cpmk_utama_deletion(self):
+        self.cpmk_utama_obj.delete()
+        self.assertFalse(cpmk.objects.filter(id_cpmk="CPMK-001").exists())
         
 class KompartemenTest(TestCase):
     def setUp(self):
@@ -144,25 +159,25 @@ class MahasiswaCRUDTestCase(TestCase):
     
     def setUp(self):
         self.user = User.objects.create(username='testuser', first_name='Test', last_name='User')
-        self.jadwal = jadwal_semester.objects.create(nama_semester='Semester 1', tanggal_awal_semester='2023-01-01', tanggal_akhir_semester='2023-06-30')
-        self.mahasiswa = mahasiswa.objects.create(nim=123456789, semester_daftar_skripsi=self.jadwal, id_user=self.user)
+        self.jadwal = jadwal_semester.objects.create(nama_semester='Semester 1',tahun_semester=2024, tanggal_awal_semester='2023-01-01', tanggal_akhir_semester='2023-06-30')
+        self.mahasiswa = mahasiswa.objects.create(nim=123456789,angkatan=2019, semester_daftar_skripsi=self.jadwal, id_user=self.user)
     
     def test_create_mahasiswa(self):
         new_user = User.objects.create(username='newuser', first_name='New', last_name='User')
-        new_jadwal = jadwal_semester.objects.create(nama_semester='Semester 2', tanggal_awal_semester='2023-07-01', tanggal_akhir_semester='2023-12-31')
-        new_mahasiswa = mahasiswa.objects.create(nim=987654321, semester_daftar_skripsi=new_jadwal, id_user=new_user)
+        new_jadwal = jadwal_semester.objects.create(nama_semester='Semester 2',tahun_semester=2024, tanggal_awal_semester='2023-07-01', tanggal_akhir_semester='2023-12-31')
+        new_mahasiswa = mahasiswa.objects.create(nim=987654321,angkatan=2019, semester_daftar_skripsi=new_jadwal, id_user=new_user)
         self.assertEqual(new_mahasiswa.nim, 987654321)
         self.assertEqual(new_mahasiswa.semester_daftar_skripsi, new_jadwal)
         self.assertEqual(new_mahasiswa.id_user, new_user)
     
     def test_read_mahasiswa(self):
         mahasiswa_db = mahasiswa.objects.get(nim=123456789)
-        self.assertEqual(mahasiswa_db.nim, 123456789)
+        self.assertEqual(mahasiswa_db.nim, str(123456789))
         self.assertEqual(mahasiswa_db.semester_daftar_skripsi, self.jadwal)
         self.assertEqual(mahasiswa_db.id_user, self.user)
     
     def test_update_mahasiswa(self):
-        new_jadwal = jadwal_semester.objects.create(nama_semester='Semester 3', tanggal_awal_semester='2024-01-01', tanggal_akhir_semester='2024-06-30')
+        new_jadwal = jadwal_semester.objects.create(nama_semester='Semester 3',tahun_semester=2024, tanggal_awal_semester='2024-01-01', tanggal_akhir_semester='2024-06-30')
         self.mahasiswa.semester_daftar_skripsi = new_jadwal
         self.mahasiswa.save()
         mahasiswa_db = mahasiswa.objects.get(nim=123456789)
@@ -196,7 +211,7 @@ class DosenTestCase(TestCase):
 
     def test_read_mahasiswa(self):
         dosen_db = dosen.objects.get(nip=1234567890)
-        self.assertEqual(dosen_db.nip, 1234567890)
+        self.assertEqual(dosen_db.nip, str(1234567890))
         self.assertEqual(dosen_db.id_user, self.user)
     
         
@@ -240,7 +255,7 @@ class KompartemenDosenCRUDTest(TestCase):
     def test_read_kompartemendosen(self):
         kompartemendosen_db = kompartemendosen.objects.get(id_dosen_kompartemen=self.kompartemendosen.id_dosen_kompartemen)
         self.assertEqual(kompartemendosen_db.id_kompartemen, self.kompartemen)
-        self.assertEqual(kompartemendosen_db.nip, self.dosen)
+        self.assertEqual(str(kompartemendosen_db.nip), str(self.dosen))
 
     def test_update_kompartemendosen(self):
         kompartemen_baru = kompartemen.objects.create(nama_kompartemen="Kompartemen Baru")
@@ -259,7 +274,8 @@ class UsulanTopikTestCase(TestCase):
         self.user = User.objects.create(username='testuser', first_name='Test', last_name='User')
         self.user2 = User.objects.create(username='testuser2', first_name='Test2', last_name='User2')
         self.user3 = User.objects.create(username='testuser3', first_name='Test3', last_name='User3')
-        self.mahasiswa = mahasiswa.objects.create(nim=123, id_user=self.user)
+        self.jadwal = jadwal_semester.objects.create(nama_semester='Semester 1',tahun_semester=2024, tanggal_awal_semester='2023-01-01', tanggal_akhir_semester='2023-06-30')
+        self.mahasiswa = mahasiswa.objects.create(nim=123456789,angkatan=2019, semester_daftar_skripsi=self.jadwal, id_user=self.user)
         self.dosen1 = dosen.objects.create(nip=321, id_user=self.user2)
         self.dosen2 = dosen.objects.create(nip=543, id_user=self.user3)
         self.usulan_topik = usulantopik.objects.create(
@@ -304,7 +320,9 @@ class EvaluasiTopikTest(TestCase):
         # create dummy data for testing
         self.kompartemen = kompartemen.objects.create(nama_kompartemen='Kompartemen A')
         self.dosen = dosen.objects.create(nip='1234567890', id_user=User.objects.create(username='dosen1'))
-        self.mahasiswa = mahasiswa.objects.create(nim='123456789', id_user=User.objects.create(username='mahasiswa1'))
+        self.jadwal = jadwal_semester.objects.create(nama_semester='Semester 1',tahun_semester=2024, tanggal_awal_semester='2023-01-01', tanggal_akhir_semester='2023-06-30')
+        self.mahasiswa = mahasiswa.objects.create(nim=123456789,angkatan=2019, semester_daftar_skripsi=self.jadwal, id_user=User.objects.create(username='mahasiswa1'))
+        # self.mahasiswa = mahasiswa.objects.create(nim='123456789', id_user=User.objects.create(username='mahasiswa1'))
         self.kompartemen_dosen = kompartemendosen.objects.create(id_kompartemen=self.kompartemen, nip=self.dosen)
         self.usulan_topik = usulantopik.objects.create(nim=self.mahasiswa, permintaan_dosen_1=self.dosen, judul_topik='judul topik', file_topik=File(open('./skripsi_app/test_folder/test.txt', 'rb')))
         self.evaluasi_topik = evaluasitopik.objects.create(id_dosen_kompartemen=self.kompartemen_dosen, id_usulan_topik=self.usulan_topik, status_topik=evaluasitopik.SUBMIT, catatan='')
@@ -350,7 +368,10 @@ class RoleDosenTestCase(TestCase):
     def setUp(self):
         # create dummy data for testing
         self.dosen = dosen.objects.create(nip='1234567890', id_user=User.objects.create(username='dosen1'))
-        self.mahasiswa = mahasiswa.objects.create(nim='123456789', id_user=User.objects.create(username='mahasiswa1'))
+        self.jadwal = jadwal_semester.objects.create(nama_semester='Semester 1',tahun_semester=2024, tanggal_awal_semester='2023-01-01', tanggal_akhir_semester='2023-06-30')
+        self.mahasiswa = mahasiswa.objects.create(nim=123456789,angkatan=2019, semester_daftar_skripsi=self.jadwal, id_user=User.objects.create(username='mahasiswa1'))
+        
+        # self.mahasiswa = mahasiswa.objects.create(nim='123456789', id_user=User.objects.create(username='mahasiswa1'))
         self.role_dosen = roledosen.objects.create(nip=self.dosen, nim=self.mahasiswa, role=roledosen.P1)
 
     def test_create_role_dosen(self):
@@ -391,7 +412,9 @@ class RoleDosenTestCase(TestCase):
 class DetailPenilaianTest(TestCase):
     def setUp(self):
         self.dosen = dosen.objects.create(nip='1234567890', id_user=User.objects.create(username='dosen1'))
-        self.mahasiswa = mahasiswa.objects.create(nim='123456789', id_user=User.objects.create(username='mahasiswa1'))
+        self.jadwal = jadwal_semester.objects.create(nama_semester='Semester 1',tahun_semester=2024, tanggal_awal_semester='2023-01-01', tanggal_akhir_semester='2023-06-30')
+        self.mahasiswa = mahasiswa.objects.create(nim=123456789,angkatan=2019, semester_daftar_skripsi=self.jadwal, id_user=User.objects.create(username='mahasiswa1'))
+        # self.mahasiswa = mahasiswa.objects.create(nim='123456789', id_user=User.objects.create(username='mahasiswa1'))
         self.role_dosen = roledosen.objects.create(nip=self.dosen, nim=self.mahasiswa, role='Pembimbing 1')
         self.detail_penilaian = detailpenilaian.objects.create(id_role_dosen=self.role_dosen, nama_tahap='Bimbingan', hasil_review='Hasil review test', status_kelulusan='Lulus')
 
@@ -437,11 +460,17 @@ class DetailPenilaianTest(TestCase):
 class SubCpmkModelTestCase(TestCase):
 
     def setUp(self):
-        cpmk_obj = cpmk.objects.create(id_cpmk='CPMK001', keterangan_cpmk='Deskripsi CPMK 1')
+        self.jadwal = jadwal_semester.objects.create(nama_semester='Semester 1',tahun_semester=2024, tanggal_awal_semester='2023-01-01', tanggal_akhir_semester='2023-06-30')
+#       self.mahasiswa = mahasiswa.objects.create(nim=123456789,angkatan=2019, semester_daftar_skripsi=self.jadwal, id_user=User.objects.create(username='mahasiswa1'))
+        self.cpmk_obj = cpmk.objects.create(id_cpmk='CPMK001',id_nama_semester=self.jadwal,tahun_angkatan=2024, keterangan_cpmk='Deskripsi CPMK 1')
+        # cpmk.objects.create(id_cpmk='CPMK002',id_nama_semester=self.jadwal,
+#             tahun_angkatan=2024, keterangan_cpmk='Deskripsi cpmk_utama kedua')
         sub_cpmk.objects.create(
             id_sub_cpmk='SubCPMK001',
+            tahun_angkatan=2019,
+            id_nama_semester=self.jadwal,
             keterangan_sub_cpmk='Deskripsi Sub CPMK 1',
-            id_cpmk=cpmk_obj,
+            id_cpmk=self.cpmk_obj,
             bobot_persen_sempro='50%',
             bobot_sempro=0.5,
             bobot_persen_semhas='50%',
@@ -454,6 +483,9 @@ class SubCpmkModelTestCase(TestCase):
         sub_cpmk_obj = sub_cpmk.objects.create(
             id_sub_cpmk='SubCPMK002',
             keterangan_sub_cpmk='Deskripsi Sub CPMK 2',
+            tahun_angkatan=2019,
+            id_cpmk=self.cpmk_obj,
+            id_nama_semester=self.jadwal,
             bobot_persen_sempro='30%',
             bobot_sempro=0.3,
             bobot_persen_semhas='70%',
@@ -484,14 +516,14 @@ class NotifikasiModelTestCase(TestCase):
     def setUp(self):
         notifikasi.objects.create(
             nip='NIP001',
-            nim='NIM001',
+            nim=None,
             messages='Pesan notifikasi 1',
             status=False
         )
 
     def test_create_notifikasi(self):
         notifikasi_obj = notifikasi.objects.create(
-            nip='NIP002',
+            nip=None,
             nim='NIM002',
             messages='Pesan notifikasi 2',
             status=True
@@ -520,7 +552,10 @@ class PenilaianModelTestCase(TestCase):
     def setUp(self):
         # Membuat objek detailpenilaian
         self.dosen = dosen.objects.create(nip='1234567890', id_user=User.objects.create(username='dosen1'))
-        self.mahasiswa = mahasiswa.objects.create(nim='123456789', id_user=User.objects.create(username='mahasiswa1'))
+        self.jadwal = jadwal_semester.objects.create(nama_semester='Semester 1',tahun_semester=2024, tanggal_awal_semester='2023-01-01', tanggal_akhir_semester='2023-06-30')
+        self.mahasiswa = mahasiswa.objects.create(nim=123456789,angkatan=2019, semester_daftar_skripsi=self.jadwal, id_user=User.objects.create(username='mahasiswa1'))
+        # self.mahasiswa = mahasiswa.objects.create(nim='123456789', id_user=User.objects.create(username='mahasiswa1'))
+        self.cpmk_obj = cpmk.objects.create(id_cpmk='CPMK001',id_nama_semester=self.jadwal,tahun_angkatan=2024, keterangan_cpmk='Deskripsi CPMK 1')
         self.role_dosen = roledosen.objects.create(nip=self.dosen, nim=self.mahasiswa, role='Pembimbing 1')
         self.detail_penilaian = detailpenilaian.objects.create(id_role_dosen=self.role_dosen, nama_tahap='Bimbingan', hasil_review='Hasil review test', status_kelulusan='Lulus')
         
@@ -528,6 +563,9 @@ class PenilaianModelTestCase(TestCase):
         self.sub_cpmk = sub_cpmk.objects.create(
             id_sub_cpmk='001', 
             keterangan_sub_cpmk='Sub-CPMK 1',
+            tahun_angkatan=2019,
+            id_cpmk=self.cpmk_obj,
+            id_nama_semester=self.jadwal,
             bobot_persen_sempro='30%',
             bobot_sempro=0.3,
             bobot_persen_semhas='50%',
@@ -592,7 +630,9 @@ class PenilaianModelTestCase(TestCase):
 
 class ProposalModelTestCase(TestCase):
     def setUp(self):
-        self.mahasiswa = mahasiswa.objects.create(nim='123456789', id_user=User.objects.create(username='mahasiswa1'))
+        self.jadwal = jadwal_semester.objects.create(nama_semester='Semester 1',tahun_semester=2024, tanggal_awal_semester='2023-01-01', tanggal_akhir_semester='2023-06-30')
+        self.mahasiswa = mahasiswa.objects.create(nim=123456789,angkatan=2019, semester_daftar_skripsi=self.jadwal, id_user=User.objects.create(username='mahasiswa1'))
+        # self.mahasiswa = mahasiswa.objects.create(nim='123456789', id_user=User.objects.create(username='mahasiswa1'))
         self.proposal = proposal.objects.create(
             nim=self.mahasiswa,
             nama_tahap=proposal.proposal_awal,
@@ -603,11 +643,11 @@ class ProposalModelTestCase(TestCase):
         self.proposal_id = self.proposal.id_proposal
 
     def test_create_proposal(self):
-        mhs = mahasiswa.objects.create(nim="67890",id_user=User.objects.create(username='mahasiswa2'))
+        mhs = mahasiswa.objects.create(nim="67890",angkatan=2019, semester_daftar_skripsi=self.jadwal,id_user=User.objects.create(username='mahasiswa2'))
         file_proposal = SimpleUploadedFile("test2.pdf", b"content")
         proposal.objects.create(
             nim=mhs,
-            nama_tahap=proposal.proposal_akhir,
+            nama_tahap=proposal.laporan_akhir,
             judul_proposal="Test Proposal 2",
             file_proposal=file_proposal,
             keterangan="Test Keterangan 2"
@@ -638,7 +678,9 @@ class ProposalModelTestCase(TestCase):
 
 class BimbinganTest(TestCase):
     def setUp(self):
-        self.mahasiswa = mahasiswa.objects.create(nim='123456789', id_user=User.objects.create(username='mahasiswa1'))
+        self.jadwal = jadwal_semester.objects.create(nama_semester='Semester 1',tahun_semester=2024, tanggal_awal_semester='2023-01-01', tanggal_akhir_semester='2023-06-30')
+        self.mahasiswa = mahasiswa.objects.create(nim=123456789,angkatan=2019, semester_daftar_skripsi=self.jadwal, id_user=User.objects.create(username='mahasiswa1'))
+        # self.mahasiswa = mahasiswa.objects.create(nim='123456789', id_user=User.objects.create(username='mahasiswa1'))
         self.proposal = proposal.objects.create(
             nim=self.mahasiswa,
             nama_tahap=proposal.proposal_awal,
@@ -689,26 +731,36 @@ class BimbinganTest(TestCase):
 
 class JadwalSeminarModelTestCase(TestCase):
     def setUp(self):
+        self.jadwal_semester = jadwal_semester.objects.create(nama_semester='Semester 1',tahun_semester=2024, tanggal_awal_semester='2023-01-01', tanggal_akhir_semester='2023-06-30')
+        self.mahasiswa = mahasiswa.objects.create(nim=123456789,angkatan=2019, semester_daftar_skripsi=self.jadwal_semester, id_user=User.objects.create(username='mahasiswa1'))
+        self.mahasiswa2 = mahasiswa.objects.create(nim=123456,angkatan=2019, semester_daftar_skripsi=self.jadwal_semester, id_user=User.objects.create(username='mahasiswa2'))
+        self.mahasiswa3 = mahasiswa.objects.create(nim=1234566,angkatan=2019, semester_daftar_skripsi=self.jadwal_semester, id_user=User.objects.create(username='mahasiswa3'))
+        self.dosen = dosen.objects.create(nip='1234567890', id_user=User.objects.create(username='dosen1'))
+        self.dosen2 = dosen.objects.create(nip='123456', id_user=User.objects.create(username='dosen2'))
         self.jadwal = jadwal_seminar.objects.create(
-            mahasiswa="Test Mahasiswa",
-            dosen_pembimbing_1="Dosen Pembimbing 1",
-            dosen_pembimbing_2="Dosen Pembimbing 2",
-            dosen_penguji_1="Dosen Penguji 1",
-            dosen_penguji_2="Dosen Penguji 2",
+            mahasiswa=self.mahasiswa,
+            # dosen_pembimbing_1="Dosen Pembimbing 1",
+            # dosen_pembimbing_2="Dosen Pembimbing 2",
+            # dosen_penguji_1="Dosen Penguji 1",
+            # dosen_penguji_2="Dosen Penguji 2",
+            dosen_pembimbing_1=roledosen.objects.create(nip=self.dosen, nim=self.mahasiswa, role=roledosen.P1),
+            dosen_pembimbing_2=roledosen.objects.create(nip=self.dosen, nim=self.mahasiswa, role=roledosen.P2),
+            dosen_penguji_1=roledosen.objects.create(nip=self.dosen, nim=self.mahasiswa, role=roledosen.US1),
+            dosen_penguji_2=roledosen.objects.create(nip=self.dosen, nim=self.mahasiswa, role=roledosen.US2),
             tahap_seminar=jadwal_seminar.tahapan_choices[0][0],
             ruang_seminar=jadwal_seminar.ruangan_seminar_choices[0][0],
             tanggal_seminar=datetime.today(),
             waktu_seminar=datetime.now().time(),
         )
-        self.jadwal_id = self.jadwal.id_jadwal
+        self.jadwal_id = self.jadwal.id_jadwal_seminar
 
     def test_create_jadwal_seminar(self):
         jadwal_seminar.objects.create(
-            mahasiswa="Test Mahasiswa 2",
-            dosen_pembimbing_1="Dosen Pembimbing 1",
-            dosen_pembimbing_2="Dosen Pembimbing 2",
-            dosen_penguji_1="Dosen Penguji 1",
-            dosen_penguji_2="Dosen Penguji 2",
+            mahasiswa = self.mahasiswa2,
+            dosen_pembimbing_1=roledosen.objects.create(nip=self.dosen2, nim=self.mahasiswa2, role=roledosen.P1),
+            dosen_pembimbing_2=roledosen.objects.create(nip=self.dosen2, nim=self.mahasiswa2, role=roledosen.P2),
+            dosen_penguji_1=roledosen.objects.create(nip=self.dosen2, nim=self.mahasiswa2, role=roledosen.UH1),
+            dosen_penguji_2=roledosen.objects.create(nip=self.dosen2, nim=self.mahasiswa2, role=roledosen.UH2),
             tahap_seminar=jadwal_seminar.tahapan_choices[1][0],
             ruang_seminar=jadwal_seminar.ruangan_seminar_choices[1][0],
             tanggal_seminar=datetime.today(),
@@ -718,54 +770,83 @@ class JadwalSeminarModelTestCase(TestCase):
         self.assertEqual(count, 2)
 
     def test_read_jadwal_seminar(self):
-        jadwal = jadwal_seminar.objects.get(id_jadwal=self.jadwal_id)
-        self.assertEqual(jadwal.mahasiswa, "Test Mahasiswa")
-        self.assertEqual(jadwal.dosen_pembimbing_1, "Dosen Pembimbing 1")
-        self.assertEqual(jadwal.dosen_pembimbing_2, "Dosen Pembimbing 2")
-        self.assertEqual(jadwal.dosen_penguji_1, "Dosen Penguji 1")
-        self.assertEqual(jadwal.dosen_penguji_2, "Dosen Penguji 2")
+        jadwal = jadwal_seminar.objects.get(id_jadwal_seminar=self.jadwal_id)
+        # self.assertEqual(jadwal.mahasiswa, self.mahasiswa)
+        self.assertEqual(str(jadwal.mahasiswa), str(self.mahasiswa))
+        self.assertEqual(jadwal.dosen_pembimbing_1, self.jadwal.dosen_pembimbing_1)
+        self.assertEqual(jadwal.dosen_pembimbing_2, self.jadwal.dosen_pembimbing_2)
+        self.assertEqual(jadwal.dosen_penguji_1, self.jadwal.dosen_penguji_1)
+        self.assertEqual(jadwal.dosen_penguji_2, self.jadwal.dosen_penguji_2)
 
     def test_update_jadwal_seminar(self):
-        jadwal = jadwal_seminar.objects.get(id_jadwal=self.jadwal_id)
-        jadwal.mahasiswa = "Updated Test Mahasiswa"
+        jadwal = jadwal_seminar.objects.get(id_jadwal_seminar=self.jadwal_id)
+        jadwal.mahasiswa = self.mahasiswa3
         jadwal.save()
-        jadwal = jadwal_seminar.objects.get(id_jadwal=self.jadwal_id)
-        self.assertEqual(jadwal.mahasiswa, "Updated Test Mahasiswa")
+        jadwal = jadwal_seminar.objects.get(id_jadwal_seminar=self.jadwal_id)
+        self.assertEqual(str(jadwal.mahasiswa), str(self.mahasiswa3))
 
     def test_delete_jadwal_seminar(self):
-        jadwal_seminar.objects.get(id_jadwal=self.jadwal_id).delete()
+        jadwal_seminar.objects.get(id_jadwal_seminar=self.jadwal_id).delete()
         count = jadwal_seminar.objects.all().count()
         self.assertEqual(count, 0)
         
 
-
-            
 class GroupTest(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        # Set up non-modified objects used by all test methods
-        Group.objects.create(name='testgroup')
+    # @classmethod
+    # def setUpTestData(cls):
+    #     # Set up non-modified objects used by all test methods
+    #     Group.objects.create(name='testgroup')
+    def setUp(self):
+        self.group=Group.objects.create(name='testgroup')
+        self.group2=Group.objects.create(name='testgroup2')
         
     def test_read_group(self):
-        group_test = Group.objects.get(id=1)
+        group_test = Group.objects.get(name='testgroup')
         self.assertEqual(group_test.name, 'testgroup')
         
     def test_create_group(self):
-        Group.objects.create(name='testgroup2')
-        group_create = Group.objects.get(id=2)
-        self.assertEqual(group_create.name, 'testgroup2')
+        Group.objects.create(name='testgroup3')
+        group_create = Group.objects.get(name='testgroup3')
+        self.assertEqual(group_create.name, 'testgroup3')
         
     def test_update_group(self):
-        group_update = Group.objects.get(id=1)
+        group_update = Group.objects.get(name='testgroup2')
         group_update.name = 'newtestgroup'
         group_update.save()
-        updated_group = Group.objects.get(id=1)
+        updated_group = Group.objects.get(name='newtestgroup')
         self.assertEqual(updated_group.name, 'newtestgroup')
         
     def test_delete_group(self):
         Group.objects.filter(id=1).delete()
         with self.assertRaises(Group.DoesNotExist):
             Group.objects.get(id=1)
+            
+# class GroupTest(TestCase):
+#     @classmethod
+#     def setUpTestData(cls):
+#         # Set up non-modified objects used by all test methods
+#         Group.objects.create(name='testgroup')
+        
+#     def test_read_group(self):
+#         group_test = Group.objects.get(id=1)
+#         self.assertEqual(group_test.name, 'testgroup')
+        
+#     def test_create_group(self):
+#         Group.objects.create(name='testgroup2')
+#         group_create = Group.objects.get(id=2)
+#         self.assertEqual(group_create.name, 'testgroup2')
+        
+#     def test_update_group(self):
+#         group_update = Group.objects.get(id=1)
+#         group_update.name = 'newtestgroup'
+#         group_update.save()
+#         updated_group = Group.objects.get(id=1)
+#         self.assertEqual(updated_group.name, 'newtestgroup')
+        
+#     def test_delete_group(self):
+#         Group.objects.filter(id=1).delete()
+#         with self.assertRaises(Group.DoesNotExist):
+#             Group.objects.get(id=1)
             
 
 class UserGroupTest(TestCase):
