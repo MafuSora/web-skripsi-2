@@ -36,7 +36,7 @@
         <td>{{item.id_detail_penilaian.nama_tahap}}</td>
         <td>{{item.id_detail_penilaian.status_kelulusan}}</td>
         <td>{{item.id_sub_cpmk}}</td>
-        {% if item.nilai < 70 %}
+        {% if item.nilai < 56 %}
           <td class="text-light bg-danger" >{{item.nilai}}</td>
           {% else %}
           <td>{{item.nilai}}</td>

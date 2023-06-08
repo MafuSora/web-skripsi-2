@@ -104,6 +104,8 @@ urlpatterns = [
          name='usulantopik_create_full'),
     path('usulantopikget/', views.usulantopik_get,
          name='usulantopik_get'),
+    path('usulantopikget/acc/', views.usulantopik_get_acc,
+         name='usulantopik_get_acc'),
     path('usulantopikget1/', views.usulantopik_get_1_year,
          name='usulantopik_get_1_year'),
     path('usulantopik_get_filter_dosen/', views.usulantopik_get_filter_dosen,

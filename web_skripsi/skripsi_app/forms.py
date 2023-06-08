@@ -2,7 +2,6 @@
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.core.validators import validate_email,MaxValueValidator,MinValueValidator,MinLengthValidator,MaxLengthValidator
-
 # library form
 from django import forms
 # from django.db import models
@@ -31,6 +30,10 @@ tanggalan=datetime.datetime.now()
 tahun=tanggalan.strftime("%Y")
 
 
+def file_size(value): # add this to some file where you can import it from
+    limit = 10 * 1024 * 1024
+    if value.size > limit:
+        raise ValidationError('File terlalu besar. Ukuran file maksimal 10 MB.')
 # User Form
 def ubac_email_validator(value):
     if not value.endswith('ub.ac.id'):
@@ -62,7 +65,7 @@ class NimForm(forms.ModelForm):
 
 
 class CreateUserForm(UserCreationForm):
-    email = forms.EmailField(required=True, validators=[validate_email])
+    email = forms.EmailField(required=True, validators=[validate_email, ubac_email_validator])
     first_name = forms.CharField(max_length=120, required=True,label='Nama Lengkap')
     class Meta:
         model = User
@@ -75,7 +78,7 @@ class CreateUserForm(UserCreationForm):
         # self.fields['id_user'].label = 'Username'
 
 class UpdateAdminUserForm(UserChangeForm):
-    email = forms.EmailField(required=True, validators=[validate_email])
+    email = forms.EmailField(required=True, validators=[validate_email, ubac_email_validator])
     first_name = forms.CharField(max_length=120, required=True,label='Nama Lengkap')
     class Meta:
         model = User
@@ -86,7 +89,7 @@ class UpdateAdminUserForm(UserChangeForm):
         self.fields['first_name'].label = 'Nama Lengkap'
         
 class UpdateUserForm(UserChangeForm):
-    # email = forms.EmailField(required=True, validators=[validate_email])
+    # email = forms.EmailField(required=True, validators=[validate_email, ubac_email_validator])
     # first_name = forms.CharField(max_length=30, required=True,label='Full Name')
     class Meta:
         model = User
@@ -209,11 +212,12 @@ class UsulanTopikFormFull(forms.ModelForm):
     ChoiceDosen= list(zip(ListDosen, ListDosen))
     # print(ChoiceDosen)
     permintaan_dosen_2=forms.ChoiceField(choices=ChoiceDosen,required=False)
+    file_topik = forms.FileField(validators=[file_size])
     class Meta:
         model = usulantopik
         fields = ["nim", "permintaan_dosen_1", 
                   "permintaan_dosen_2",
-                  "judul_topik", "file_topik", "keterangan"]
+                  "judul_topik","status_pengajuan", "file_topik", "keterangan"]
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -262,12 +266,12 @@ class UsulanTopikForm(forms.ModelForm):
         ListDosen += [fields]
     ChoiceDosen= list(zip(ListDosen, ListDosen))
     permintaan_dosen_2=forms.ChoiceField(choices=ChoiceDosen,required=False)
-
+    file_topik = forms.FileField(validators=[file_size])
     class Meta:
         model = usulantopik
         fields = [ "permintaan_dosen_1", 
                   "permintaan_dosen_2",
-                  "judul_topik", "file_topik", "keterangan"]
+                  "judul_topik","status_pengajuan", "file_topik", "keterangan"]
         
     def clean(self):
         cleaned_data = super().clean()
@@ -311,6 +315,9 @@ class EvaluasiTopikFormSekertarisDepartemen(forms.ModelForm):
 
 
 class EvaluasiTopikFormKompartemen(forms.ModelForm):
+    catatan= forms.CharField(widget=forms.Textarea, validators=[
+        MinLengthValidator(200, 'Panjang karakter minimum adalah 200.')
+    ])
     class Meta:
         model = evaluasitopik
         fields = ["status_topik", "catatan"]
@@ -324,6 +331,7 @@ class EvaluasiTopikFormKompartemen(forms.ModelForm):
 
 # Form Proposal
 class ProposalFormFull(forms.ModelForm):
+    file_proposal = forms.FileField(validators=[file_size])
     class Meta:
         model = proposal
         fields = [  "nim","nama_tahap", "judul_proposal",
@@ -334,6 +342,7 @@ class ProposalFormFull(forms.ModelForm):
         self.fields['judul_proposal'].label = 'Judul Berkas Skripsi'
         self.fields['file_proposal'].label = 'File Berkas Skripsi'
 class ProposalForm(forms.ModelForm):
+    file_proposal = forms.FileField(validators=[file_size])
     class Meta:
         model = proposal
         fields = [  "nama_tahap", "judul_proposal",
@@ -347,6 +356,7 @@ class ProposalForm(forms.ModelForm):
 
 
 class ProposalFormRead(forms.ModelForm):
+    file_proposal = forms.FileField(validators=[file_size])
     class Meta:
         model = proposal
         fields = [  "nim","nama_tahap", "judul_proposal",
@@ -649,15 +659,15 @@ class JadwalForm(forms.ModelForm):
         
         if tahap_seminar=="Seminar Proposal":
             if dosen_penguji_1.role != "Penguji Seminar Proposal 1":
-                raise ValidationError("Role Dosen Penguji 1 Tidak Sesuai.")
+                raise ValidationError("Tahap Seminar dengan Role Dosen Penguji 1 Tidak Sesuai.")
             if dosen_penguji_2.role != "Penguji Seminar Proposal 2":
-                raise ValidationError("Role Dosen Penguji 2 Tidak Sesuai.")
+                raise ValidationError("Tahap Seminar dengan Role Dosen Penguji 2 Tidak Sesuai.")
             
         if tahap_seminar=="Seminar Hasil":
             if dosen_penguji_1.role != "Penguji Seminar Hasil 1":
-                raise ValidationError("Role Dosen Penguji 1 Tidak Sesuai.")
+                raise ValidationError("Tahap Seminar dengan Role Dosen Penguji 1 Tidak Sesuai.")
             if dosen_penguji_2.role != "Penguji Seminar Hasil 2":
-                raise ValidationError("Role Dosen Penguji 2 Tidak Sesuai.")
+                raise ValidationError("Tahap Seminar dengan Role Dosen Penguji 2 Tidak Sesuai.")
         
         
         return cleaned_data
@@ -683,11 +693,11 @@ class JadwalFormTanpaFilter(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         mahasiswa = cleaned_data.get("mahasiswa")
+        tahap_seminar = cleaned_data.get("tahap_seminar")
         dosen_pembimbing_1 = cleaned_data.get("dosen_pembimbing_1")
         dosen_pembimbing_2 = cleaned_data.get("dosen_pembimbing_2")
         dosen_penguji_1 = cleaned_data.get("dosen_penguji_1")
         dosen_penguji_2 = cleaned_data.get("dosen_penguji_2")
-
 
         # Cek duplikat antara field dosen
         if ((dosen_pembimbing_1 and dosen_pembimbing_1.nip) and \
@@ -710,15 +720,27 @@ class JadwalFormTanpaFilter(forms.ModelForm):
             dosen_penguji_1.nip.nip == dosen_penguji_2.nip.nip):
             raise ValidationError("Dosen tidak boleh duplikat.")
         
-        # if (mahasiswa and mahasiswa.nim) and \
-        #     not((dosen_pembimbing_1 and dosen_pembimbing_1.nim) and mahasiswa.nim == dosen_pembimbing_1.nim.nim) and \
-        #     not((dosen_pembimbing_2 and dosen_pembimbing_2.nim) and mahasiswa.nim == dosen_pembimbing_2.nim.nim) and \
-        #     not((dosen_penguji_1 and dosen_penguji_1.nim) and mahasiswa.nim == dosen_penguji_1.nim.nim) and \
-        #     not((dosen_penguji_2 and dosen_penguji_2.nim) and mahasiswa.nim == dosen_penguji_2.nim.nim):
-        #     raise ValidationError("NIM mahasiswa berbeda dengan NIM dosen.")
+        if (mahasiswa and mahasiswa.nim) and \
+            not((dosen_pembimbing_1 and dosen_pembimbing_1.nim) and mahasiswa.nim == dosen_pembimbing_1.nim.nim) and \
+            not((dosen_pembimbing_2 and dosen_pembimbing_2.nim) and mahasiswa.nim == dosen_pembimbing_2.nim.nim) and \
+            not((dosen_penguji_1 and dosen_penguji_1.nim) and mahasiswa.nim == dosen_penguji_1.nim.nim) and \
+            not((dosen_penguji_2 and dosen_penguji_2.nim) and mahasiswa.nim == dosen_penguji_2.nim.nim):
+            raise ValidationError("NIM mahasiswa berbeda dengan NIM dosen.")
+        
+        if tahap_seminar=="Seminar Proposal":
+            if dosen_penguji_1.role != "Penguji Seminar Proposal 1":
+                raise ValidationError("Tahap Seminar dengan Role Dosen Penguji 1 Tidak Sesuai.")
+            if dosen_penguji_2.role != "Penguji Seminar Proposal 2":
+                raise ValidationError("Tahap Seminar dengan Role Dosen Penguji 2 Tidak Sesuai.")
+            
+        if tahap_seminar=="Seminar Hasil":
+            if dosen_penguji_1.role != "Penguji Seminar Hasil 1":
+                raise ValidationError("Tahap Seminar dengan Role Dosen Penguji 1 Tidak Sesuai.")
+            if dosen_penguji_2.role != "Penguji Seminar Hasil 2":
+                raise ValidationError("Tahap Seminar dengan Role Dosen Penguji 2 Tidak Sesuai.")
         
         
-        return cleaned_data  
+        return cleaned_data
    
 
 # Form Jadwal Semester

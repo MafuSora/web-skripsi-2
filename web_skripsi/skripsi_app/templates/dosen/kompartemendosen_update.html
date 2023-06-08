@@ -1,5 +1,5 @@
 {%extends 'navbar_superuser.html' %}
-{% block title %}Update Data Dosen Kompartemen{% endblock %}
+{% block title %}Update Data Dosen Ketua Kompartemen{% endblock %}
 
 {% load static %}
 {% load crispy_forms_tags%}
@@ -8,7 +8,7 @@
 
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <form method="post">
-        <h1 class="h2">Update Dosen Kompartemen</h1>
+        <h1 class="h2">Update Dosen Ketua Kompartemen</h1>
 
         {%csrf_token%}
         {{form|crispy}}

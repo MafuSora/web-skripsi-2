@@ -5,16 +5,44 @@
 {% load crispy_forms_tags%}
 {% load mathfilters %}
 {% block content %}
+{% comment %} <script> 
+  window.jsPDF = window.jspdf.jsPDF; 
+  // Convert HTML content to PDF 
+  function Convert_HTML_To_PDF() { 
+    var doc = jsPDF(); 
+    // Source HTMLElement or a string containing HTML. 
+    var elementHTML = document.querySelector("#filetoprint"); 
+    doc.html(elementHTML, {
+      callback: function(doc) { 
+      }, 
+      margin: [10, 10, 10, 10],
+      autoPaging: 'text',
+      x: 0,
+      y: 0,
+      width: 190, 
+    });
+  }
+</script>  {% endcomment %}
 
-<div class="container">
-  <h2>Tabel Data Nilai Bimbingan</h2>
+
+{% comment %} <a href="../dashboard"> {% endcomment %}
+  {% comment %} </a> {% endcomment %}
+  {% comment %} <button onclick="Convert_HTML_To_PDF()">Print As PDF</button> {% endcomment %}
+  
+  <div class="d-flex text-end">
+    
+    <button class="btn btn-primary btn-block  p-2" onclick="downloadCode()">Print As PDF</button>
+  </div>
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <div class="container" id="filetoprint">
+  <h2 class="text-center">Penilaian Bimbingan</h2>
   <br>
   <br>
   <h3>Data Mahasiswa :</h3>
   {% if data_penilaian is not None %}
   <div>
     <p>Nama Mahasiswa  :  {{data_penilaian.0.id_role_dosen.nim.id_user.first_name}}</p>
-    <p>NIM  :{{data_penilaian.0.id_role_dosen.nim.nim}}</p>
+    <p>NIM  : {{data_penilaian.0.id_role_dosen.nim.nim}}</p>
   </div>
   {%endif%}
   <h3>Hasil Review :</h3>
@@ -22,8 +50,8 @@
   {%for item in data_penilaian%}
   <div class="text-start">
     <p>Nama Dosen  : {{item.id_role_dosen.nip.id_user.first_name}}</p>
-    <p> NIP  :{{item.id_role_dosen.nip.nip}}</p>
-    <p>Role  :{{item.id_role_dosen.role}}</p>
+    <p> NIP  : {{item.id_role_dosen.nip.nip}}</p>
+    <p>Role  : {{item.id_role_dosen.role}}</p>
     <p>Status Kelulusan :{{item.status_kelulusan}}</p>
     <p>Catatan Review :{{item.hasil_review}}</p>
   </div>
@@ -34,7 +62,8 @@
 {%if user_info.2.name == "Mahasiswa"  %}
 <div></div>
 {%else%}
-  <table id="table-paginate-semhas" class="table table-striped table-bordered table-paginate" cellspacing="0" width="100%">
+
+  <table id="table-paginate-semhas" class="table  table-bordered table-paginate" cellspacing="0" width="100%">
     <thead>
       <tr>
         {%for item in isi_list%}
@@ -57,7 +86,7 @@
           {% if forloop.counter == forloop.parentloop.counter %}
           <tr>
             <td>{{a.id_sub_cpmk}}</td>
-            {% if a.nilai < 70 %}
+            {% if a.nilai < 56 %}
             <td class="text-light bg-danger" >{{a.nilai}}</td>
             {% else %}
             <td>{{a.nilai}}</td>
@@ -66,7 +95,7 @@
             <td> {{ a.nilai|mul:a.id_sub_cpmk.bobot_pembimbing }}</td>
             <td>{{b.id_sub_cpmk}}</td>
             
-            {% if b.nilai < 70 %}
+            {% if b.nilai < 56 %}
             <td class="text-light bg-danger" >{{b.nilai}}</td>
             {% else %}
             <td>{{b.nilai}}</td>
@@ -91,7 +120,7 @@
         <tr>
           
           <td>{{a.id_sub_cpmk}}</td>
-          {% if a.nilai < 70 %}
+          {% if a.nilai < 56 %}
           
           <td class="text-light bg-danger" >{{a.nilai}}</td>
           {% else %}
@@ -121,15 +150,98 @@
     </tfoot>
   </table>
   {%endif%}
+  <br/>
+  <div class="d-flex justify-content-end">
+    <br/>
+    <br/>
+  <table>
+    <tr>
+      <td>
+        <h4 class="text-end px-2"> Disetujui Oleh  </h4>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <h4 class="text-end px-2"> Manajemen Departemen  </h4>
+        <br/>
+        <br/>
+      </td>
+    </tr>
+  </table>
+  </div>
+</div>
 </div>
 
+{% comment %} ['dt-buttons btn-group flex-wrap','dataTables_length', 'dataTables_info', 'dataTables_paginatepaging_simple_numbers']; {% endcomment %}
+{% comment %} <script src="{% static 'js/dashboard.js' %}"></script> {% endcomment %}
+<script type="text/javascript" charset="utf-8">
 
-<script src="{% static 'js/dashboard.js' %}"></script>
+
+
+    function generatePDF() {
+      const element = document.getElementById("filetoprint");
+    
+      // Find elements with the specified class and remove them
+      const excludedElements = element.getElementsByClassName("dt-buttons btn-group flex-wrap");
+      while (excludedElements.length > 0) {
+        excludedElements[0].parentNode.removeChild(excludedElements[0]);
+      }
+      const excludedElements1 = element.getElementsByClassName("judul");
+      while (excludedElements1.length > 0) {
+        excludedElements1[0].parentNode.removeChild(excludedElements1[0]);
+      }
+      const excludedElements2 = element.getElementsByClassName("dataTables_length");
+      while (excludedElements2.length > 0) {
+        excludedElements2[0].parentNode.removeChild(excludedElements2[0]);
+      }
+      const excludedElements3 = element.getElementsByClassName("dataTables_info");
+      while (excludedElements3.length > 0) {
+        excludedElements3[0].parentNode.removeChild(excludedElements3[0]);
+      }
+      const excludedElements4 = element.getElementsByClassName("pagination");
+      while (excludedElements4.length > 0) {
+        excludedElements4[0].parentNode.removeChild(excludedElements4[0]);
+      }
+      const excludedElements5 = element.getElementsByClassName("dataTables_filter");
+      while (excludedElements5.length > 0) {
+        excludedElements5[0].parentNode.removeChild(excludedElements5[0]);
+      }
+
+      const options = {
+        filename: 'Penilaian Bimbingan-{{data_penilaian.0.id_role_dosen.nim.nim}}-{{data_penilaian.0.id_role_dosen.nim.id_user.first_name}}.pdf',
+        margin: 10, // Atur margin di sini, dalam satuan piksel
+        jsPDF: { format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['avoid-all'] }
+      };
+    
+      html2pdf().set(options).from(element).save('Penilaian Bimbingan.pdf');
+    }
+    function redirectToURL() {
+    
+      // Redirect the user to the specified URL
+      
+      window.location.href = `../${window.location.pathname}`;
+    }
+    
+    function downloadCode() {
+      var x = document.getElementById("filetoprint");
+      
+      generatePDF()
+      redirectToURL()
+      
+    }
+    
+  
+  
+  
+</script>
+
 <script type="text/javascript" charset="utf-8">
   $(document).ready(function () {
 
       $('#table-paginate-semhas').DataTable({
-
+        "lengthMenu": [[25, 50, 75, -1], [25, 50, 75, "All"]],
         lengthChange: true,
                     dom: 'Blfrtip',
                     buttons: [
@@ -231,5 +343,7 @@
 
   });
 </script>
+
+
 
 {% endblock %}

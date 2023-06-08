@@ -76,11 +76,18 @@ class kompartemendosen(models.Model):
 
 
 class usulantopik(models.Model):
+    status_choices = [
+        ("Usulan Topik Pertama", "Usulan Topik Pertama"),
+        ("Pengajuan Kembali Usulan Topik", "Pengajuan Kembali Usulan Topik"),
+        
+    ]
     id_usulan_topik = models.BigAutoField(primary_key=True)
     nim = models.ForeignKey(mahasiswa, on_delete=models.CASCADE)
-    permintaan_dosen_1 = models.ForeignKey(dosen, on_delete=models.DO_NOTHING)
+    permintaan_dosen_1 = models.ForeignKey(dosen, on_delete=models.DO_NOTHING,null=True,blank=True)
     permintaan_dosen_2 = models.CharField(max_length=100,null=True)
     judul_topik = models.CharField(max_length=60)
+    status_pengajuan = models.CharField(null=False,
+        choices=status_choices, max_length=60, default="Usulan Topik Pertama")
     file_topik = models.FileField(upload_to="topik_mahasiswa/", storage=gd_storage,validators=[FileExtensionValidator(['pdf'])])
     keterangan = models.TextField(blank=True)
     tanggal_buat = models.DateTimeField(auto_now_add=True)

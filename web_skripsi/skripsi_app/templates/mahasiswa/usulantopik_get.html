@@ -22,7 +22,8 @@
     <a class="btn btn-success w-100 text-white my-1" href="/usulantopik_get_filter_dosen">Filter Usulan Topik Belum Assign Kompartemen</a>
     <a class="btn btn-success w-100 text-white my-1" href="/usulantopik_get_filter_dosen_pembimbing">Filter Usulan Topik Belum Assign Pembimbing</a>
     <a class="btn btn-success w-100 text-white my-1" href="/usulantopik_get_filter_ACC">Filter Usulan Topik Belum ACC</a>
-    <a class="btn btn-success w-100 text-white my-1" href="/usulantopikget1">Filter Topik ACC 1 Tahun Terakhir</a>
+    {% comment %} <a class="btn btn-success w-100 text-white my-1" href="/usulantopikget1">Filter Topik ACC 1 Tahun Terakhir</a> {% endcomment %}
+    <a class="btn btn-primary w-100 text-white my-1" href="{% url 'usulantopik_get_acc' %}">Filter Usulan Topik ACC Keseluruhan</a>
     {%endif%}
   </div>
   <div class="container-fluid text-start px-2">
@@ -35,24 +36,30 @@
     <div class="container-fluid text-start">
 
       {%if user_info.2.name == "Manajemen Departemen" or user_info.2.name == "Admin" or user_info.2.name == "Properta"%}
-    
-      <a class="btn btn-primary w-100 text-white my-1" href="/usulantopikget">Tampilkan Usulan Topik Tanpa Filter</a>
-      <a class="btn btn-primary w-100 text-white my-1" href="/usulantopik_get_filter_dosen">Filter Usulan Topik Belum Assign Kompartemen</a>
-      <a class="btn btn-primary w-100 text-white my-1" href="/usulantopik_get_filter_dosen_pembimbing">Filter Usulan Topik Belum Assign Pembimbing</a>
-      <a class="btn btn-primary w-100 text-white my-1" href="/usulantopik_get_filter_ACC">Filter Usulan Topik Belum ACC</a>
-      <a class="btn btn-primary w-100 text-white my-1" href="/usulantopikget1">Filter Usulan Topik ACC 1 Tahun Terakhir</a>
+      <div class="container-fluid text-start px-2">
+        <a class="btn btn-primary w-100 text-white my-1" href="/usulantopikget">Tampilkan Usulan Topik Tanpa Filter</a>
+        <a class="btn btn-primary w-100 text-white my-1" href="/usulantopik_get_filter_dosen">Filter Usulan Topik Belum Assign Kompartemen</a>
+        <a class="btn btn-primary w-100 text-white my-1" href="/usulantopik_get_filter_dosen_pembimbing">Filter Usulan Topik Belum Assign Pembimbing</a>
+        <a class="btn btn-primary w-100 text-white my-1" href="/usulantopik_get_filter_ACC">Filter Usulan Topik Belum ACC</a>
+        {% comment %} <a class="btn btn-primary w-100 text-white my-1" href="/usulantopikget1">Filter Usulan Topik ACC 1 Tahun Terakhir</a> {% endcomment %}
+        <a class="btn btn-primary w-100 text-white my-1" href="{% url 'usulantopik_get_acc' %}">Filter Usulan Topik ACC Keseluruhan</a>
+      </div>
       {%endif%}
       <br>
       {%if user_info.2.name == "Kompartemen" %}
-      <a class="btn btn-primary w-100 text-white my-1" href="/usulantopik_get_filter/kompartemen">Tampilkan Usulan Topik Tanpa Filter - Kompartemen</a>
-      <a class="btn btn-primary w-100 text-white my-1" href="/usulantopik_get_filter_ACC/kompartemen">Filter Usulan Topik Filter Belum ACC - Kompartemen </a>
-      <a class="btn btn-primary w-100 text-white my-1" href="/usulantopik_get_filter_belum_ACC/kompartemen">Filter Usulan Topik Filter Sudah Diperiksa - Kompartemen </a>
+      <div class="container-fluid text-start px-2">
+      <a class="btn btn-primary  text-white my-1" href="/usulantopik_get_filter/kompartemen">Tampilkan Usulan Topik Tanpa Filter - Kompartemen</a>
+      <a class="btn btn-primary  text-white my-1" href="/usulantopik_get_filter_ACC/kompartemen">Filter Usulan Topik Filter Belum ACC - Kompartemen </a>
+      <a class="btn btn-primary text-white my-1" href="/usulantopik_get_filter_belum_ACC/kompartemen">Filter Usulan Topik Filter Sudah Diperiksa (ACC & Revisi) - Kompartemen </a>
+      </div>
       {%endif%}
       <br>
 
       {%if user_info.2.name == "Dosen" or user_info.2.name == "Manajemen Departemen" or user_info.2.name == "Kompartemen"%}
-      <a class="btn btn-primary w-100 text-white my-1" href="/usulantopik_get_filter/dosen">Tampilkan Usulan Topik Tanpa Filter - Pembimbing</a>
-      <a class="btn btn-primary w-100 text-white my-1" href="/usulantopik_get_filter_ACC/dosen">Tabel Topik Sudah ACC - Pembimbing</a>
+      <div class="container-fluid text-start px-2">
+      <a class="btn btn-primary  text-white my-1" href="/usulantopik_get_filter/dosen">Tampilkan Usulan Topik Tanpa Filter - Pembimbing</a>
+      <a class="btn btn-primary  text-white my-1" href="/usulantopik_get_filter_ACC/dosen">Tabel Topik Sudah ACC - Pembimbing</a>
+      </div>
       {%endif%}
       <br>
     </div>
@@ -91,7 +98,12 @@
         <td id="file-skripsi"><a href="{{item.file_topik.url}}">File</a></td>
         <!-- <td><embed src="{{item.File_Topik.url}}" width="500" height="375" type="application/pdf"></td> -->
         <td>{{item.keterangan}}</td>
+        {% if item.status_dosen_Kompartemen == "Belum Di Assign" %}
+        
+        <td class="text-light bg-danger" >{{item.status_dosen_Kompartemen}}</td>
+        {% else %}
         <td>{{item.status_dosen_Kompartemen}}</td>
+        {% endif %}
         <td>{{item.status}}</td>
         <td>{{item.keterangan_dosen}}</td>
         <td>{{item.tanggal_buat |date:"Y-m-d,D H:i"}}</td>

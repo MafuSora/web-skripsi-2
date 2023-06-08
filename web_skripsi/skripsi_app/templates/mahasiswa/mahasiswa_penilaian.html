@@ -111,6 +111,11 @@
             <a class="btn btn-success m-1" type="button" href="{% url 'penilaian_semhas_nim' item.nim %}">Nilai Semhas</a>
           </div>
           <div class="d-flex flex-column m-2">
+            <a class="btn btn-success m-1" type="button" href="{% url 'nilai_bimbingan_get' item.nim %}">Nilai Kelulusan Bimbingan</a>
+            <a class="btn btn-success m-1" type="button" href="{% url 'nilai_sempro_get' item.nim %}">Nilai Kelulusan Sempro</a>
+            <a class="btn btn-success m-1" type="button" href="{% url 'nilai_semhas_get' item.nim %}">Nilai Kelulusan Semhas</a>
+          </div>
+          <div class="d-flex flex-column m-2">
               <a class="btn btn-warning m-1" type="button" href="{% url 'jadwal_dosen_bimbingan_filter_nim' item.nim %}">List Seminar Mahasiswa</a>
           {% if user_info.2.name == "Admin" %}
           

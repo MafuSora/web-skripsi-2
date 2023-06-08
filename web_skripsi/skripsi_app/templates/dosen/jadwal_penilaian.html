@@ -12,7 +12,7 @@
   <h2>Tabel Penilaian Dosen Pembimbing</h2>
 
   <div class="container-fluid text-start">
-    <a class="btn btn-success text-white mb-2"
+    {% comment %} <a class="btn btn-success text-white mb-2"
     href="{% url 'jadwal_dosen_bimbingan_tanpa_filter' %}">Tanpa Filter
     </a>
     <a class="btn btn-success text-white mb-2"
@@ -26,7 +26,7 @@
     Penilaian Sebagian Lengkap</a>
     <a class="btn btn-success text-white mb-2"
     href="{% url 'jadwal_dosen_bimbingan_belum_dinilai' %}">Filter
-    Penilaian Kosong</a>
+    Penilaian Kosong</a> {% endcomment %}
 
 
   </div>
@@ -40,10 +40,10 @@
 
     <a class="btn btn-success text-white mb-2"
     href="{% url 'jadwal_dosen_bimbingan_sudah_dinilai_2' %}">Filter
-    Penilaian Lengkap</a>
+    Sudah Dinilai</a>
     <a class="btn btn-success text-white mb-2"
     href="{% url 'jadwal_dosen_bimbingan_belum_dinilai_2' %}">Filter
-    Penilaian Kosong</a>
+    Belum Dinilai</a>
   </div>
   {%elif role == "Dosen Seminar Proposal" %}
   <h2>Tabel Penilaian Dosen Seminar Proposal</h2>
@@ -185,8 +185,8 @@
         {%if user_info.0 == item.dosen_pembimbing_1.nip.nip or  user_info.2.name == "Admin"  or user_info.2.name == "Properta"%}
         <div class="d-flex flex-column m-2">
         
-          <a class="btn btn-primary w-100 text-white my-1" type="button"
-      href="{% url 'penilaian_bimbingan_dosen_1' item.id_jadwal_seminar %}">Penilaian Bimbingan Dospem 1</a>
+          {% comment %} <a class="btn btn-primary w-100 text-white my-1" type="button"
+      href="{% url 'penilaian_bimbingan_dosen_1' item.id_jadwal_seminar %}">Penilaian Bimbingan Dospem 1</a> {% endcomment %}
         {% if item.tahap_seminar == "Seminar Proposal"%}
       <a class="btn btn-primary w-100 text-white my-1" type="button"
       href="{% url 'penilaian_sempro_dosen_pembimbing_1' item.id_jadwal_seminar %}">Penilaian Sempro Dospem 1</a>
@@ -199,8 +199,8 @@
         {%if user_info.0 == item.dosen_pembimbing_2.nip.nip or  user_info.2.name == "Admin"  or user_info.2.name == "Properta"%}
         {%if  item.dosen_pembimbing_2 != None %}
         <div class="d-flex flex-column m-2">
-        <a class="btn btn-primary w-100 text-white my-1" type="button"
-      href="{% url 'penilaian_bimbingan_dosen_2' item.id_jadwal_seminar %}">Penilaian Bimbingan Dospem 2</a>
+        {% comment %} <a class="btn btn-primary w-100 text-white my-1" type="button"
+      href="{% url 'penilaian_bimbingan_dosen_2' item.id_jadwal_seminar %}">Penilaian Bimbingan Dospem 2</a> {% endcomment %}
       {% if item.tahap_seminar == "Seminar Proposal" %}
       
       <a class="btn btn-primary w-100 text-white my-1" type="button"

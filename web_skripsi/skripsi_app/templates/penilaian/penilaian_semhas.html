@@ -6,11 +6,15 @@
 {% load mathfilters %}
 {% block content %}
 
-
-<div class="container">
-  <h2>Tabel Data Nilai Seminar Hasil</h2>
-  <br>
-  <br>
+<div class="d-flex text-end">
+    
+  <button class="btn btn-primary btn-block  p-2" onclick="downloadCode()">Print As PDF</button>
+</div>
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <div class="container" id="filetoprint">
+    <h2 class="text-center">Penilaian Seminar Hasil</h2>
+    <br>
+    <br>
   <h3>Data Mahasiswa :</h3>
   {% if data_penilaian is not None %}
   <div>
@@ -58,7 +62,7 @@
           
           <td>{{a.id_sub_cpmk}}</td>
 
-          {% if a.nilai < 70 %}
+          {% if a.nilai < 56 %}
           <td class="text-light bg-danger" >{{a.nilai}}</td>
           {% else %}
           <td>{{a.nilai}}</td>
@@ -70,7 +74,7 @@
          
           <td>{{b.id_sub_cpmk}}</td>
 
-          {% if b.nilai < 70 %}
+          {% if b.nilai < 56 %}
           <td class="text-light bg-danger" >{{b.nilai}}</td>
           {% else %}
           <td>{{b.nilai}}</td>
@@ -81,7 +85,7 @@
      
           <td>{{c.id_sub_cpmk}}</td>
 
-          {% if c.nilai < 70 %}
+          {% if c.nilai < 56 %}
           <td class="text-light bg-danger" >{{c.nilai}}</td>
           {% else %}
           <td>{{c.nilai}}</td>
@@ -91,7 +95,7 @@
    
           <td>{{d.id_sub_cpmk}}</td>
 
-          {% if d.nilai < 70 %}
+          {% if d.nilai < 56 %}
           <td class="text-light bg-danger" >{{d.nilai}}</td>
           {% else %}
           <td>{{d.nilai}}</td>
@@ -130,7 +134,7 @@
         <tr>
           
           <td>{{a.id_sub_cpmk}}</td>
-          {% if a.nilai < 70 %}
+          {% if a.nilai < 56 %}
           <td class="text-light bg-danger" >{{a.nilai}}</td>
           {% else %}
           <td>{{a.nilai}}</td>
@@ -141,7 +145,7 @@
          
           <td>{{b.id_sub_cpmk}}</td>
           
-          {% if b.nilai < 70 %}
+          {% if b.nilai < 56 %}
           <td class="text-light bg-danger" >{{b.nilai}}</td>
           {% else %}
           <td>{{b.nilai}}</td>
@@ -152,7 +156,7 @@
      
           <td>{{c.id_sub_cpmk}}</td>
           
-          {% if c.nilai < 70 %}
+          {% if c.nilai < 56 %}
           <td class="text-light bg-danger" >{{c.nilai}}</td>
           {% else %}
           <td>{{c.nilai}}</td>
@@ -191,7 +195,7 @@
           <tr>
             <td>{{a.id_sub_cpmk}}</td>
 
-            {% if a.nilai < 70 %}
+            {% if a.nilai < 56 %}
           <td class="text-light bg-danger" >{{a.nilai}}</td>
           {% else %}
           <td>{{a.nilai}}</td>
@@ -200,7 +204,7 @@
             <td>{{a.id_sub_cpmk.bobot_semhas}}</td>         
             <td> {{ a.nilai|mul:a.id_sub_cpmk.bobot_semhas }}</td>
             <td>{{b.id_sub_cpmk}}</td>
-            {% if b.nilai < 70 %}
+            {% if b.nilai < 56 %}
           <td class="text-light bg-danger" >{{b.nilai}}</td>
           {% else %}
           <td>{{b.nilai}}</td>
@@ -220,7 +224,7 @@
         <tr>
           
           <td>{{a.id_sub_cpmk}}</td>
-          {% if a.nilai < 70 %}
+          {% if a.nilai < 56 %}
           <td class="text-light bg-danger" >{{a.nilai}}</td>
           {% else %}
           <td>{{a.nilai}}</td>
@@ -249,15 +253,95 @@
       </tfoot>
     </table>
     {% endif %}
+    <div class="d-flex justify-content-end">
+      <br/>
+      <br/>
+      <table>
+        <tr>
+          <td>
+            <h4 class="text-end px-2"> Disetujui Oleh  </h4>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <h4 class="text-end px-2"> Manajemen Departemen  </h4>
+            <br/>
+            <br/>
+          </td>
+        </tr>
+      </table>
+      </div>
+</div>
 </div>
 
+<script type="text/javascript" charset="utf-8">
 
+
+
+  function generatePDF() {
+    const element = document.getElementById("filetoprint");
+  
+    // Find elements with the specified class and remove them
+    const excludedElements = element.getElementsByClassName("dt-buttons btn-group flex-wrap");
+    while (excludedElements.length > 0) {
+      excludedElements[0].parentNode.removeChild(excludedElements[0]);
+    }
+    const excludedElements1 = element.getElementsByClassName("judul");
+    while (excludedElements1.length > 0) {
+      excludedElements1[0].parentNode.removeChild(excludedElements1[0]);
+    }
+    const excludedElements2 = element.getElementsByClassName("dataTables_length");
+    while (excludedElements2.length > 0) {
+      excludedElements2[0].parentNode.removeChild(excludedElements2[0]);
+    }
+    const excludedElements3 = element.getElementsByClassName("dataTables_info");
+    while (excludedElements3.length > 0) {
+      excludedElements3[0].parentNode.removeChild(excludedElements3[0]);
+    }
+    const excludedElements4 = element.getElementsByClassName("pagination");
+    while (excludedElements4.length > 0) {
+      excludedElements4[0].parentNode.removeChild(excludedElements4[0]);
+    }
+    const excludedElements5 = element.getElementsByClassName("dataTables_filter");
+    while (excludedElements5.length > 0) {
+      excludedElements5[0].parentNode.removeChild(excludedElements5[0]);
+    }
+
+    const options = {
+      filename: 'Penilaian Seminar Hasil.pdf',
+      margin: 7, // Atur margin di sini, dalam satuan piksel
+      jsPDF: { format: 'a4', orientation: 'landscape' },
+      pagebreak: { mode: ['avoid-all'] }
+    };
+  
+    html2pdf().set(options).from(element).save('Penilaian Seminar Hasil-{{data_penilaian.0.id_role_dosen.nim.nim}}-{{data_penilaian.0.id_role_dosen.nim.id_user.first_name}}.pdf');
+  }
+  function redirectToURL() {
+  
+    // Redirect the user to the specified URL
+    window.location.href = `${window.location.pathname}`;
+  }
+  
+  function downloadCode() {
+    var x = document.getElementById("filetoprint");
+    
+    generatePDF()
+    redirectToURL()
+    
+  }
+  
+
+
+
+</script>
 <script src="{% static 'js/dashboard.js' %}"></script>
 <script type="text/javascript" charset="utf-8">
   $(document).ready(function () {
 
       $('#table-paginate-semhas').DataTable({
-
+        columnDefs: [{ targets: [2,3,4,6,7,8,10,11], visible: false }],
+        "lengthMenu": [[25, 50, 75, -1], [25, 50, 75, "All"]],
         lengthChange: true,
                     dom: 'Blfrtip',
                     buttons: [

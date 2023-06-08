@@ -1,5 +1,5 @@
 {%extends 'navbar_superuser.html' %}
-{% block title %}Update Data Evaluasi Topik{% endblock %}
+{% block title %}Update Data Review Usulan Topik{% endblock %}
 
 {% load static %}
 {% load crispy_forms_tags%}
@@ -10,20 +10,23 @@
 </style>
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <form method="post">
-        <h1 class="h2">Update Evaluasi Topik</h1>
+        <h1 class="h2">Update Data Review Usulan Topik</h1>
         {%csrf_token%}
         {{form|crispy}}
         <p>Preview</p>
         <div class="container-fluid mb-2" >
             <div id="example1" style="height:700px;">
-                <script>
+                <object data="{{file.url}}" type="application/pdf" width="100%" height="500px">
+                    <p>Unable to display PDF file. <a href="{{file.url}}">Download</a> instead.</p>
+                </object>
+                {% comment %} <script>
                     PDFObject.embed("{{file.url}}", "#example1");
                     if(PDFObject.supportsPDFs){
                         console.log("Yay, this browser supports inline PDFs.");
                     } else {
                         console.log("Boo, inline PDFs are not supported by this browser");
                     }
-                </script>
+                </script> {% endcomment %}
             </div>
         </div>
         <div class="row container-fluid">

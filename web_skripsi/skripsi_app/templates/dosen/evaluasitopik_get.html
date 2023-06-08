@@ -13,8 +13,8 @@
     <a class="btn btn-success text-white my-3" href="/evaluasitopikget">Tanpa Filter</a>
     {%if user_info.2.name != "Mahasiswa"%}
     <a class="btn btn-success text-white my-3" href="{% url 'evaluasitopik_get_sudah_ACC'  %}">Filter Evaluasi Topik Sudah ACC</a>
-    <a class="btn btn-success text-white my-3" href="{% url 'evaluasitopik_get_sudah_revisi'  %}">Filter Evaluasi Topik Sudah di Revisi</a>
-    <a class="btn btn-success text-white my-3" href="{% url 'evaluasitopik_get_sudah_evaluasi'  %}">Filter Evaluasi Topik Sudah ACC dan Revisi</a>
+    {% comment %} <a class="btn btn-success text-white my-3" href="{% url 'evaluasitopik_get_sudah_revisi'  %}">Filter Evaluasi Topik Sudah di Revisi</a>
+    <a class="btn btn-success text-white my-3" href="{% url 'evaluasitopik_get_sudah_evaluasi'  %}">Filter Evaluasi Topik Sudah ACC dan Revisi</a> {% endcomment %}
     <a class="btn btn-success text-white my-3" href="/evaluasitopikgetrevise">Filter Evaluasi Topik Belum Evaluasi</a>
     {%endif%}
   </div>

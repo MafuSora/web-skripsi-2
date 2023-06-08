@@ -1,5 +1,5 @@
 {%extends 'navbar_superuser.html' %}
-{% block title %} Data Dosen Kompartemen{% endblock %}
+{% block title %} Data Dosen ketua Kompartemen{% endblock %}
 
 {% load static %}
 {% load crispy_forms_tags%}
@@ -7,14 +7,14 @@
 {% block content %}
 
 <div class="container">
-    <h2>Tabel Daftar Dosen Kompartemen</h2>
+    <h2>Tabel Daftar Dosen Ketua Kompartemen</h2>
     <div class="container-fluid text-end"><a class="btn btn-success text-white my-3"
             href="/kompartemendosencreate">Tambah
             Data Dosen Kompartemen</a></div>
     <table id="table-paginate" class="table table-striped table-bordered table-paginate" cellspacing="0" width="100%">
         <thead>
             <tr>
-                <th>ID</th>
+                <th>ID Dosen Kompartemen</th>
                 <th>NIP</th>
                 <th>Nama</th>
                 <th>Kompartemen</th>

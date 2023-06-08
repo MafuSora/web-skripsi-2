@@ -1,5 +1,5 @@
 {%extends 'navbar_superuser.html' %}
-{% block title %} Data Evaluasi Topik{% endblock %}
+{% block title %} Data Review Usulan Topik{% endblock %}
 
 {% load static %}
 {% load crispy_forms_tags%}
@@ -10,7 +10,7 @@
 </style>
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <form method="post">
-        <h1 class="h2">Data Evaluasi Topik</h1>
+        <h1 class="h2">Data Review Usulan Topik</h1>
         {%csrf_token%}
         {{form|crispy}}
         <p>Preview</p>

@@ -72,7 +72,13 @@
         {% comment %} Extension Select 2 {% endcomment %}
         <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
+        {% comment %} pdfjs {% endcomment %}
+        {% comment %} <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>  {% endcomment %}
+        {% comment %} <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script> {% endcomment %}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        {% comment %} <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script> {% endcomment %}
+        {% comment %} <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.js" integrity="sha512-Bw9Zj8x4giJb3OmlMiMaGbNrFr0ERD2f9jL3en5FmcTXLhkI+fKyXVeyGyxKMIl1RfgcCBDprJJt4JvlglEb3A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> {% endcomment %}
+        {% comment %} .select2 use code {% endcomment %}
         <script type="text/javascript" charset="utf-8">
             $(document).ready(function() {
                 $('<br/>').insertBefore('select#id_permintaan_dosen_1');
@@ -812,7 +818,7 @@
                 if($('#msg-notif').length>0){
                     $('#msg-notif').remove();
                 }
-            },6000)
+            },4000)
         </script>
         <script type="text/javascript" charset="utf-8">
 
@@ -866,6 +872,25 @@
            
             });
         </script>
+
+        {% comment %} <script> 
+            window.jsPDF = window.jspdf.jsPDF; 
+            // Convert HTML content to PDF 
+            function Convert_HTML_To_PDF() { 
+              var doc = jsPDF(); 
+              // Source HTMLElement or a string containing HTML. 
+              var elementHTML = document.querySelector("#filetoprint"); 
+              doc.html(elementHTML, {
+                callback: function(doc) { 
+                }, 
+                margin: [10, 10, 10, 10],
+                autoPaging: 'text',
+                x: 0,
+                y: 0,
+                width: 190, 
+              });
+            }
+          </script>  {% endcomment %}
         {% block script %}
         {% endblock %}
     <title>{% block title %}{% endblock %}</title>
