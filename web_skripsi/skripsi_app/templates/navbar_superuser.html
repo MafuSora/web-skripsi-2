@@ -37,10 +37,10 @@
                   <tr>
                     {% if user_info.2.name == "Mahasiswa" %}
                     <!-- <a href="/mahasiswa_update/{{user_info.0}}" class="btn btn-danger text-center m-2">Change Photo</a>     -->
-                    <th>NIM</th>
+                    <th>Nama</th>
                     {%else%}
                     <!-- <a href="/dosen_update/{{user_info.0}}" class="btn btn-danger text-center m-2">Change Photo</a> -->
-                    <th>NIP</th>
+                    <th>Nama</th>
                     {% endif %}
                     <th>Pesan</th>
                     <th>Tanggal Buat</th>
@@ -53,9 +53,11 @@
                     <tr>
                         {% if user_info.2.name == "Mahasiswa" %}
                         <!-- <a href="/mahasiswa_update/{{user_info.0}}" class="btn btn-danger text-center m-2">Change Photo</a>     -->
-                        <td>{{item.nim|lower|cut:"a"|cut:"b"|cut:"c"|cut:"d"|cut:"e"|cut:"f"|cut:"g"|cut:"h"|cut:"i"|cut:"j"|cut:"k"|cut:"l"|cut:"m"|cut:"n"|cut:"o"|cut:"p"|cut:"q"|cut:"r"|cut:"s"|cut:"t"|cut:"u"|cut:"v"|cut:"w"|cut:"x"|cut:"y"|cut:"z"|cut:"-"}}</td>
+                        <td>{{item.nim}}</td>
+                        {% comment %} <td>{{item.nim|lower|cut:"a"|cut:"b"|cut:"c"|cut:"d"|cut:"e"|cut:"f"|cut:"g"|cut:"h"|cut:"i"|cut:"j"|cut:"k"|cut:"l"|cut:"m"|cut:"n"|cut:"o"|cut:"p"|cut:"q"|cut:"r"|cut:"s"|cut:"t"|cut:"u"|cut:"v"|cut:"w"|cut:"x"|cut:"y"|cut:"z"|cut:"-"}}</td> {% endcomment %}
                         {%else%}
-                        <td>{{item.nip|lower|cut:"a"|cut:"b"|cut:"c"|cut:"d"|cut:"e"|cut:"f"|cut:"g"|cut:"h"|cut:"i"|cut:"j"|cut:"k"|cut:"l"|cut:"m"|cut:"n"|cut:"o"|cut:"p"|cut:"q"|cut:"r"|cut:"s"|cut:"t"|cut:"u"|cut:"v"|cut:"w"|cut:"x"|cut:"y"|cut:"z"|cut:"-"}}</td>
+                        {% comment %} <td>{{item.nip|lower|cut:"a"|cut:"b"|cut:"c"|cut:"d"|cut:"e"|cut:"f"|cut:"g"|cut:"h"|cut:"i"|cut:"j"|cut:"k"|cut:"l"|cut:"m"|cut:"n"|cut:"o"|cut:"p"|cut:"q"|cut:"r"|cut:"s"|cut:"t"|cut:"u"|cut:"v"|cut:"w"|cut:"x"|cut:"y"|cut:"z"|cut:"-"}}</td> {% endcomment %}
+                        <td>{{item.nip}}</td>
                         <!-- <a href="/dosen_update/{{user_info.0}}" class="btn btn-danger text-center m-2">Change Photo</a> -->
                         <!-- <td>NIP</td> -->
                         {% endif %}
@@ -715,6 +717,46 @@
                                 <a href="/bimbinganget" class="nav-link px-3">
                                     <span class="me-2"><i class="bi bi-speedometer2"></i></span>
                                     <span>Tabel Bimbingan</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>      
+                </li>
+
+                <li>
+                    <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#layoutsWaktuMasterAdmin">
+                        <span class="me-2"><i class="bi bi-layout-split"></i></span>
+                        <span>Pengubahan Waktu Master</span>
+                        <span class="ms-auto">
+                            <span class="right-icon">
+                                <i class="bi bi-chevron-down"></i>
+                            </span>
+                        </span>
+                    </a>
+                    <div class="collapse" id="layoutsWaktuMasterAdmin">
+                        <ul class="navbar-nav ps-3">
+                            <li>
+                                <a href="{% url 'update_tanggal_usulantopik' %}" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Waktu Master Usulan Topik</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'update_tanggal_evaluasitopik' %}" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Waktu Master Evaluasi Topik</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'update_tanggal_proposal' %} " class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Waktu Master Proposal</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'update_tanggal_bimbingan' %}" class="nav-link px-3">
+                                    <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                                    <span>Waktu Master Bimbingan</span>
                                 </a>
                             </li>
                         </ul>

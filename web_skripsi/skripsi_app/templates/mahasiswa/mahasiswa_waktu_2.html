@@ -78,9 +78,12 @@
         <td>{{item.id_role_dosen.nim.nim}}</td>
         <td>{{item.id_role_dosen.nim.id_user.first_name}}</td>
         {% endif %} {% endcomment %}
-        {% if tahap == "kompartemen" %}
+        {% if tahap == "Ketua Kompartemen" %}
         <td>{{item2.tanggal_buat}}</td>
         <td>{{item.tanggal_update}}</td>
+        {% elif tahap == "berkas"%}
+        <td>{{item2.tanggal_update}}</td>
+        <td>{{item.TanggalUpdate}}</td>
         {% else %}
         <td>{{item2.tanggal_buat}}</td>
         <td>{{item.TanggalUpdate}}</td>

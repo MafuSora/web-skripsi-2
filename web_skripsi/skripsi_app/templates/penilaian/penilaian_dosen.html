@@ -32,6 +32,7 @@
   <div class="d-flex text-end">
     
     <button class="btn btn-primary btn-block  p-2" onclick="downloadCode()">Print As PDF</button>
+    <small>Jangan zoom Halaman, agar menghasilkan hasil terbaik ! Gunakan Komputer / Laptop dan lakukan refresh jika anda terlanjur zoom dan pastikan zoom pada ukuran 100% !  Jika Menggunakan Handphone Harap Gunakan Mode Tampilan Dekstop!</small>
   </div>
   <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <div class="container" id="filetoprint">
@@ -151,9 +152,9 @@
   </table>
   {%endif%}
   <br/>
+  <br/>
+  <br/>
   <div class="d-flex justify-content-end">
-    <br/>
-    <br/>
   <table>
     <tr>
       <td>
@@ -215,7 +216,7 @@
         pagebreak: { mode: ['avoid-all'] }
       };
     
-      html2pdf().set(options).from(element).save('Penilaian Bimbingan.pdf');
+      html2pdf().set(options).from(element).save('Penilaian Bimbingan-{{data_penilaian.0.id_role_dosen.nim.nim}}-{{data_penilaian.0.id_role_dosen.nim.id_user.first_name}}.pdf');
     }
     function redirectToURL() {
     

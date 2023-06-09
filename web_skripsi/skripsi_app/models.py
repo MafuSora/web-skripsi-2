@@ -118,8 +118,8 @@ class evaluasitopik(models.Model):
     status_topik = models.CharField(
         choices=status_choices, max_length=60, default=SUBMIT)
     catatan = models.TextField()
-    tanggal_buat = models.DateTimeField(auto_now_add=True)
-    tanggal_update = models.DateTimeField(auto_now=True)
+    tanggal_buat = models.DateTimeField(auto_now_add=True, editable=True)
+    tanggal_update = models.DateTimeField(auto_now=True, editable=True)
 
     def __str__(self):
         return str(self.id_usulan_topik) + "-" + str(self.status_topik)
@@ -234,8 +234,8 @@ class proposal(models.Model):
     file_proposal = models.FileField(
         upload_to="proposal_mahasiswa/", storage=gd_storage,validators=[FileExtensionValidator(['pdf'])])
     keterangan = models.TextField(blank=True)
-    tanggal_buat = models.DateTimeField(auto_now_add=True)
-    tanggal_update = models.DateTimeField(auto_now=True)
+    tanggal_buat = models.DateTimeField(auto_now_add=True, editable=True)
+    tanggal_update = models.DateTimeField(auto_now=True, editable=True)
 
     def __str__(self):
         return str(self.nim) + "-" + str(self.judul_proposal)
@@ -262,8 +262,8 @@ class bimbingan(models.Model):
     # file_proposal = models.FileField(
     #     upload_to="proposal_mahasiswa/", storage=gd_storage)
     catatan = models.TextField(blank=True)
-    tanggal_buat = models.DateTimeField(auto_now_add=True)
-    tanggal_update = models.DateTimeField(auto_now=True)
+    tanggal_buat = models.DateTimeField(auto_now_add=True, editable=True)
+    tanggal_update = models.DateTimeField(auto_now=True, editable=True)
     
     def __str__(self):
         return str(self.id_proposal) + "-" + str(self.id_role_dosen) + "-" + str(self.status_bimbingan)
@@ -313,8 +313,8 @@ class penilaian(models.Model):
         detailpenilaian, null=True, on_delete= models.CASCADE)
     id_sub_cpmk = models.ForeignKey(sub_cpmk,on_delete= models.CASCADE,null=True)
     nilai = models.IntegerField(blank=True,null=True)
-    tanggal_buat = models.DateTimeField(auto_now_add=True)
-    tanggal_update = models.DateTimeField(auto_now=True)
+    tanggal_buat = models.DateTimeField(auto_now_add=True, editable=True)
+    tanggal_update = models.DateTimeField(auto_now=True, editable=True)
 
     def __str__(self):
         return str(self.id_penilaian) + "-"+str(self.id_sub_cpmk.id_sub_cpmk)+ "-" + str(self.nilai)
@@ -329,8 +329,8 @@ class notifikasi(models.Model):
     nim= models.CharField(max_length=100,null=True)
     messages=models.TextField()
     status=models.BooleanField(default=False)
-    tanggal_buat = models.DateTimeField(auto_now_add=True)
-    tanggal_update = models.DateTimeField(auto_now=True)
+    tanggal_buat = models.DateTimeField(auto_now_add=True, editable=True)
+    tanggal_update = models.DateTimeField(auto_now=True, editable=True)
 
     def __str__(self):
         return str(self.messages) + "-" + str(self.status)

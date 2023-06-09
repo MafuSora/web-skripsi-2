@@ -62,7 +62,96 @@ class NimForm(forms.ModelForm):
         ,"semester_daftar_skripsi","angkatan"
         ]
     
+class Form_Update_Tanggal_Usulan(forms.Form):
+    id_usulan_topik = forms.ModelChoiceField(queryset=usulantopik.objects.all(), widget=forms.Select(attrs={'class': 'select2'}))
+    tanggal_buat = forms.DateTimeField(initial=datetime.datetime.now, widget=forms.DateTimeInput(attrs={'class': 'datepicker'}))
+    tanggal_update = forms.DateTimeField(initial=datetime.datetime.now, widget=forms.DateTimeInput(attrs={'class': 'datepicker'}))
+    # tanggal_buat = forms.DateTimeField(initial=datetime.datetime.now)
+    # tanggal_update = forms.DateTimeField(initial=datetime.datetime.now)
 
+    class Meta:
+        fields = ['id_usulan_topik', 'tanggal_buat', 'tanggal_update']
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['id_usulan_topik'].label = 'Usulan Topik'
+        self.fields['id_usulan_topik'].label_from_instance = self.label_from_instance
+
+    def label_from_instance(self, obj):
+        return f"{obj.id_usulan_topik} - {obj.nim} - {obj.judul_topik} - {obj.tanggal_buat} - {obj.tanggal_update}"
+
+    class Meta:
+        fields = ['id_usulan_topik', 'tanggal_buat', 'tanggal_update']
+        
+        
+class Form_Update_Tanggal_Evaluasi(forms.Form):
+    id_evaluasi_topik = forms.ModelChoiceField(queryset=evaluasitopik.objects.all(), widget=forms.Select(attrs={'class': 'select2'}))
+    tanggal_buat = forms.DateTimeField(initial=datetime.datetime.now, widget=forms.DateTimeInput(attrs={'class': 'datepicker'}))
+    tanggal_update = forms.DateTimeField(initial=datetime.datetime.now, widget=forms.DateTimeInput(attrs={'class': 'datepicker'}))
+    # tanggal_buat = forms.DateTimeField(initial=datetime.datetime.now)
+    # tanggal_update = forms.DateTimeField(initial=datetime.datetime.now)
+
+    class Meta:
+        fields = ['id_evaluasi_topik', 'tanggal_buat', 'tanggal_update']
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['id_evaluasi_topik'].label = 'Evaluasi Topik'
+        self.fields['id_evaluasi_topik'].label_from_instance = self.label_from_instance
+
+    def label_from_instance(self, obj):
+        return f"{obj.id_evaluasi_topik} - {obj.id_usulan_topik} - {obj.id_dosen_kompartemen}- {obj.status_topik} - {obj.tanggal_buat} - {obj.tanggal_update}"
+
+    class Meta:
+        fields = ['id_evaluasi_topik', 'tanggal_buat', 'tanggal_update']
+
+        
+        
+class Form_Update_Tanggal_Proposal(forms.Form):
+    id_proposal = forms.ModelChoiceField(queryset=proposal.objects.all(), widget=forms.Select(attrs={'class': 'select2'}))
+    tanggal_buat = forms.DateTimeField(initial=datetime.datetime.now, widget=forms.DateTimeInput(attrs={'class': 'datepicker'}))
+    tanggal_update = forms.DateTimeField(initial=datetime.datetime.now, widget=forms.DateTimeInput(attrs={'class': 'datepicker'}))
+    # tanggal_buat = forms.DateTimeField(initial=datetime.datetime.now)
+    # tanggal_update = forms.DateTimeField(initial=datetime.datetime.now)
+
+
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['id_proposal'].label = 'Berkas Skripsi'
+        self.fields['id_proposal'].label_from_instance = self.label_from_instance
+
+    def label_from_instance(self, obj):
+        return f"{obj.id_proposal} - {obj.nim} - {obj.nama_tahap}- {obj.judul_proposal} - {obj.tanggal_buat} - {obj.tanggal_update}"
+    
+    class Meta:
+        fields = ['id_proposal', 'tanggal_buat', 'tanggal_update']
+    
+
+        
+        
+class Form_Update_Tanggal_Bimbingan(forms.Form):
+    id_bimbingan = forms.ModelChoiceField(queryset=bimbingan.objects.all(), widget=forms.Select(attrs={'class': 'select2'}))
+    tanggal_buat = forms.DateTimeField(initial=datetime.datetime.now, widget=forms.DateTimeInput(attrs={'class': 'datepicker'}))
+    tanggal_update = forms.DateTimeField(initial=datetime.datetime.now, widget=forms.DateTimeInput(attrs={'class': 'datepicker'}))
+    # tanggal_buat = forms.DateTimeField(initial=datetime.datetime.now)
+    # tanggal_update = forms.DateTimeField(initial=datetime.datetime.now)
+
+
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['id_bimbingan'].label = 'Bimbingan'
+        self.fields['id_bimbingan'].label_from_instance = self.label_from_instance
+
+    def label_from_instance(self, obj):
+        return f"{obj.id_bimbingan} - {obj.id_proposal} - {obj.id_role_dosen}- {obj.status_bimbingan} - {obj.tanggal_buat} - {obj.tanggal_update}"
+
+    class Meta:
+        fields = ['id_bimbingan', 'tanggal_buat', 'tanggal_update']
+    
+
+   
 
 class CreateUserForm(UserCreationForm):
     email = forms.EmailField(required=True, validators=[validate_email, ubac_email_validator])

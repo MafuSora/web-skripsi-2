@@ -31,7 +31,11 @@ urlpatterns = [
      # notifikasi delete
      path('notifikasi_delete/<int:id>', views.notifikasi_delete, name='notifikasi_delete'),
 
-
+     # Update tanggal
+    path('update/usulantopik/', views.update_tanggal_usulantopik, name='update_tanggal_usulantopik'),
+    path('update/evaluasitopik/', views.update_tanggal_evaluasitopik, name='update_tanggal_evaluasitopik'),
+    path('update/proposal/', views.update_tanggal_proposal, name='update_tanggal_proposal'),
+    path('update/bimbingan/', views.update_tanggal_bimbingan, name='update_tanggal_bimbingan'),
 
     # register mahasiswa
     path('register/', views.register, name='register'),

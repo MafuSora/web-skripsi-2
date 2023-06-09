@@ -505,9 +505,12 @@
                       <div class="col mr-2">
                           <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                               Status Terakhir Topik</div>
-                            {%if last_topik.status_topik ==  None %}
+                            {%if last_topik ==  "Sudah Membuat Topik" %}
+                              
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"> Sudah Membuat Topik  </div>
+                            {%elif last_topik.status_topik ==  None %}
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"> Belum Membuat Topik  </div>
 
-                            <div class="h5 mb-0 font-weight-bold text-gray-800"> Belum Buat Topik  </div>
                             {% else %}
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{last_topik.status_topik}}  </div>
                             {% endif %}
@@ -536,7 +539,9 @@
                       <div class="col mr-2">
                           <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                               Status Terakhir Bimbingan</div>
-                            {%if last_bimbingan is none%}
+                            {%if last_bimbingan == "Sudah Membuat Proposal" %}
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">Sudah Membuat Proposal </div>
+                            {%elif last_bimbingan is none%}
                             <div class="h5 mb-0 font-weight-bold text-gray-800">Belum Membuat Proposal </div>
                             {% else %}
                           <div class="h5 mb-0 font-weight-bold text-gray-800">{{last_bimbingan.status_bimbingan}} </div>

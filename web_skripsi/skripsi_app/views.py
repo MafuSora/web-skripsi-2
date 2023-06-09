@@ -26,7 +26,7 @@ from .models import cpmk,notifikasi,jadwal_seminar,penilaian, bimbingan, detailp
 
 # Import file form untuk dapat dikontrol(ditampilkan) disini  
 from django import forms
-from .forms import JadwalFormTanpaFilter,DetailPenilaianFormBimbingan,UpdateAdminUserForm,UpdateAdminDosenForm,UpdateAdminMahasiswaForm,ProposalFormRead,ProposalFormFull,DetailPenilaianIDDosen,DetailPenilaianFormDosen,NotifikasiForm,BimbinganFormDosenUpdate, ProposalForm, RoleDosenFormUpdateSekdept, RoleDosenFormSekdept, BimbinganForm, BimbinganFormDosen, DetailPenilaianForm, EvaluasiTopikFormKompartemen, EvaluasiTopikFormSekertarisDepartemen, EvaluasiTopikFormFull, RoleDosenForm, UsulanTopikFormFull, UpdateDosenForm, KompartemenDosenForm, UpdateMahasiswaForm, NimForm, NipForm, RegistrationForm, DosenForm, MahasiswaForm, UpdateUserForm, KompartemenForm, CreateUserForm, UsulanTopikForm ,JadwalForm, JadwalSemesterForm,PenilaianForm,CPMKForm, SubCPMKForm
+from .forms import Form_Update_Tanggal_Bimbingan,Form_Update_Tanggal_Proposal,Form_Update_Tanggal_Evaluasi,Form_Update_Tanggal_Usulan,JadwalFormTanpaFilter,DetailPenilaianFormBimbingan,UpdateAdminUserForm,UpdateAdminDosenForm,UpdateAdminMahasiswaForm,ProposalFormRead,ProposalFormFull,DetailPenilaianIDDosen,DetailPenilaianFormDosen,NotifikasiForm,BimbinganFormDosenUpdate, ProposalForm, RoleDosenFormUpdateSekdept, RoleDosenFormSekdept, BimbinganForm, BimbinganFormDosen, DetailPenilaianForm, EvaluasiTopikFormKompartemen, EvaluasiTopikFormSekertarisDepartemen, EvaluasiTopikFormFull, RoleDosenForm, UsulanTopikFormFull, UpdateDosenForm, KompartemenDosenForm, UpdateMahasiswaForm, NimForm, NipForm, RegistrationForm, DosenForm, MahasiswaForm, UpdateUserForm, KompartemenForm, CreateUserForm, UsulanTopikForm ,JadwalForm, JadwalSemesterForm,PenilaianForm,CPMKForm, SubCPMKForm
 from django.forms import inlineformset_factory,models
 # Untuk membuat field form text pada form 
 from django.db.models import CharField
@@ -56,8 +56,91 @@ tanggalan=datetime.datetime.now()
 tanggal=tanggalan.strftime("%A, %d - %B - %Y")
 Jam=tanggalan.strftime("%H:%M:%S")
 
+from django.db import connection
 
+# Update waktu buat dan update usulan topik
+@login_required(login_url="/login")
+# @permission_required("main.add_user", raise_exception=True)
+@role_required(allowed_roles=['Admin','Properta'])
+def update_tanggal_usulantopik(request):
+    user_info = user_information(request)
+    tahap="Usulan Topik"
+    if request.method == 'POST':
+        form = Form_Update_Tanggal_Usulan(request.POST)
+        tgl_buat=request.POST["tanggal_buat"]
+        tgl_update=request.POST["tanggal_update"]
+        id_usulan=request.POST["id_usulan_topik"]
+        query = f"UPDATE skripsi_app_usulantopik SET tanggal_buat = '{tgl_buat}', tanggal_update = '{tgl_update}' WHERE id_usulan_topik = {id_usulan}"
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+        messages.success(request,"Sukses Merubah Waktu Buat dan Update Usulan Topik!")
+    else:
+        form = Form_Update_Tanggal_Usulan()
+        
+    return render(request, 'registration/tanggal_update.html', {"form": form, "tahap": tahap, "user_info": user_info})
 
+# Update waktu buat dan update eval topik
+@login_required(login_url="/login")
+# @permission_required("main.add_user", raise_exception=True)
+@role_required(allowed_roles=['Admin','Properta'])  
+def update_tanggal_evaluasitopik(request):
+    user_info = user_information(request)
+    tahap="Evaluasi Topik"
+    if request.method == 'POST':
+        form = Form_Update_Tanggal_Evaluasi(request.POST)
+        tgl_buat=request.POST["tanggal_buat"]
+        tgl_update=request.POST["tanggal_update"]
+        id_evaluasi=request.POST["id_evaluasi_topik"]
+        query = f"UPDATE skripsi_app_evaluasitopik SET tanggal_buat = '{tgl_buat}', tanggal_update = '{tgl_update}' WHERE id_evaluasi_topik = {id_evaluasi}"
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+        messages.success(request,"Sukses Merubah Waktu Buat dan Update Evaluasi Topik!")
+    else:
+        form = Form_Update_Tanggal_Evaluasi()
+        
+    return render(request, 'registration/tanggal_update.html', {"form": form, "tahap": tahap, "user_info": user_info})
+
+# Update waktu buat dan update proposal/berkas skripsi
+@login_required(login_url="/login")
+# @permission_required("main.add_user", raise_exception=True)
+@role_required(allowed_roles=['Admin','Properta'])
+def update_tanggal_proposal(request):
+    user_info = user_information(request)
+    tahap="Proposal"
+    if request.method == 'POST':
+        form = Form_Update_Tanggal_Proposal(request.POST)
+        tgl_buat=request.POST["tanggal_buat"]
+        tgl_update=request.POST["tanggal_update"]
+        id_proposal=request.POST["id_proposal"]
+        query = f"UPDATE skripsi_app_proposal SET tanggal_buat = '{tgl_buat}', tanggal_update = '{tgl_update}' WHERE id_proposal = {id_proposal}"
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+        messages.success(request,"Sukses Merubah Waktu Buat dan Update Berkas Skripsi!")
+    else:
+        form = Form_Update_Tanggal_Proposal()
+        
+    return render(request, 'registration/tanggal_update.html', {"form": form, "tahap": tahap, "user_info": user_info})
+
+# Update waktu buat dan update proposal/berkas skripsi
+@login_required(login_url="/login")
+# @permission_required("main.add_user", raise_exception=True)
+@role_required(allowed_roles=['Admin','Properta'])
+def update_tanggal_bimbingan(request):
+    user_info = user_information(request)
+    tahap="Bimbingan"
+    if request.method == 'POST':
+        form = Form_Update_Tanggal_Bimbingan(request.POST)
+        tgl_buat=request.POST["tanggal_buat"]
+        tgl_update=request.POST["tanggal_update"]
+        id_bimbingan=request.POST["id_bimbingan"]
+        query = f"UPDATE skripsi_app_bimbingan SET tanggal_buat = '{tgl_buat}', tanggal_update = '{tgl_update}' WHERE id_bimbingan = {id_bimbingan}"
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+        messages.success(request,"Sukses Merubah Waktu Buat dan Update Bimbingan!")
+    else:
+        form = Form_Update_Tanggal_Bimbingan()
+        
+    return render(request, 'registration/tanggal_update.html', {"form": form, "tahap": tahap, "user_info": user_info})
 
 # Create your views here.
 # # 404 : Handle halamn yang tidak ditemukan (tidak tersedia) atau (salah route)
@@ -430,7 +513,7 @@ def mahasiswa_progress_get(request):
     list_nim=[]
 
     # Lulus
-    lulus_mhs=bimbingan.objects.filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim")
+    lulus_mhs=bimbingan.objects.filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update')
     lulus_list=list(bimbingan.objects.filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim"))
     for i in range(len(lulus_list)):
         # print(lulus_list[i][0])
@@ -1049,7 +1132,7 @@ def dashboard(request):
     list_nim=[]
 
     # Lulus
-    lulus_mhs=bimbingan.objects.filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim").annotate(Tanggal_Update_Terakhir=datetime.datetime.now()-Max("tanggal_update"))
+    lulus_mhs=bimbingan.objects.filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update').annotate(Tanggal_Update_Terakhir=datetime.datetime.now()-Max("tanggal_update"))
     lulus_list=list(bimbingan.objects.filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim"))
     for i in range(len(lulus_list)):
         list_nim.append(lulus_list[i][0])
@@ -2002,6 +2085,11 @@ def dashboard(request):
     else : 
         last_topik= evaluasitopik.objects.filter(id_usulan_topik__nim__nim=user_info[0]).order_by("-tanggal_update").first()
         last_topik= last_topik
+        if last_topik==None:
+            if usulantopik.objects.filter(nim__nim=user_info[0]).exists() ==True:
+                last_topik= "Sudah Membuat Topik"
+            
+        print(last_topik)
         # if last_topik==None:
         #     last_topik.status_topik="Belum Buat Topik"
         
@@ -2012,7 +2100,10 @@ def dashboard(request):
 
     else : 
         last_bimbingan= bimbingan.objects.filter(id_proposal__nim__nim=user_info[0]).order_by("-tanggal_update").first()
-
+        if last_bimbingan == None :
+            if proposal.objects.filter(nim__nim=user_info[0]).exists()==True:
+            
+                last_bimbingan= "Sudah Membuat Proposal"
         last_bimbingan= last_bimbingan
     # Pareto
     list_nim=[]
@@ -4387,14 +4478,19 @@ def evaluasitopik_get_id_usulan(request,id):
     # check:dosen kompartemen
     if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" :
         try:
-            list_dosen_kompartemen=[]
-            temp_dosen_kompartemen=list(kompartemendosen.objects.filter(nip=dosen.objects.filter(pk=user_info[0])[0].nip).values_list('id_dosen_kompartemen'))
-            # print(temp_dosen_kompartemen)
-            for i in range(len(temp_dosen_kompartemen)):
-                        list_dosen_kompartemen.append(temp_dosen_kompartemen[i][0])
+            # list_dosen_kompartemen=[]
+            # temp_dosen_kompartemen=list(kompartemendosen.objects.filter(nip=dosen.objects.filter(pk=user_info[0])[0].nip).values_list('id_dosen_kompartemen',flat=True))
+            # list_dosen_kompartemen=list(kompartemendosen.objects.filter(nip=dosen.objects.get(nip=user_info[0]).nip).values_list('id_dosen_kompartemen',flat=True))
             # print(list_dosen_kompartemen)
-            evaluasitopiks = evaluasitopik.objects.filter(
-                id_dosen_kompartemen__in=list_dosen_kompartemen).filter(id_usulan_topik=id)
+            # for i in range(len(temp_dosen_kompartemen)):
+            #             list_dosen_kompartemen.append(temp_dosen_kompartemen[i][0])
+            # print(list_dosen_kompartemen)
+            
+            evaluasitopiks = evaluasitopik.objects.filter(id_usulan_topik=id)
+            # .filter(
+            #     id_dosen_kompartemen__in=list_dosen_kompartemen)
+            
+            # print(evaluasitopiks)
         except:
             evaluasitopiks = []
     elif user_info[2].name == "Mahasiswa":
@@ -5868,7 +5964,7 @@ def bimbingan_update_proposal(request, id):
                 create_roledosen = form.save()
                 create_roledosen.save()
                 messages.warning(request,"Data Bimbingan Telah Berhasil Dirubah! ")
-                notifikasi.objects.create(nim=create_roledosen.id_proposal.nim,messages=f"Terdapat Update Revisi Bimbingan Baru Oleh {create_roledosen.id_role_dosen.nip.id_user.first_name} pada {tanggal} Jam {Jam}")
+                notifikasi.objects.create(nim=create_roledosen.id_proposal.nim.nim,messages=f"Terdapat Update Revisi Bimbingan Baru Oleh {create_roledosen.id_role_dosen.nip.id_user.first_name} pada {tanggal} Jam {Jam}")
                 # send ke mahasiswa
                 
                 email_list=[]
@@ -5959,7 +6055,7 @@ def bimbingan_update_proposal(request, id):
             if form.is_valid():
                 create_roledosen = form.save()
                 create_roledosen.save()
-                notifikasi.objects.create(nim=create_roledosen.id_proposal.nim,messages=f"Terdapat Update Revisi Bimbingan Baru Oleh {create_roledosen.id_role_dosen.nip.id_user.first_name} pada {tanggal} Jam {Jam}")
+                notifikasi.objects.create(nim=create_roledosen.id_proposal.nim.nim,messages=f"Terdapat Update Revisi Bimbingan Baru Oleh {create_roledosen.id_role_dosen.nip.id_user.first_name} pada {tanggal} Jam {Jam}")
                 # send ke mahasiswa
                 email_list=[]
                 
@@ -6091,7 +6187,7 @@ def bimbingan_get_acc(request):
 
     else:
         bimbingans = bimbingan.objects.all()
-    bimbingans.filter(status_bimbingan="ACC")
+    bimbingans=bimbingans.filter(status_bimbingan="ACC")
     # print(bimbingans)
     return render(request, 'bimbingan/bimbingan_get.html', {"bimbingans": bimbingans, "user_info": user_info})
 # Filter bimbingan dengan status belum diperiksa 
@@ -6117,7 +6213,7 @@ def bimbingan_get_lain_lain(request):
 
     else:
         bimbingans = bimbingan.objects.all()
-    bimbingans.exclude(status_bimbingan="ACC").exclude(status_bimbingan="Revisi")
+    bimbingans=bimbingans.exclude(status_bimbingan="ACC").exclude(status_bimbingan="Revisi")
     # print(bimbingans)
     return render(request, 'bimbingan/bimbingan_get.html', {"bimbingans": bimbingans, "user_info": user_info})
 # Filter bimbingan dengan status sudah diperiksa 
@@ -6143,7 +6239,7 @@ def bimbingan_get_sudah_diperiksa(request):
 
     else:
         bimbingans = bimbingan.objects.all()
-    bimbingans.filter(status_bimbingan__in=["Revisi","ACC"])
+    bimbingans=bimbingans.filter(status_bimbingan__in=["Revisi","ACC"])
     # print(bimbingans)
     return render(request, 'bimbingan/bimbingan_get.html', {"bimbingans": bimbingans, "user_info": user_info})
 # Filter bimbingan dengan status revisi 
@@ -6170,7 +6266,8 @@ def bimbingan_get_revisi(request):
 
     else:
         bimbingans = bimbingan.objects.all()
-    bimbingans.filter(status_bimbingan="Revisi")
+        
+    bimbingans=bimbingans.filter(status_bimbingan="Revisi")
     # print(bimbingans)
     return render(request, 'bimbingan/bimbingan_get.html', {"bimbingans": bimbingans, "user_info": user_info})
 
@@ -6291,7 +6388,7 @@ def bimbingan_update(request, id):
                     instances.update(status_bimbingan='Revisi') # Mengubah status untuk semua objek
                 create_roledosen.save()
                 messages.warning(request,"Data Bimbingan Telah Berhasil Dirubah! ")
-                notifikasi.objects.create(nim=create_roledosen.id_proposal.nim,messages=f"Terdapat Update Revisi Bimbingan Baru Oleh {create_roledosen.id_role_dosen.nip.id_user.first_name} pada {tanggal} Jam {Jam}")
+                notifikasi.objects.create(nim=create_roledosen.id_proposal.nim.nim,messages=f"Terdapat Update Revisi Bimbingan Baru Oleh {create_roledosen.id_role_dosen.nip.id_user.first_name} pada {tanggal} Jam {Jam}")
                 # send ke mahasiswa
                 email_list=[]
                 
@@ -6388,7 +6485,7 @@ def bimbingan_update(request, id):
                     instances.update(status_bimbingan='Revisi') # Mengubah status untuk semua objek
                 create_roledosen.save()
                 messages.warning(request,"Data Bimbingan Telah Berhasil Dirubah! ")
-                notifikasi.objects.create(nim=create_roledosen.id_proposal.nim,messages=f"Terdapat Update Revisi Bimbingan Baru Oleh {create_roledosen.id_role_dosen.nip.id_user.first_name} pada {tanggal} Jam {Jam}")
+                notifikasi.objects.create(nim=create_roledosen.id_proposal.nim.nim,messages=f"Terdapat Update Revisi Bimbingan Baru Oleh {create_roledosen.id_role_dosen.nip.id_user.first_name} pada {tanggal} Jam {Jam}")
                 # send ke mahasiswa
                 email_list=[]
                 temp_email=list(User.objects.filter(pk=create_roledosen.id_proposal.nim.id_user.id).values_list('email'))
@@ -9144,7 +9241,7 @@ def proposal_create_full(request):
             for i in roledosen_data:
                 temp_email=list(User.objects.filter(pk=i.nip.id_user.id).values_list('email'))
                 email_list.append(temp_email[0][0])
-                notifikasi.objects.create(nip=i.nip,messages=f"Terdapat Proposal Baru Oleh {create_proposal.nim.id_user.first_name} Untuk diperiksa pada {tanggal} Jam {Jam}")
+                notifikasi.objects.create(nip=i.nip.nip,messages=f"Terdapat Proposal Baru Oleh {create_proposal.nim.id_user.first_name} Untuk diperiksa pada {tanggal} Jam {Jam}")
             # roledosen_data=roledosen.objects.filter(role="Pembimbing 1").filter(nim=create_proposal.nim)|roledosen.objects.filter(role="Pembimbing 2").filter(nim=create_proposal.nim)
             # send ke mahasiswa
             # email_list=roledosen.objects.filter(role="Pembimbing 1").filter(nim=create_proposal.nim).values_list('email')|roledosen.objects.filter(role="Pembimbing 2").filter(nim=create_proposal.nim).values_list('email')
@@ -9185,7 +9282,7 @@ def proposal_create(request):
             for i in roledosen_data:
                 temp_email=list(User.objects.filter(pk=i.nip.id_user.id).values_list('email'))
                 email_list.append(temp_email[0][0])
-                notifikasi.objects.create(nip=i.nip,messages=f"Terdapat Proposal Baru Oleh {create_proposal.nim.id_user.first_name} Untuk diperiksa pada {tanggal} Jam {Jam}")
+                notifikasi.objects.create(nip=i.nip.nip,messages=f"Terdapat Proposal Baru Oleh {create_proposal.nim.id_user.first_name} Untuk diperiksa pada {tanggal} Jam {Jam}")
             # roledosen_data=roledosen.objects.filter(role="Pembimbing 1").filter(nim=create_proposal.nim)|roledosen.objects.filter(role="Pembimbing 2").filter(nim=create_proposal.nim)
             # send ke mahasiswa
             # email_list=roledosen.objects.filter(role="Pembimbing 1").filter(nim=create_proposal.nim).values_list('email')|roledosen.objects.filter(role="Pembimbing 2").filter(nim=create_proposal.nim).values_list('email')
@@ -12794,7 +12891,7 @@ def proposal_update(request, id):
                 for i in roledosen_data:
                     temp_email=list(User.objects.filter(pk=i.nip.id_user.id).values_list('email'))
                     email_list.append(temp_email[0][0])
-                    notifikasi.objects.create(nip=i.nip,messages=f"Terdapat Update Proposal dilakukan Oleh {create_proposal.nim.id_user.first_name} Untuk diperiksa pada {tanggal} Jam {Jam}")
+                    notifikasi.objects.create(nip=i.nip.nip,messages=f"Terdapat Update Proposal dilakukan Oleh {create_proposal.nim.id_user.first_name} Untuk diperiksa pada {tanggal} Jam {Jam}")
                 # email_list=User.objects.filter(pk=i.nip.id_user).values_list('email')
                 send_mail(
                     'Terdapat Update Proposal Telah Di Buat ',
@@ -12828,7 +12925,7 @@ def proposal_update(request, id):
                 for i in roledosen_data:
                     temp_email=list(User.objects.filter(pk=i.nip.id_user.id).values_list('email'))
                     email_list.append(temp_email[0][0])
-                    notifikasi.objects.create(nip=i.nip,messages=f"Terdapat Update Proposal dilakukan Oleh {create_proposal.nim.id_user.first_name} Untuk diperiksa pada {tanggal} Jam {Jam}")
+                    notifikasi.objects.create(nip=i.nip.nip,messages=f"Terdapat Update Proposal dilakukan Oleh {create_proposal.nim.id_user.first_name} Untuk diperiksa pada {tanggal} Jam {Jam}")
                 # email_list=User.objects.filter(pk=i.nip.id_user).values_list('email')
                 # User.objects.filter(pk=create_roledosen.id_proposal.nim.id_user).values_list('email')
                 send_mail(
@@ -12906,8 +13003,18 @@ def user_information(request):
         except:
             photo = ""
     # notiifikasi_data=models.notifikasi.objects.filter(nim=Nomor)|models.notifikasi.objects.filter(nip=Nomor)
-    notiifikasi_data= notifikasi.objects.filter(nim=Nomor)|notifikasi.objects.filter(nip=Nomor)|notifikasi.objects.filter(nim__startswith=Nomor)|notifikasi.objects.filter(nip__endswith=Nomor)
+
     # print(notiifikasi_data)
+    # print(str(role) == "Mahasiswa")
+    if str(role) == "Mahasiswa":
+        notiifikasi_data= notifikasi.objects.filter(nim=Nomor)
+        notiifikasi_data=notiifikasi_data.exclude(nim=None)
+        print(notiifikasi_data)
+    else:
+        notiifikasi_data= notifikasi.objects.filter(nip=Nomor)
+        notiifikasi_data=notiifikasi_data.exclude(nip=None)
+    # print(type(role))
+    
     if notiifikasi_data.exists():
         pass
     else :
@@ -12926,6 +13033,8 @@ def user_information(request):
         count_notif=notiifikasi_data.count()
     except :
         count_notif=0
+    
+
 
     return Nomor, photo, role,notiifikasi_data,count_notif,{"formnotif":formnotif}
 # Menghapus Notifikasi 
@@ -13045,14 +13154,14 @@ def jadwal_create(request):
             form.save()
             # print(form)
             # todo notif
-            notifikasi.objects.create(nim=form.mahasiswa,messages=f"Anda sudah diassign untuk melakukan jadwal seminar sebagai peserta seminar pada tanggal {form.tanggal_seminar} dan jam {form.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
-            notifikasi.objects.create(nip=form.dosen_pembimbing_1,messages=f"Anda sudah diassign untuk melakukan jadwal seminar sebagai pembimbing 1 mahasiswa {form.mahasiswa} pada tanggal {form.tanggal_seminar} dan jam {form.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
+            notifikasi.objects.create(nim=form.mahasiswa.nim,messages=f"Anda sudah diassign untuk melakukan jadwal seminar sebagai peserta seminar pada tanggal {form.tanggal_seminar} dan jam {form.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
+            notifikasi.objects.create(nip=form.dosen_pembimbing_1.nip.nip,messages=f"Anda sudah diassign untuk melakukan jadwal seminar sebagai pembimbing 1 mahasiswa {form.mahasiswa} pada tanggal {form.tanggal_seminar} dan jam {form.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
             try : 
-                notifikasi.objects.create(nip=form.dosen_pembimbing_2,messages=f"Anda sudah diassign untuk melakukan jadwal seminar sebagai pembimbing 2 mahasiswa {form.mahasiswa} pada tanggal {form.tanggal_seminar} dan jam {form.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
+                notifikasi.objects.create(nip=form.dosen_pembimbing_2.nip.nip,messages=f"Anda sudah diassign untuk melakukan jadwal seminar sebagai pembimbing 2 mahasiswa {form.mahasiswa} pada tanggal {form.tanggal_seminar} dan jam {form.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
             except : 
                 pass
-            notifikasi.objects.create(nip=form.dosen_penguji_1,messages=f"Anda sudah diassign untuk melakukan jadwal seminar sebagai penguji 1 mahasiswa {form.mahasiswa} pada tanggal {form.tanggal_seminar} dan jam {form.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
-            notifikasi.objects.create(nip=form.dosen_penguji_2,messages=f"Anda sudah diassign untuk melakukan jadwal seminar sebagai penguji 2 mahasiswa {form.mahasiswa} pada tanggal {form.tanggal_seminar} dan jam {form.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
+            notifikasi.objects.create(nip=form.dosen_penguji_1.nip.nip,messages=f"Anda sudah diassign untuk melakukan jadwal seminar sebagai penguji 1 mahasiswa {form.mahasiswa} pada tanggal {form.tanggal_seminar} dan jam {form.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
+            notifikasi.objects.create(nip=form.dosen_penguji_2.nip.nip,messages=f"Anda sudah diassign untuk melakukan jadwal seminar sebagai penguji 2 mahasiswa {form.mahasiswa} pada tanggal {form.tanggal_seminar} dan jam {form.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
             # email_list=User.objects.filter(pk=form.nim.id_user).values_list('email')
             email_list=[]
 
@@ -13107,14 +13216,14 @@ def jadwal_create_tanpa_filter(request):
             form.save()
             # print(form)
             # todo notif
-            notifikasi.objects.create(nim=form.mahasiswa,messages=f"Anda sudah diassign untuk melakukan jadwal seminar sebagai peserta seminar pada tanggal {form.tanggal_seminar} dan jam {form.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
-            notifikasi.objects.create(nip=form.dosen_pembimbing_1,messages=f"Anda sudah diassign untuk melakukan jadwal seminar sebagai pembimbing 1 mahasiswa {form.mahasiswa} pada tanggal {form.tanggal_seminar} dan jam {form.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
+            notifikasi.objects.create(nim=form.mahasiswa.nim,messages=f"Anda sudah diassign untuk melakukan jadwal seminar sebagai peserta seminar pada tanggal {form.tanggal_seminar} dan jam {form.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
+            notifikasi.objects.create(nip=form.dosen_pembimbing_1.nip.nip,messages=f"Anda sudah diassign untuk melakukan jadwal seminar sebagai pembimbing 1 mahasiswa {form.mahasiswa} pada tanggal {form.tanggal_seminar} dan jam {form.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
             try : 
-                notifikasi.objects.create(nip=form.dosen_pembimbing_2,messages=f"Anda sudah diassign untuk melakukan jadwal seminar sebagai pembimbing 2 mahasiswa {form.mahasiswa} pada tanggal {form.tanggal_seminar} dan jam {form.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
+                notifikasi.objects.create(nip=form.dosen_pembimbing_2.nip.nip,messages=f"Anda sudah diassign untuk melakukan jadwal seminar sebagai pembimbing 2 mahasiswa {form.mahasiswa} pada tanggal {form.tanggal_seminar} dan jam {form.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
             except :
                 pass
-            notifikasi.objects.create(nip=form.dosen_penguji_1,messages=f"Anda sudah diassign untuk melakukan jadwal seminar sebagai penguji 1 mahasiswa {form.mahasiswa} pada tanggal {form.tanggal_seminar} dan jam {form.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
-            notifikasi.objects.create(nip=form.dosen_penguji_2,messages=f"Anda sudah diassign untuk melakukan jadwal seminar sebagai penguji 2 mahasiswa {form.mahasiswa} pada tanggal {form.tanggal_seminar} dan jam {form.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
+            notifikasi.objects.create(nip=form.dosen_penguji_1.nip.nip,messages=f"Anda sudah diassign untuk melakukan jadwal seminar sebagai penguji 1 mahasiswa {form.mahasiswa} pada tanggal {form.tanggal_seminar} dan jam {form.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
+            notifikasi.objects.create(nip=form.dosen_penguji_2.nip.nip,messages=f"Anda sudah diassign untuk melakukan jadwal seminar sebagai penguji 2 mahasiswa {form.mahasiswa} pada tanggal {form.tanggal_seminar} dan jam {form.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
             # email_list=User.objects.filter(pk=form.nim.id_user).values_list('email')
             email_list=[]
 
@@ -13178,14 +13287,14 @@ def jadwal_update(request,id):
             # print(jadwal_data.mahasiswa.split("-")[0])
             # todo : notif
             email_list=[]
-            notifikasi.objects.create(nim=jadwal_data.mahasiswa,messages=f"Terdapat perubahan Jadwal untuk anda melakukan jadwal seminar sebagai peserta seminar pada tanggal {jadwal_data.tanggal_seminar} dan jam {jadwal_data.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
-            notifikasi.objects.create(nip=jadwal_data.dosen_pembimbing_1,messages=f"Terdapat perubahan Jadwal untuk anda melakukan jadwal seminar sebagai pembimbing 1 mahasiswa {jadwal_data.mahasiswa} pada tanggal {jadwal_data.tanggal_seminar} dan jam {jadwal_data.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
+            notifikasi.objects.create(nim=jadwal_data.mahasiswa.nim,messages=f"Terdapat perubahan Jadwal untuk anda melakukan jadwal seminar sebagai peserta seminar pada tanggal {jadwal_data.tanggal_seminar} dan jam {jadwal_data.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
+            notifikasi.objects.create(nip=jadwal_data.dosen_pembimbing_1.nip.nip,messages=f"Terdapat perubahan Jadwal untuk anda melakukan jadwal seminar sebagai pembimbing 1 mahasiswa {jadwal_data.mahasiswa} pada tanggal {jadwal_data.tanggal_seminar} dan jam {jadwal_data.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
             try : 
-                notifikasi.objects.create(nip=jadwal_data.dosen_pembimbing_2,messages=f"Terdapat perubahan Jadwal untuk anda melakukan jadwal seminar sebagai pembimbing 2 mahasiswa {jadwal_data.mahasiswa} pada tanggal {jadwal_data.tanggal_seminar} dan jam {jadwal_data.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
+                notifikasi.objects.create(nip=jadwal_data.dosen_pembimbing_2.nip.nip,messages=f"Terdapat perubahan Jadwal untuk anda melakukan jadwal seminar sebagai pembimbing 2 mahasiswa {jadwal_data.mahasiswa} pada tanggal {jadwal_data.tanggal_seminar} dan jam {jadwal_data.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
             except : 
                 pass
-            notifikasi.objects.create(nip=jadwal_data.dosen_penguji_1,messages=f"Terdapat perubahan Jadwal untuk anda melakukan jadwal seminar sebagai penguji 1 mahasiswa {jadwal_data.mahasiswa} pada tanggal {jadwal_data.tanggal_seminar} dan jam {jadwal_data.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
-            notifikasi.objects.create(nip=jadwal_data.dosen_penguji_2,messages=f"Terdapat perubahan Jadwal untuk anda melakukan jadwal seminar sebagai penguji 2 mahasiswa {jadwal_data.mahasiswa} pada tanggal {jadwal_data.tanggal_seminar} dan jam {jadwal_data.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
+            notifikasi.objects.create(nip=jadwal_data.dosen_penguji_1.nip.nip,messages=f"Terdapat perubahan Jadwal untuk anda melakukan jadwal seminar sebagai penguji 1 mahasiswa {jadwal_data.mahasiswa} pada tanggal {jadwal_data.tanggal_seminar} dan jam {jadwal_data.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
+            notifikasi.objects.create(nip=jadwal_data.dosen_penguji_2.nip.nip,messages=f"Terdapat perubahan Jadwal untuk anda melakukan jadwal seminar sebagai penguji 2 mahasiswa {jadwal_data.mahasiswa} pada tanggal {jadwal_data.tanggal_seminar} dan jam {jadwal_data.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
             email_list=[]
 
             temp_email=list(User.objects.filter(pk=mahasiswa.objects.get(pk=form.mahasiswa.nim).id_user.id).values_list('email',flat=True))
@@ -13249,14 +13358,14 @@ def jadwal_update_tanpa_filter(request,id):
             # print(jadwal_data.mahasiswa.split("-")[0])
             # todo : notif
             email_list=[]
-            notifikasi.objects.create(nim=jadwal_data.mahasiswa,messages=f"Terdapat perubahan Jadwal untuk anda melakukan jadwal seminar sebagai peserta seminar pada tanggal {jadwal_data.tanggal_seminar} dan jam {jadwal_data.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
-            notifikasi.objects.create(nip=jadwal_data.dosen_pembimbing_1,messages=f"Terdapat perubahan Jadwal untuk anda melakukan jadwal seminar sebagai pembimbing 1 mahasiswa {jadwal_data.mahasiswa} pada tanggal {jadwal_data.tanggal_seminar} dan jam {jadwal_data.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
+            notifikasi.objects.create(nim=jadwal_data.mahasiswa.nim,messages=f"Terdapat perubahan Jadwal untuk anda melakukan jadwal seminar sebagai peserta seminar pada tanggal {jadwal_data.tanggal_seminar} dan jam {jadwal_data.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
+            notifikasi.objects.create(nip=jadwal_data.dosen_pembimbing_1.nip.nip,messages=f"Terdapat perubahan Jadwal untuk anda melakukan jadwal seminar sebagai pembimbing 1 mahasiswa {jadwal_data.mahasiswa} pada tanggal {jadwal_data.tanggal_seminar} dan jam {jadwal_data.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
             try :
-                notifikasi.objects.create(nip=jadwal_data.dosen_pembimbing_2,messages=f"Terdapat perubahan Jadwal untuk anda melakukan jadwal seminar sebagai pembimbing 2 mahasiswa {jadwal_data.mahasiswa} pada tanggal {jadwal_data.tanggal_seminar} dan jam {jadwal_data.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
+                notifikasi.objects.create(nip=jadwal_data.dosen_pembimbing_2.nip.nip,messages=f"Terdapat perubahan Jadwal untuk anda melakukan jadwal seminar sebagai pembimbing 2 mahasiswa {jadwal_data.mahasiswa} pada tanggal {jadwal_data.tanggal_seminar} dan jam {jadwal_data.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
             except :
                 pass
-            notifikasi.objects.create(nip=jadwal_data.dosen_penguji_1,messages=f"Terdapat perubahan Jadwal untuk anda melakukan jadwal seminar sebagai penguji 1 mahasiswa {jadwal_data.mahasiswa} pada tanggal {jadwal_data.tanggal_seminar} dan jam {jadwal_data.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
-            notifikasi.objects.create(nip=jadwal_data.dosen_penguji_2,messages=f"Terdapat perubahan Jadwal untuk anda melakukan jadwal seminar sebagai penguji 2 mahasiswa {jadwal_data.mahasiswa} pada tanggal {jadwal_data.tanggal_seminar} dan jam {jadwal_data.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
+            notifikasi.objects.create(nip=jadwal_data.dosen_penguji_1.nip.nip,messages=f"Terdapat perubahan Jadwal untuk anda melakukan jadwal seminar sebagai penguji 1 mahasiswa {jadwal_data.mahasiswa} pada tanggal {jadwal_data.tanggal_seminar} dan jam {jadwal_data.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
+            notifikasi.objects.create(nip=jadwal_data.dosen_penguji_2.nip.nip,messages=f"Terdapat perubahan Jadwal untuk anda melakukan jadwal seminar sebagai penguji 2 mahasiswa {jadwal_data.mahasiswa} pada tanggal {jadwal_data.tanggal_seminar} dan jam {jadwal_data.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
             email_list=[]
 
             temp_email=list(User.objects.filter(pk=mahasiswa.objects.get(pk=form.mahasiswa.nim).id_user.id).values_list('email',flat=True))
@@ -13339,13 +13448,13 @@ def jadwal_delete(request,id):
     )
 
     notifikasi.objects.create(nim=jadwal_data.mahasiswa.nim,messages=f"Terdapat penghapusan Jadwal untuk anda melakukan jadwal seminar sebagai peserta seminar pada tanggal {jadwal_data.tanggal_seminar} dan jam {jadwal_data.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
-    notifikasi.objects.create(nip=jadwal_data.dosen_pembimbing_1.nip,messages=f"Terdapat penghapusan Jadwal untuk anda melakukan jadwal seminar sebagai pembimbing 1 mahasiswa {jadwal_data.mahasiswa} pada tanggal {jadwal_data.tanggal_seminar} dan jam {jadwal_data.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
+    notifikasi.objects.create(nip=jadwal_data.dosen_pembimbing_1.nip.nip,messages=f"Terdapat penghapusan Jadwal untuk anda melakukan jadwal seminar sebagai pembimbing 1 mahasiswa {jadwal_data.mahasiswa} pada tanggal {jadwal_data.tanggal_seminar} dan jam {jadwal_data.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
     try : 
-        notifikasi.objects.create(nip=jadwal_data.dosen_pembimbing_2.nip,messages=f"Terdapat penghapusan Jadwal untuk anda melakukan jadwal seminar sebagai pembimbing 2 mahasiswa {jadwal_data.mahasiswa} pada tanggal {jadwal_data.tanggal_seminar} dan jam {jadwal_data.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
+        notifikasi.objects.create(nip=jadwal_data.dosen_pembimbing_2.nip.nip,messages=f"Terdapat penghapusan Jadwal untuk anda melakukan jadwal seminar sebagai pembimbing 2 mahasiswa {jadwal_data.mahasiswa} pada tanggal {jadwal_data.tanggal_seminar} dan jam {jadwal_data.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
     except : 
         pass
-    notifikasi.objects.create(nip=jadwal_data.dosen_penguji_1.nip,messages=f"Terdapat penghapusan Jadwal untuk anda melakukan jadwal seminar sebagai penguji 1 mahasiswa {jadwal_data.mahasiswa} pada tanggal {jadwal_data.tanggal_seminar} dan jam {jadwal_data.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
-    notifikasi.objects.create(nip=jadwal_data.dosen_penguji_2.nip,messages=f"Terdapat penghapusan Jadwal untuk anda melakukan jadwal seminar sebagai penguji 2 mahasiswa {jadwal_data.mahasiswa} pada tanggal {jadwal_data.tanggal_seminar} dan jam {jadwal_data.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
+    notifikasi.objects.create(nip=jadwal_data.dosen_penguji_1.nip.nip,messages=f"Terdapat penghapusan Jadwal untuk anda melakukan jadwal seminar sebagai penguji 1 mahasiswa {jadwal_data.mahasiswa} pada tanggal {jadwal_data.tanggal_seminar} dan jam {jadwal_data.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
+    notifikasi.objects.create(nip=jadwal_data.dosen_penguji_2.nip.nip,messages=f"Terdapat penghapusan Jadwal untuk anda melakukan jadwal seminar sebagai penguji 2 mahasiswa {jadwal_data.mahasiswa} pada tanggal {jadwal_data.tanggal_seminar} dan jam {jadwal_data.waktu_seminar}  telah di update pada {tanggal} Jam {Jam}")
     jadwal_data.delete()
     messages.error(request,"Data Jadwal Seminar Telah Berhasil Dihapus! ")
     return redirect('../jadwalget/nomorinduk')
@@ -18019,7 +18128,7 @@ def mahasiswa_progress_by_bulan(request):
     list_nim=[]
 
     # Lulus
-    lulus_mhs=bimbingan.objects.filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim").annotate(Tanggal_Update_Terakhir=datetime.datetime.now()-Max("tanggal_update"))
+    lulus_mhs=bimbingan.objects.filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update').annotate(Tanggal_Update_Terakhir=datetime.datetime.now()-Max("tanggal_update"))
     lulus_list=list(bimbingan.objects.filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim"))
     for i in range(len(lulus_list)):
         list_nim.append(lulus_list[i][0])
@@ -18113,7 +18222,7 @@ def mahasiswa_progress_by_bulan_dosen(request):
     list_nim=[]
 
     # Lulus
-    lulus_mhs=bimbingan.objects.filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim").annotate(Tanggal_Update_Terakhir=datetime.datetime.now()-Max("tanggal_update"))
+    lulus_mhs=bimbingan.objects.filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update').annotate(Tanggal_Update_Terakhir=datetime.datetime.now()-Max("tanggal_update"))
     lulus_list=list(bimbingan.objects.filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)",status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim"))
     for i in range(len(lulus_list)):
         list_nim.append(lulus_list[i][0])

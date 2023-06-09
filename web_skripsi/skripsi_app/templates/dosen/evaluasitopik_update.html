@@ -16,18 +16,19 @@
         <p>Preview</p>
         <div class="container-fluid mb-2" >
             <div id="example1" style="height:700px;">
-                <object data="{{file.url}}" type="application/pdf" width="100%" height="500px">
+                {% comment %} <object data="{{file.url}}" type="application/pdf" width="100%" height="500px">
                     <p>Unable to display PDF file. <a href="{{file.url}}">Download</a> instead.</p>
-                </object>
-                {% comment %} <script>
+                </object> {% endcomment %}
+                <script>
                     PDFObject.embed("{{file.url}}", "#example1");
                     if(PDFObject.supportsPDFs){
                         console.log("Yay, this browser supports inline PDFs.");
                     } else {
                         console.log("Boo, inline PDFs are not supported by this browser");
                     }
-                </script> {% endcomment %}
+                </script>
             </div>
+            <small>Jika tidak dapat mengakses file harap <a href="{{file.url}}">klik disini !</a> </small>
         </div>
         <div class="row container-fluid">
             <button type="submit" class="btn btn-primary btn-block mb-4">
