@@ -215,7 +215,7 @@ def user_read(request, id):
 # Update data User Terdaftar berdasarkan id
 @login_required(login_url="/login")
 # @permission_required("auth.change_user", raise_exception=True)
-@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def user_update(request, id):
     user_info = user_information(request)
     if user_info[2].name == "Admin" or user_info[2].name == "Properta":
@@ -424,7 +424,7 @@ def mahasiswa_get(request):
 
 # Menampilkan data progress mahasiswa berdasarkan nama 
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Dosen','Admin', 'Kompartemen','Manajemen Departemen','Properta'])
+@role_required(allowed_roles=['Dosen','Admin', "Ketua Kompartemen",'Manajemen Departemen','Properta'])
 def mahasiswa_progress_get(request):
     user_info = user_information(request)
     list_nim=[]
@@ -512,7 +512,7 @@ def mahasiswa_progress_get(request):
 
 # Menampilkan data progress mahasiswa berdasarkan waktu akhir progress
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Dosen','Admin', 'Kompartemen','Manajemen Departemen','Properta'])
+@role_required(allowed_roles=['Dosen','Admin', "Ketua Kompartemen",'Manajemen Departemen','Properta'])
 def mahasiswa_waktu_get(request):
     user_info = user_information(request)
     # bimbingans = bimbingan.objects.filter(id_proposal__nama_tahap="Laporan Akhir").filter(status_bimbingan="ACC")|bimbingan.objects.filter(id_proposal__nama_tahap="Laporan Akhir (BAB 4 - BAB 6)").filter(status_bimbingan="ACC")
@@ -534,18 +534,18 @@ def mahasiswa_waktu_get(request):
 
 # Menampilkan data progress mahasiswa berdasarkan waktu akhir progress
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Dosen','Admin', 'Kompartemen','Manajemen Departemen','Properta'])
+@role_required(allowed_roles=['Dosen','Admin', "Ketua Kompartemen",'Manajemen Departemen','Properta'])
 def mahasiswa_waktu_get_usulan(request):
     user_info = user_information(request)
     tahap="Usulan"
     # bimbingans = bimbingan.objects.filter(id_proposal__nama_tahap="Laporan Akhir").filter(status_bimbingan="ACC")|bimbingan.objects.filter(id_proposal__nama_tahap="Laporan Akhir (BAB 4 - BAB 6)").filter(status_bimbingan="ACC")
     bimbingans_nim = list(bimbingan.objects.values_list('id_proposal__nim',flat=True).filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)").filter(status_bimbingan="ACC").distinct())
+    bimbingans_nim_tanggal = bimbingan.objects.values(nim=F("id_proposal__nim"),TanggalUpdate=F("id_proposal__tanggal_update")).filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)").filter(status_bimbingan="ACC").order_by("id_proposal__nim").values(NIM_mhs=F("id_proposal__nim"), nama=F("id_proposal__nim__id_user__first_name")).annotate(TanggalUpdate=Max('id_proposal__tanggal_update'))
+    mahasiswa_topik=usulantopik.objects.filter(nim__in=bimbingans_nim).order_by("nim","tanggal_buat").distinct("nim")
     # # |bimbingan.objects.values_list('id_proposal__nim').filter(id_proposal__nama_tahap="Laporan Akhir").filter(status_bimbingan="ACC").distinct()
 
-    bimbingans_nim_tanggal = bimbingan.objects.values(nim=F("id_proposal__nim"),TanggalUpdate=F("id_proposal__tanggal_update")).filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)").filter(status_bimbingan="ACC").order_by("id_proposal__nim").values(NIM_mhs=F("id_proposal__nim"), nama=F("id_proposal__nim__id_user__first_name")).annotate(TanggalUpdate=Max('id_proposal__tanggal_update'))
     # # bimbingans_nim_tanggal =bimbingan.objects.values(nim=F("id_proposal__nim"),TanggalUpdate=F("id_proposal__tanggal_update")).filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)").filter(status_bimbingan="ACC").order_by("id_proposal__nim").values(NIM_mhs=F("id_proposal__nim")).annotate(TanggalUpdate=Max('id_proposal__tanggal_update'))
     # mahasiswa_topik=usulantopik.objects.filter(nim__in=bimbingans_nim).annotate(min_date=Min("tanggal_buat")).filter(tanggal_buat=F("min_date")).order_by("nim").distinct("nim")
-    mahasiswa_topik=usulantopik.objects.filter(nim__in=bimbingans_nim).order_by("nim","tanggal_buat").distinct("nim")
     # for i in mahasiswa_topik:
     #     print(i.tanggal_buat)
     # print(mahasiswa_topik)
@@ -561,7 +561,7 @@ def mahasiswa_waktu_get_usulan(request):
 
 # Menampilkan data progress mahasiswa berdasarkan waktu akhir progress
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Dosen','Admin', 'Kompartemen','Manajemen Departemen','Properta'])
+@role_required(allowed_roles=['Dosen','Admin', "Ketua Kompartemen",'Manajemen Departemen','Properta'])
 def mahasiswa_waktu_get_evaluasi(request):
     user_info = user_information(request)
     tahap="Evaluasi"
@@ -588,7 +588,7 @@ def mahasiswa_waktu_get_evaluasi(request):
                                                               "user_info": user_info})
 # Menampilkan data progress mahasiswa berdasarkan waktu akhir progress
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Dosen','Admin', 'Kompartemen','Manajemen Departemen','Properta'])
+@role_required(allowed_roles=['Dosen','Admin', "Ketua Kompartemen",'Manajemen Departemen','Properta'])
 def mahasiswa_waktu_get_berkas(request):
     user_info = user_information(request)
     tahap="berkas"
@@ -618,10 +618,10 @@ def mahasiswa_waktu_get_berkas(request):
     
 # Menampilkan data progress mahasiswa berdasarkan waktu akhir progress
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Dosen','Admin', 'Kompartemen','Manajemen Departemen','Properta'])
+@role_required(allowed_roles=['Dosen','Admin', "Ketua Kompartemen",'Manajemen Departemen','Properta'])
 def mahasiswa_waktu_get_kompartemen(request):
     user_info = user_information(request)
-    tahap="kompartemen"
+    tahap="Ketua Kompartemen"
     # bimbingans = bimbingan.objects.filter(id_proposal__nama_tahap="Laporan Akhir").filter(status_bimbingan="ACC")|bimbingan.objects.filter(id_proposal__nama_tahap="Laporan Akhir (BAB 4 - BAB 6)").filter(status_bimbingan="ACC")
     bimbingans_nim = list(evaluasitopik.objects.values_list('id_usulan_topik__nim__nim',flat=True).filter(status_topik="ACC").distinct('id_usulan_topik__nim__nim'))
     # # |bimbingan.objects.values_list('id_proposal__nim').filter(id_proposal__nama_tahap="Laporan Akhir").filter(status_bimbingan="ACC").distinct()
@@ -680,7 +680,7 @@ def mahasiswa_read(request, id):
 
 # Menampilkan Dashboard Beserta segala querynya berdasarkan kebutuhnnya : cara seaarch bug  => ke dashboard cek variabel nilai yang aneh di variabel html lalu search variabel di fungsi dashboaard  sesuaikan fungsinya 
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Dosen','Mahasiswa','Admin', 'Kompartemen','Manajemen Departemen','Properta'])
+@role_required(allowed_roles=['Dosen','Mahasiswa','Admin', "Ketua Kompartemen",'Manajemen Departemen','Properta'])
 # @permission_required("skripsi_app.view_mahasiswa", raise_exception=True)
 def dashboard(request):
     user_info = user_information(request)
@@ -1277,7 +1277,7 @@ def dashboard(request):
     
     # Revisi Belum Penilaian Seminar Pembimbing
     nim_list=[]
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
             nim_list.append(item.id_role_dosen)
@@ -1340,7 +1340,7 @@ def dashboard(request):
     # Revisi Jumlah Penilaian Pembimbing 
     nim_list=[]
     role_dosen_list=[]
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
             role_dosen_list.append(item.id_role_dosen)
@@ -1371,7 +1371,7 @@ def dashboard(request):
         else:
             jumlah_penilaian_pembimbing=1
             
-        if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+        if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
             ambil_pembimbing=roledosen.objects.filter(nim=item.nim).filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nim=item.nim).filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
             mahasiswa_data[jumlah].status_dosen_pembimbing=str(ambil_pembimbing.first().role)
         else:
@@ -1493,7 +1493,7 @@ def dashboard(request):
     id_roledosen_list=[]
     jumlah_belum_dinilai_pembimbing_seminar=0
     jumlah_belum_lengkap_pembimbing_seminar=0
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
             id_roledosen_list.append(item.id_role_dosen)
@@ -1775,7 +1775,7 @@ def dashboard(request):
     
     # Penilaiana sempro seminar
     nim_list=[]
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Proposal 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Proposal 2")
         for item in ambil_pembimbing:
             nim_list.append(item.id_role_dosen)
@@ -1851,7 +1851,7 @@ def dashboard(request):
     ambil_penguji_semhas=ambil_penguji_semhas.values_list("id_role_dosen")
 # Penilaian seminar semhas
     nim_list=[]
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Hasil 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Hasil 2")
         for item in ambil_pembimbing:
             nim_list.append(item.id_role_dosen)
@@ -2115,6 +2115,9 @@ def dashboard(request):
     # # |bimbingan.objects.values_list('id_proposal__nim').filter(id_proposal__nama_tahap="Laporan Akhir (BAB 4 - BAB 6)").filter(status_bimbingan="ACC").distinct()
     # bimbingans_nim_tanggal = bimbingan.objects.values(nim=F("id_proposal__nim"),TanggalUpdate=F("id_proposal__tanggal_update")).filter(id_proposal__nama_tahap="Laporan Akhir").filter(status_bimbingan="ACC").order_by("id_proposal__nim").values(NIM_mhs=F("id_proposal__nim")).annotate(TanggalUpdate=Max('id_proposal__tanggal_update'))
     # # bimbingans_nim_tanggal =bimbingan.objects.values(nim=F("id_proposal__nim"),TanggalUpdate=F("id_proposal__tanggal_update")).filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)").filter(status_bimbingan="ACC").order_by("id_proposal__nim").values(NIM_mhs=F("id_proposal__nim")).annotate(TanggalUpdate=Max('id_proposal__tanggal_update'))
+    bimbingans_nim = list(bimbingan.objects.values_list('id_proposal__nim',flat=True).filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)").filter(status_bimbingan="ACC").distinct())
+    bimbingans_nim_tanggal = bimbingan.objects.values(nim=F("id_proposal__nim"),TanggalUpdate=F("id_proposal__tanggal_update")).filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)").filter(status_bimbingan="ACC").order_by("id_proposal__nim").values(NIM_mhs=F("id_proposal__nim"), nama=F("id_proposal__nim__id_user__first_name")).annotate(TanggalUpdate=Max('id_proposal__tanggal_update'))
+    mahasiswa_topik_tanggal=usulantopik.objects.filter(nim__in=bimbingans_nim).order_by("nim","tanggal_buat").distinct("nim")
     # mahasiswa_topik_tanggal=usulantopik.objects.order_by("nim").filter(nim__in=bimbingans_nim)
     new_bimbingans_nim_tanggal = bimbingan.objects.values(nim=F("id_proposal__nim"),TanggalUpdate=F("id_proposal__tanggal_update")).filter(id_proposal__nama_tahap="Laporan Akhir").filter(status_bimbingan="ACC").order_by("id_proposal__nim").values(NIM_mhs=F("id_proposal__nim"), nama=F("id_proposal__nim__id_user__first_name"),TanggalAwal=F('id_proposal__nim__semester_daftar_skripsi__tanggal_awal_semester'),TanggalAkhir=F('id_proposal__tanggal_update')).annotate(TanggalUpdate=Max('id_proposal__tanggal_update')-Max('id_proposal__nim__semester_daftar_skripsi__tanggal_awal_semester'))
     max_mhs_lulus=new_bimbingans_nim_tanggal.aggregate(Max('TanggalUpdate'))['TanggalUpdate__max']
@@ -2147,8 +2150,8 @@ def dashboard(request):
                                               "last_topik":last_topik,
                                               "last_bimbingan":last_bimbingan,
                                               "mahasiswa_last_update":mahasiswa_last_update,
-                                            #   "bimbingans_nim_tanggal":bimbingans_nim_tanggal,
-                                            #   "mahasiswa_topik_tanggal":mahasiswa_topik_tanggal,
+                                              "bimbingans_nim_tanggal":bimbingans_nim_tanggal,
+                                              "mahasiswa_topik_tanggal":mahasiswa_topik_tanggal,
                                               'new_bimbingans_nim_tanggal':new_bimbingans_nim_tanggal,
                                               'max_mhs_lulus':max_mhs_lulus,
                                               'min_mhs_lulus':min_mhs_lulus,
@@ -2222,7 +2225,7 @@ def mahasiswa_delete(request, id):
 # Dosen : Read
 # Menampilakan List data Dosen Terdaftar
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Dosen','Admin', 'Kompartemen','Manajemen Departemen','Properta'])
+@role_required(allowed_roles=['Dosen','Admin', "Ketua Kompartemen",'Manajemen Departemen','Properta'])
 # @permission_required("skripsi_app.view_dosen", raise_exception=True)
 def dosen_get(request):
     user_info = user_information(request)
@@ -2232,7 +2235,7 @@ def dosen_get(request):
 
 # Menampilakan data Dosen Terdaftar berdasarkan NIP dalam bentuk Form
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Dosen','Admin', 'Kompartemen','Manajemen Departemen','Properta'])
+@role_required(allowed_roles=['Dosen','Admin', "Ketua Kompartemen",'Manajemen Departemen','Properta'])
 # @permission_required("skripsi_app.view_dosen", raise_exception=True)
 def dosen_read(request, id):
     user_info = user_information(request)
@@ -2261,7 +2264,7 @@ def dosen_create(request):
 # Dosen: UPDATE
 # Update data Dosen Terdaftar berdasarkan nip
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Dosen','Admin', 'Kompartemen','Manajemen Departemen','Properta'])
+@role_required(allowed_roles=['Dosen','Admin', "Ketua Kompartemen",'Manajemen Departemen','Properta'])
 # @permission_required("skripsi_app.change_dosen", raise_exception=True)
 def dosen_update(request, id):
     user_info = user_information(request)
@@ -2352,7 +2355,7 @@ def kompartemendosen_create(request):
 # Dosen Kompartemen: read
 # Menampilkan list dosen dengan kompartemen untuk evaluasi  
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Dosen','Admin', 'Kompartemen','Manajemen Departemen','Properta'])
+@role_required(allowed_roles=['Dosen','Admin', "Ketua Kompartemen",'Manajemen Departemen','Properta'])
 # @permission_required("skripsi_app.add_mahasiswa", raise_exception=True)
 def kompartemendosen_get(request):
     user_info = user_information(request)
@@ -2503,7 +2506,7 @@ def usulantopik_create_full(request):
 # Usulan Topik: Read
 # Melihat tampilan list data Usulan Topik oleh Mahasiswa 
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Dosen','Admin', 'Kompartemen','Manajemen Departemen','Mahasiswa','Properta'])
+@role_required(allowed_roles=['Dosen','Admin', "Ketua Kompartemen",'Manajemen Departemen','Mahasiswa','Properta'])
 # @permission_required("skripsi_app.view_mahasiswa", raise_exception=True)
 def usulantopik_read(request, id):
     user_info = user_information(request)
@@ -2518,7 +2521,7 @@ def usulantopik_read(request, id):
 
 # Melihat tampilan form data Usulan Topik oleh Mahasiswa 
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Dosen','Admin', 'Kompartemen','Manajemen Departemen','Mahasiswa','Properta'])
+@role_required(allowed_roles=['Dosen','Admin', "Ketua Kompartemen",'Manajemen Departemen','Mahasiswa','Properta'])
 def usulantopik_get(request):
     user_info = user_information(request)
 
@@ -2606,7 +2609,7 @@ def usulantopik_get(request):
 
 # Melihat tampilan form data Usulan Topik oleh Mahasiswa 
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin', 'Kompartemen','Manajemen Departemen','Properta'])
+@role_required(allowed_roles=['Admin', "Ketua Kompartemen",'Manajemen Departemen','Properta'])
 def usulantopik_get_acc(request):
     user_info = user_information(request)
 
@@ -2767,7 +2770,7 @@ def usulantopik_get_acc(request):
 
 # Menampilkan usulan topik dengan Filter usulan topik 1 tahun kebelakang
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Dosen','Admin', 'Kompartemen','Manajemen Departemen','Mahasiswa','Properta'])
+@role_required(allowed_roles=['Dosen','Admin', "Ketua Kompartemen",'Manajemen Departemen','Mahasiswa','Properta'])
 def usulantopik_get_1_year(request):
     user_info = user_information(request)
     get_year =datetime.datetime.now().year
@@ -2922,7 +2925,7 @@ def usulantopik_get_1_year(request):
 
 # Menampilkan usulan topik dengan Filter belum dapat dosen kompartemen
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Dosen','Admin', 'Kompartemen','Manajemen Departemen','Mahasiswa','Properta'])
+@role_required(allowed_roles=['Dosen','Admin', "Ketua Kompartemen",'Manajemen Departemen','Mahasiswa','Properta'])
 def usulantopik_get_filter_dosen(request):
     user_info = user_information(request)
 
@@ -3071,7 +3074,7 @@ def usulantopik_get_filter_dosen(request):
     return render(request, 'mahasiswa/usulantopik_get.html', {"usulantopiks": usulantopiks, "user_info": user_info})
 # Menampilkan usulan topik dengan Filter belum dapat dosen pembimbing
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Dosen','Admin', 'Kompartemen','Manajemen Departemen','Mahasiswa','Properta'])
+@role_required(allowed_roles=['Dosen','Admin', "Ketua Kompartemen",'Manajemen Departemen','Mahasiswa','Properta'])
 def usulantopik_get_filter_dosen_pembimbing(request):
     user_info = user_information(request)
     roledosen_data=roledosen.objects.filter(role="Pembimbing 1").values_list("nim")|roledosen.objects.filter(role="Pembimbing 2").values_list("nim")
@@ -3230,7 +3233,7 @@ def usulantopik_get_filter_dosen_pembimbing(request):
     return render(request, 'mahasiswa/usulantopik_get.html', {"usulantopiks": usulantopiks, "user_info": user_info})
 # Menampilkan usulan topik dengan Filter sudah di revisi
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Dosen','Admin', 'Kompartemen','Manajemen Departemen','Mahasiswa','Properta'])
+@role_required(allowed_roles=['Dosen','Admin', "Ketua Kompartemen",'Manajemen Departemen','Mahasiswa','Properta'])
 def usulantopik_get_filter_ACC(request):
     user_info = user_information(request)
 
@@ -3380,9 +3383,9 @@ def usulantopik_get_filter_ACC(request):
 
 
 # Menampilkan usulan topik dengan Filter Belum ACC untuk role kompartemen
-# @permission_required(allowed_roles=['Admin', 'Kompartemen','Properta'])
+# @permission_required(allowed_roles=['Admin', "Ketua Kompartemen",'Properta'])
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin', 'Kompartemen','Properta'])
+@role_required(allowed_roles=['Admin', "Ketua Kompartemen",'Properta'])
 def usulantopik_get_filter_revisi_kompartemen(request):
     user_info = user_information(request)
     evaluasitopiks_list=list(evaluasitopik.objects.filter(id_dosen_kompartemen__nip__nip=user_info[0]).values_list("id_usulan_topik",flat=True))
@@ -3461,9 +3464,9 @@ def usulantopik_get_filter_revisi_kompartemen(request):
     return render(request, 'mahasiswa/usulantopik_get.html', {"usulantopiks": usulantopiks, "user_info": user_info})
 
 # Menampilkan usulan topik dengan Filter Belum ACC untuk role kompartemen
-# @permission_required(allowed_roles=['Admin', 'Kompartemen','Properta'])
+# @permission_required(allowed_roles=['Admin', "Ketua Kompartemen",'Properta'])
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin', 'Kompartemen','Properta'])
+@role_required(allowed_roles=['Admin', "Ketua Kompartemen",'Properta'])
 def usulantopik_get_filter_ACC_kompartemen(request):
     user_info = user_information(request)
     evaluasitopiks_list=list(evaluasitopik.objects.filter(id_dosen_kompartemen__nip__nip=user_info[0]).values_list("id_usulan_topik",flat=True))
@@ -3542,9 +3545,9 @@ def usulantopik_get_filter_ACC_kompartemen(request):
     return render(request, 'mahasiswa/usulantopik_get.html', {"usulantopiks": usulantopiks, "user_info": user_info})
 
 # Menampilkan usulan topik dengan Filter dosen yang mengevaluasi untuk role kompartemen
-# @permission_required(['Admin', 'Kompartemen','Properta'])
+# @permission_required(['Admin', "Ketua Kompartemen",'Properta'])
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin', 'Kompartemen','Properta'])
+@role_required(allowed_roles=['Admin', "Ketua Kompartemen",'Properta'])
 def usulantopik_get_filter_kompartemen(request):
     user_info = user_information(request)
     evaluasitopiks_list=list(evaluasitopik.objects.filter(id_dosen_kompartemen__nip__nip=user_info[0]).values_list("id_usulan_topik",flat=True))
@@ -3598,8 +3601,8 @@ def usulantopik_get_filter_kompartemen(request):
 
 # Menampilkan usulan topik dengan Filter mahasiswa bimbingan untuk dosen pembimbing 
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Dosen','Admin', 'Kompartemen','Manajemen Departemen','Properta'])
-# @permission_required(allowed_roles=['Dosen','Manajemen Departemen','Admin', 'Kompartemen','Properta'])
+@role_required(allowed_roles=['Dosen','Admin', "Ketua Kompartemen",'Manajemen Departemen','Properta'])
+# @permission_required(allowed_roles=['Dosen','Manajemen Departemen','Admin', "Ketua Kompartemen",'Properta'])
 def usulantopik_getfilter_dosen(request):
     user_info = user_information(request)
     roledosen_cek=roledosen.objects.filter(status="Active").filter(role="Pembimbing 1").filter(nip__nip=user_info[0])|roledosen.objects.filter(status="Active").filter(role="Pembimbing 2").filter(nip__nip=user_info[0])
@@ -3653,7 +3656,7 @@ def usulantopik_getfilter_dosen(request):
     return render(request, 'mahasiswa/usulantopik_get.html', {"usulantopiks": usulantopiks, "user_info": user_info})
 # Menampilkan usulan topik dengan Filter ACC mahasiswa bimbingan untuk dosen pembimbing 
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Dosen','Admin', 'Kompartemen','Manajemen Departemen','Properta'])
+@role_required(allowed_roles=['Dosen','Admin', "Ketua Kompartemen",'Manajemen Departemen','Properta'])
 def usulantopik_get_filter_ACC_dosen(request):
     user_info = user_information(request)
     roledosen_cek=roledosen.objects.filter(status="Active").filter(role="Pembimbing 1").filter(nip__nip=user_info[0])|roledosen.objects.filter(status="Active").filter(role="Pembimbing 2").filter(nip__nip=user_info[0])
@@ -3929,11 +3932,11 @@ def usulantopik_delete(request, id):
 # Pembuatan data Evaluasi Topik oleh DOSEN Kompartemen > Untuk Evaluasi Topik
 # todo: add in notification and email
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin', 'Kompartemen','Manajemen Departemen','Properta'])
+@role_required(allowed_roles=['Admin', "Ketua Kompartemen",'Manajemen Departemen','Properta'])
 def evaluasitopik_create(request):
     user_info = user_information(request)
 
-    if user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Ketua Kompartemen":
         if request.method == "POST":
             form = EvaluasiTopikFormKompartemen(request.POST, request.FILES)
             if form.is_valid():
@@ -4030,13 +4033,13 @@ def evaluasitopik_create(request):
     return render(request, 'dosen/evaluasitopik_create.html', {"form": form, "user_info": user_info})
 # Mebuat evaluasi topik berdasarkan usulan topik 
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin', 'Kompartemen', 'Manajemen Departemen','Properta'])
+@role_required(allowed_roles=['Admin', "Ketua Kompartemen", 'Manajemen Departemen','Properta'])
 def evaluasitopik_create_id_usulan(request,id):
     user_info = user_information(request)
     usulantopiks=usulantopik.objects.get(id_usulan_topik=id)
     # "Selesai Assign Dosen Kompartemen"
     evaluasitopiks=evaluasitopik.objects.filter(id_usulan_topik=id).first()
-    if user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Ketua Kompartemen":
         if request.method == "POST":
             form = EvaluasiTopikFormKompartemen(request.POST, request.FILES)
             if form.is_valid():
@@ -4178,7 +4181,7 @@ def evaluasitopik_create_id_usulan(request,id):
 # Dosen Pembimbing Topik: max reach
 # handle max role dosen   
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin', 'Manajemen Departemen','Kompartemen','Properta'])
+@role_required(allowed_roles=['Admin', 'Manajemen Departemen',"Ketua Kompartemen",'Properta'])
 def dosenevalkompartemen_max(request):
     user_info = user_information(request)
     return render(request, 'sekdept/kompartemen_max.html', { "user_info": user_info})
@@ -4264,11 +4267,11 @@ def evaluasitopik_create_sekdept(request, id):
 # Evaluasi Topik:read
 # Menampilkan list data hasil evaluasi topik di klasterisasi berdasarkan role dan nomor induk 
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def evaluasitopik_get(request):
     user_info = user_information(request)
     # print(user_info[2].name)
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" :
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" :
         # print("abc")
         try:
             # print(kompartemendosen.objects.filter(nip=dosen.objects.filter(pk=user_info[0])[0]))
@@ -4292,11 +4295,11 @@ def evaluasitopik_get(request):
 # Evaluasi Topik:read
 # Menampilkan list data hasil evaluasi topik di klasterisasi berdasarkan role dan nomor induk filter dengan ACC
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin',  'Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin',  'Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def evaluasitopik_get_ACC(request):
     user_info = user_information(request)
     # print(user_info[2].name)
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" :
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" :
         # print("abc")
         try:
             # print(kompartemendosen.objects.filter(nip=dosen.objects.filter(pk=user_info[0])[0]))
@@ -4313,11 +4316,11 @@ def evaluasitopik_get_ACC(request):
     return render(request, 'dosen/evaluasitopik_get.html', {"evaluasitopiks": evaluasitopiks, "user_info": user_info})
 # filter acc
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin',  'Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin',  'Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def evaluasitopik_get_sudah_ACC(request):
     user_info = user_information(request)
     # print(user_info[2].name)
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" :
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" :
         # print("abc")
         try:
             # print(kompartemendosen.objects.filter(nip=dosen.objects.filter(pk=user_info[0])[0]))
@@ -4334,11 +4337,11 @@ def evaluasitopik_get_sudah_ACC(request):
     return render(request, 'dosen/evaluasitopik_get.html', {"evaluasitopiks": evaluasitopiks, "user_info": user_info})
 # filter revisi
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin',  'Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin',  'Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def evaluasitopik_get_sudah_revisi(request):
     user_info = user_information(request)
     # print(user_info[2].name)
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" :
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" :
         # print("abc")
         try:
             # print(kompartemendosen.objects.filter(nip=dosen.objects.filter(pk=user_info[0])[0]))
@@ -4356,11 +4359,11 @@ def evaluasitopik_get_sudah_revisi(request):
 
 # filter sudah evaluasi
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin',  'Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin',  'Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def evaluasitopik_get_sudah_evaluasi(request):
     user_info = user_information(request)
     # print(user_info[2].name)
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" :
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" :
         # print("abc")
         try:
             # print(kompartemendosen.objects.filter(nip=dosen.objects.filter(pk=user_info[0])[0]))
@@ -4378,11 +4381,11 @@ def evaluasitopik_get_sudah_evaluasi(request):
 
 # Menampilkan form data hasil evaluasi topik  berdasarkan id evaluasi topik
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def evaluasitopik_get_id_usulan(request,id):
     user_info = user_information(request)
     # check:dosen kompartemen
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" :
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" :
         try:
             list_dosen_kompartemen=[]
             temp_dosen_kompartemen=list(kompartemendosen.objects.filter(nip=dosen.objects.filter(pk=user_info[0])[0].nip).values_list('id_dosen_kompartemen'))
@@ -4421,7 +4424,7 @@ def evaluasitopik_get_id_usulan(request,id):
 # Mengubah data hasil evaluasi topik di klasterisasi berdasarkan id evaluasi topik 
 # todo: add in notification and email
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin',  'Manajemen Departemen','Kompartemen','Properta'])
+@role_required(allowed_roles=['Admin',  'Manajemen Departemen',"Ketua Kompartemen",'Properta'])
 def evaluasitopik_update(request, id):
     user_info = user_information(request)
     evaluasitopik_data = evaluasitopik.objects.get(pk=id)
@@ -4438,7 +4441,7 @@ def evaluasitopik_update(request, id):
     # except:
     #     evaluasitopik_data.file_topik = None
         
-    if user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Ketua Kompartemen":
 
         if request.method == "POST":
             form = EvaluasiTopikFormKompartemen(
@@ -4607,7 +4610,7 @@ def evaluasitopik_update(request, id):
 # Mengubah data hasil evaluasi topik di klasterisasi berdasarkan id evaluasi topik 
 # todo: add in notification and email
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def evaluasitopik_read(request, id):
     user_info = user_information(request)
     evaluasitopik_data = evaluasitopik.objects.get(pk=id)
@@ -4626,7 +4629,7 @@ def evaluasitopik_read(request, id):
 # penghapusan data Evaluasi Topik berdasarkan id evaluasi topik  
 # todo: add in notification and email
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin',  'Kompartemen','Properta'])
+@role_required(allowed_roles=['Admin',  "Ketua Kompartemen",'Properta'])
 def evaluasitopik_delete(request, id):
     delete_data = evaluasitopik.objects.get(pk=id)
     messages.error(request,"Data Evaluasi Topik Telah Berhasil Dihapus! ")
@@ -4935,11 +4938,11 @@ def dosenpembimbing_max(request,my_variable):
 # Melihat list data Assign Dosen Pembimbing, penguji seminar  
 @login_required(login_url="/login")
 # @role_required(allowed_roles=['Admin','Manajemen Departemen', 'Properta'])
-@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def dosenpembimbing_get(request):
     user_info = user_information(request)
 
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen":
         role="Dosen"
         try:
             roledosens = roledosen.objects.filter(
@@ -4960,11 +4963,11 @@ def dosenpembimbing_get(request):
 
 @login_required(login_url="/login")
 # @role_required(allowed_roles=['Admin','Manajemen Departemen', 'Properta'])
-@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def dosenpembimbing_get_sekdept(request):
     user_info = user_information(request)
     filter="sekdept"
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" or user_info[2].name == "Manajemen Departemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" or user_info[2].name == "Manajemen Departemen":
         role="Dosen"
         try:
             roledosens = roledosen.objects.filter(
@@ -4987,11 +4990,11 @@ def dosenpembimbing_get_sekdept(request):
 
 # Melihat list data Assign Dosen Pembimbing serta filter dosen pembimbing  
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def dosenpembimbing_get_pembimbing(request):
     user_info = user_information(request)
     role="Dosen Pembimbing"
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" or user_info[2].name == "Manajemen Departemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" or user_info[2].name == "Manajemen Departemen":
 
         roledosens = roledosen.objects.filter(
             nip=dosen.objects.filter(pk=user_info[0])[0]).filter(role="Pembimbing 1") | roledosen.objects.filter(
@@ -5026,11 +5029,11 @@ def dosenpembimbing_get_finished(request):
 
 # Melihat list data Assign Dosen Pembimbing serta filter dosen pembimbing  
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def dosenpembimbing_get_active_filter(request):
     user_info = user_information(request)
     role="Dosen Pembimbing"
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" or user_info[2].name == "Manajemen Departemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" or user_info[2].name == "Manajemen Departemen":
 
         roledosens = roledosen.objects.filter(
             nip=dosen.objects.filter(pk=user_info[0])[0]).filter(status="Active")
@@ -5043,11 +5046,11 @@ def dosenpembimbing_get_active_filter(request):
 
 # Melihat list data Assign Dosen Pembimbing serta filter dosen pembimbing  
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def dosenpembimbing_get_finished_filter(request):
     user_info = user_information(request)
     role="Dosen Pembimbing"
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" or user_info[2].name == "Manajemen Departemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" or user_info[2].name == "Manajemen Departemen":
 
         roledosens = roledosen.objects.filter(
             nip=dosen.objects.filter(pk=user_info[0])[0]).filter(status="Finished")
@@ -5061,11 +5064,11 @@ def dosenpembimbing_get_finished_filter(request):
 
 # Melihat list data Assign Dosen Penguji proposal serta filter dosen penguji proposal  
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def dosenpembimbing_get_sempro(request):
     user_info = user_information(request)
     role="Dosen Seminar Proposal"
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" or user_info[2].name == "Manajemen Departemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" or user_info[2].name == "Manajemen Departemen":
         try:
             roledosens = roledosen.objects.filter(
                 nip=dosen.objects.filter(pk=user_info[0])[0]).filter(role="Penguji Seminar Proposal 1") | roledosen.objects.filter(
@@ -5084,11 +5087,11 @@ def dosenpembimbing_get_sempro(request):
 
 # Melihat list data Assign Dosen Penguji hasil serta filter dosen penguji hasil  
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def dosenpembimbing_get_semhas(request):
     user_info = user_information(request)
     role="Dosen Seminar Hasil"
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" or user_info[2].name == "Manajemen Departemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" or user_info[2].name == "Manajemen Departemen":
         try:
             roledosens = roledosen.objects.filter(
                 nip=dosen.objects.filter(pk=user_info[0])[0]).filter(role="Penguji Seminar Hasil 1") | roledosen.objects.filter(
@@ -5267,7 +5270,7 @@ def dosenpembimbing_delete(request, id):
 # todo: add in notification and email
 # disini
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin',  'Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin',  'Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def bimbingan_create(request):
     user_info = user_information(request)
     if user_info[2].name == "Admin"  or user_info[2].name == "Properta":
@@ -5458,7 +5461,7 @@ def bimbingan_create(request):
 # # Membuat data bimbingan proposal dari id proposal  
 # todo: add in notification and email
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin',  'Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin',  'Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def bimbingan_create_dosen(request, id):
     user_info = user_information(request)
     proposal_data = proposal.objects.get(pk=id)
@@ -5592,7 +5595,7 @@ def bimbingan_create_dosen(request, id):
 # # Membuat data bimbingan proposal dari id proposal  
 # todo: add in notification and email
 # @login_required(login_url="/login")
-# @role_required(allowed_roles=['Admin',  'Manajemen Departemen','Kompartemen','Dosen','Properta'])
+# @role_required(allowed_roles=['Admin',  'Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 # def bimbingan_create_dosen(request, id):
 #     user_info = user_information(request)
 #     proposal_data = proposal.objects.get(pk=id)
@@ -5852,7 +5855,7 @@ def bimbingan_create_dosen(request, id):
 # # Mengubah data bimbingan proposal berdasarakan id bimbingan
 # todo: add in notification and email
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin',  'Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin',  'Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def bimbingan_update_proposal(request, id):
     user_info = user_information(request)
     proposal_data = proposal.objects.get(pk=id)
@@ -6042,10 +6045,10 @@ def bimbingan_update_proposal(request, id):
 # bimbingan:read
 # Melihat list  data bimbingan bedasarkan nim untuk mahasiswa  & berdasarkan  role dosen untuk dosen 
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def bimbingan_get(request):
     user_info = user_information(request)
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" or user_info[2].name == "Manajemen Departemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" or user_info[2].name == "Manajemen Departemen":
         bimbingans = bimbingan.objects.filter(id_role_dosen__nip=user_info[0]).filter(
             id_role_dosen__role="Pembimbing 1") | bimbingan.objects.filter(id_role_dosen__nip=user_info[0]).filter(
             id_role_dosen__role="Pembimbing 2")
@@ -6067,10 +6070,10 @@ def bimbingan_get(request):
     return render(request, 'bimbingan/bimbingan_get.html', {"bimbingans": bimbingans, "user_info": user_info})
 # Filter list bimbingan yang acc 
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def bimbingan_get_acc(request):
     user_info = user_information(request)
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" or user_info[2].name == "Manajemen Departemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" or user_info[2].name == "Manajemen Departemen":
         bimbingans = bimbingan.objects.filter(id_role_dosen__nip=user_info[0]).filter(
             id_role_dosen__role="Pembimbing 1") | bimbingan.objects.filter(id_role_dosen__nip=user_info[0]).filter(
             id_role_dosen__role="Pembimbing 2")
@@ -6093,10 +6096,10 @@ def bimbingan_get_acc(request):
     return render(request, 'bimbingan/bimbingan_get.html', {"bimbingans": bimbingans, "user_info": user_info})
 # Filter bimbingan dengan status belum diperiksa 
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def bimbingan_get_lain_lain(request):
     user_info = user_information(request)
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" or user_info[2].name == "Manajemen Departemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" or user_info[2].name == "Manajemen Departemen":
         bimbingans = bimbingan.objects.filter(id_role_dosen__nip=user_info[0]).filter(
             id_role_dosen__role="Pembimbing 1") | bimbingan.objects.filter(id_role_dosen__nip=user_info[0]).filter(
             id_role_dosen__role="Pembimbing 2")
@@ -6119,10 +6122,10 @@ def bimbingan_get_lain_lain(request):
     return render(request, 'bimbingan/bimbingan_get.html', {"bimbingans": bimbingans, "user_info": user_info})
 # Filter bimbingan dengan status sudah diperiksa 
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def bimbingan_get_sudah_diperiksa(request):
     user_info = user_information(request)
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" or user_info[2].name == "Manajemen Departemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" or user_info[2].name == "Manajemen Departemen":
         bimbingans = bimbingan.objects.filter(id_role_dosen__nip=user_info[0]).filter(
             id_role_dosen__role="Pembimbing 1") | bimbingan.objects.filter(id_role_dosen__nip=user_info[0]).filter(
             id_role_dosen__role="Pembimbing 2")
@@ -6145,10 +6148,10 @@ def bimbingan_get_sudah_diperiksa(request):
     return render(request, 'bimbingan/bimbingan_get.html', {"bimbingans": bimbingans, "user_info": user_info})
 # Filter bimbingan dengan status revisi 
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def bimbingan_get_revisi(request):
     user_info = user_information(request)
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" or user_info[2].name == "Manajemen Departemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" or user_info[2].name == "Manajemen Departemen":
         bimbingans = bimbingan.objects.filter(id_role_dosen__nip=user_info[0]).filter(
             id_role_dosen__role="Pembimbing 1") | bimbingan.objects.filter(id_role_dosen__nip=user_info[0]).filter(
             id_role_dosen__role="Pembimbing 2")
@@ -6206,11 +6209,11 @@ def list_detail_penilaian_semhas(request):
 
 # # Melihat list data bimbingan proposal  untuk dosen penguji sempro (?) 
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def bimbingan_get_sempro(request):
     user_info = user_information(request)
     role="Dosen Seminar Proposal"
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" or user_info[2].name == "Manajemen Departemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" or user_info[2].name == "Manajemen Departemen":
         bimbingans = bimbingan.objects.filter(id_role_dosen__nip=user_info[0]).filter(
             id_role_dosen__role="Penguji Seminar Proposal 1").latest('Tanggal_Update') | bimbingan.objects.filter(id_role_dosen__nip=user_info[0]).filter(
             id_role_dosen__role="Penguji Seminar Proposal 2").latest('Tanggal_Update')
@@ -6226,11 +6229,11 @@ def bimbingan_get_sempro(request):
 
 # # melihat data bimbingan berdasarkan id proposal  
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def bimbingan_get_proposal(request,id):
     user_info = user_information(request)
 
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" or user_info[2].name == "Manajemen Departemen"or user_info[2].name == "Admin"  or user_info[2].name == "Properta":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" or user_info[2].name == "Manajemen Departemen"or user_info[2].name == "Admin"  or user_info[2].name == "Properta":
         bimbingans = bimbingan.objects.filter(id_role_dosen__nip=user_info[0]).filter(
             id_role_dosen__role="Pembimbing 1").filter(id_proposal=id) | bimbingan.objects.filter(id_role_dosen__nip=user_info[0]).filter(
             id_role_dosen__role="Pembimbing 2").filter(id_proposal=id)
@@ -6247,7 +6250,7 @@ def bimbingan_get_proposal(request,id):
 
 # # melihat list data bimbingan proposal berbentuk form berdasarkan id bimbingan  
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin', 'Mahasiswa', 'Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def bimbingan_read(request, id):
     user_info = user_information(request)
     bimbingan_data = bimbingan.objects.get(pk=id)
@@ -6272,7 +6275,7 @@ def bimbingan_read(request, id):
 # bimbingan:update
 # mengubah data bimbingan proposal berdasarkan id bimbingan  
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin',  'Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin',  'Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def bimbingan_update(request, id):
     user_info = user_information(request)
     bimbingan_data = bimbingan.objects.get(pk=id)
@@ -6414,7 +6417,7 @@ def bimbingan_update(request, id):
 # bimbingan:delete
 # menghapus data bimbingan berdasarkan id bimbingan
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin', 'Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin', 'Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def bimbingan_delete(request, id):
     delete_data = bimbingan.objects.get(pk=id)
     messages.error(request,"Data Bimbingan Telah Berhasil Dihapus! ")
@@ -6425,7 +6428,7 @@ def bimbingan_delete(request, id):
 # detailpenilaian:create
 # Untuk Membuat Komentar Skripsi(data detail penilaian ) saja > ga kepake sih 
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def detailpenilaian_create(request):
     user_info = user_information(request)
     if user_info[2].name == "Admin"  or user_info[2].name == "Properta":
@@ -6489,7 +6492,7 @@ def detailpenilaian_create(request):
 # Detail Penilaian:delete
 # # Untuk Menghapus Komentar Skripsi(data detail penilaian) > ga kepake sih 
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def detailpenilaian_delete(request):
     delete_data = detailpenilaian.objects.get(pk=id)
     delete_data.delete()
@@ -6500,7 +6503,7 @@ def detailpenilaian_delete(request):
 # penilaian:create
 # Untuk membuat penilaian > Tidak Terpakai karena nanti digabung detail penilaian
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def penilaian_create(request):
     user_info = user_information(request)
     cpmk_list=sub_cpmk.objects.all()
@@ -6534,11 +6537,11 @@ def penilaian_create(request):
 # penilaian:read
 # Untuk list data penilaian > Tidak Terpakai karena nanti digabung detail penilaian
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def penilaian_get(request):
     user_info = user_information(request)
 
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" or user_info[2].name == "Manajemen Departemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" or user_info[2].name == "Manajemen Departemen":
         try:
             penilaians = penilaian.objects.filter(
                 pk=dosen.objects.filter(pk=user_info[0])[0])
@@ -6558,7 +6561,7 @@ def penilaian_get(request):
 # penilaian:read
 # Untuk menampilkan list penilaian sempro berdasarkan nim
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def nilai_sempro_get(request,nim):
     user_info = user_information(request)
     if user_info[2].name == "Mahasiswa" and nim !=user_info[0]:
@@ -6661,7 +6664,7 @@ def nilai_sempro_get(request,nim):
 # penilaian:read
 # Untuk menampilkan list penilaian semhas berdasarkan nim
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def nilai_semhas_get(request,nim):
     user_info = user_information(request)
     if user_info[2].name == "Mahasiswa" and nim !=user_info[0]:
@@ -6769,7 +6772,7 @@ def nilai_semhas_get(request,nim):
 # penilaian:read
 # Untuk menampilkan list penilaian sempro berdasarkan nim
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def nilai_sempro_get_seminar(request,id_jadwal_seminar):
     jadwal_seminar_data=jadwal_seminar.objects.get(pk=id_jadwal_seminar)
     user_info = user_information(request)
@@ -6877,7 +6880,7 @@ def nilai_sempro_get_seminar(request,id_jadwal_seminar):
 # penilaian:read
 # Untuk menampilkan list penilaian semhas berdasarkan nim
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def nilai_semhas_get_seminar(request,id_jadwal_seminar):
     user_info = user_information(request)
     jadwal_seminar_data=jadwal_seminar.objects.get(pk=id_jadwal_seminar)
@@ -6985,7 +6988,7 @@ def nilai_semhas_get_seminar(request,id_jadwal_seminar):
 # penilaian:read
 # Untuk menampilkan list penilaian bimbingan berdasarkan nim
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def nilai_bimbingan_get_seminar(request,id_jadwal_seminar):
     user_info = user_information(request)
     jadwal_seminar_data=jadwal_seminar.objects.get(pk=id_jadwal_seminar)
@@ -7070,7 +7073,7 @@ def nilai_bimbingan_get_seminar(request,id_jadwal_seminar):
 # penilaian:read
 # Untuk menampilkan list penilaian bimbingan berdasarkan nim
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def nilai_bimbingan_get(request,nim):
     user_info = user_information(request)
     if user_info[2].name == "Mahasiswa" and nim !=user_info[0]:
@@ -7150,7 +7153,7 @@ def nilai_bimbingan_get(request,nim):
 # penilaian dan detail penilaian:create & update
 # Untuk pembuatan dan update data penilaian dan detail penilaian seminar proposal berdasarkan id proposal
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def penilaian_sempro_dosen_1(request, id_jadwal_seminar):
     user_info = user_information(request)
     jadwal_seminar_data=jadwal_seminar.objects.get(pk=id_jadwal_seminar)
@@ -7313,7 +7316,7 @@ def penilaian_sempro_dosen_1(request, id_jadwal_seminar):
 # penilaian dan detail penilaian:create & update
 # Untuk pembuatan dan update data penilaian dan detail penilaian seminar proposal berdasarkan id proposal
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def penilaian_sempro_dosen_2(request, id_jadwal_seminar):
     user_info = user_information(request)
     jadwal_seminar_data=jadwal_seminar.objects.get(pk=id_jadwal_seminar)
@@ -7475,7 +7478,7 @@ def penilaian_sempro_dosen_2(request, id_jadwal_seminar):
 # penilaian dan detail penilaian:create & update
 # Untuk pembuatan dan update data penilaian dan detail penilaian seminar proposal berdasarkan id proposal
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def penilaian_sempro_dosen_pembimbing_1(request, id_jadwal_seminar):
     user_info = user_information(request)
     jadwal_seminar_data=jadwal_seminar.objects.get(pk=id_jadwal_seminar)
@@ -7637,7 +7640,7 @@ def penilaian_sempro_dosen_pembimbing_1(request, id_jadwal_seminar):
 # penilaian dan detail penilaian:create & update
 # Untuk pembuatan dan update data penilaian dan detail penilaian seminar proposal berdasarkan id proposal
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def penilaian_sempro_dosen_pembimbing_2(request, id_jadwal_seminar):
     user_info = user_information(request)
     jadwal_seminar_data=jadwal_seminar.objects.get(pk=id_jadwal_seminar)
@@ -7799,7 +7802,7 @@ def penilaian_sempro_dosen_pembimbing_2(request, id_jadwal_seminar):
 # penilaian dan detail penilaian:create & update
 # Untuk pembuatan dan update data penilaian dan detail penilaian bimbingan berdasarkan id proposal untuk dospem 1
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def penilaian_bimbingan_dosen_1_by_nim(request, nim):
     user_info = user_information(request)
     # jadwal_seminar_data=jadwal_seminar.objects.get(pk=id_jadwal_seminar)
@@ -7963,7 +7966,7 @@ def penilaian_bimbingan_dosen_1_by_nim(request, nim):
 # penilaian dan detail penilaian:create & update
 # Untuk pembuatan dan update data penilaian dan detail penilaian bimbingan berdasarkan id proposal untuk dospem 2
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def penilaian_bimbingan_dosen_2_by_nim(request, nim):
     user_info = user_information(request)
     # jadwal_seminar_data=jadwal_seminar.objects.get(pk=id_jadwal_seminar)
@@ -8127,7 +8130,7 @@ def penilaian_bimbingan_dosen_2_by_nim(request, nim):
 # penilaian dan detail penilaian:create & update
 # Untuk pembuatan dan update data penilaian dan detail penilaian bimbingan berdasarkan id proposal untuk dospem 1
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def penilaian_bimbingan_dosen_1(request, id_jadwal_seminar):
     user_info = user_information(request)
     jadwal_seminar_data=jadwal_seminar.objects.get(pk=id_jadwal_seminar)
@@ -8288,7 +8291,7 @@ def penilaian_bimbingan_dosen_1(request, id_jadwal_seminar):
     return render(request, 'dosen/penilaian_update.html', {"detailpenilaianform":detailpenilaian_form,"form_nilai":penilaianset_form,"cpmk_data":cpmk_data, "user_info": user_info})
 # Untuk pembuatan dan update data penilaian dan detail penilaian bimbingan berdasarkan id proposal untuk dospem 2
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def penilaian_bimbingan_dosen_2(request, id_jadwal_seminar):
     user_info = user_information(request)
     jadwal_seminar_data=jadwal_seminar.objects.get(pk=id_jadwal_seminar)
@@ -8454,7 +8457,7 @@ def penilaian_bimbingan_dosen_2(request, id_jadwal_seminar):
 # penilaian dan detail penilaian:create & update
 # Untuk pembuatan dan update data penilaian dan detail penilaian seminar hasil berdasarkan id proposaluntuk dosen uji 1
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def penilaian_semhas_dosen_1(request, id_jadwal_seminar):
     user_info = user_information(request)
     jadwal_seminar_data=jadwal_seminar.objects.get(pk=id_jadwal_seminar)
@@ -8610,7 +8613,7 @@ def penilaian_semhas_dosen_1(request, id_jadwal_seminar):
 # penilaian dan detail penilaian:create & update
 # Untuk pembuatan dan update data penilaian dan detail penilaian seminar hasil berdasarkan id proposal untuk dosen uji 2
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def penilaian_semhas_dosen_2(request, id_jadwal_seminar):
     user_info = user_information(request)
     jadwal_seminar_data=jadwal_seminar.objects.get(pk=id_jadwal_seminar)
@@ -8766,7 +8769,7 @@ def penilaian_semhas_dosen_2(request, id_jadwal_seminar):
 # penilaian dan detail penilaian:create & update
 # Untuk pembuatan dan update data penilaian dan detail penilaian seminar hasil berdasarkan id proposal untuk dospem 1
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def penilaian_semhas_dosen_pembimbing_1(request, id_jadwal_seminar):
     user_info = user_information(request)
     jadwal_seminar_data=jadwal_seminar.objects.get(pk=id_jadwal_seminar)
@@ -8922,7 +8925,7 @@ def penilaian_semhas_dosen_pembimbing_1(request, id_jadwal_seminar):
 # penilaian dan detail penilaian:create & update
 # Untuk pembuatan dan update data penilaian dan detail penilaian seminar hasil berdasarkan id proposal untuk dospem 2
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def penilaian_semhas_dosen_pembimbing_2(request, id_jadwal_seminar):
     user_info = user_information(request)
     jadwal_seminar_data=jadwal_seminar.objects.get(pk=id_jadwal_seminar)
@@ -9111,7 +9114,7 @@ def penilaian_semhas_dosen_pembimbing_2(request, id_jadwal_seminar):
 # penilaian:delete
 # Menghapus data penilaian 
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def penilaian_delete(request, id):
     delete_data = penilaian.objects.get(pk=id)
     messages.error(request,"Data Penilaian Telah Berhasil Dihapus! ")
@@ -9204,7 +9207,7 @@ def proposal_create(request):
 # Proposal:read
 # Proposal Untuk data 5 tahun kebelakang tanpa filter
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def proposal_get_5_years(request):
     user_info = user_information(request)
     get_year =datetime.datetime.now().year
@@ -9299,7 +9302,7 @@ def proposal_get_5_years(request):
     return render(request, 'bimbingan/proposal_get.html', {"proposals": proposals, "user_info": user_info})
 # Proposal Untuk data 5 tahun kebelakang dengan filter proposal awal
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def proposal_get_5_years_proposal(request):
     user_info = user_information(request)
     get_year =datetime.datetime.now().year
@@ -9396,7 +9399,7 @@ def proposal_get_5_years_proposal(request):
 
 # Proposal Untuk data 5 tahun kebelakang dengan filter Laporan Akhir
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def proposal_get_5_years_hasil(request):
     user_info = user_information(request)
     get_year =datetime.datetime.now().year
@@ -9493,7 +9496,7 @@ def proposal_get_5_years_hasil(request):
 
 # Proposal tanpa filter
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Mahasiswa','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Mahasiswa','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def proposal_get(request):
     user_info = user_information(request)
 
@@ -9581,7 +9584,7 @@ def proposal_get(request):
 # Proposal:read
 # Untuk melihat list proposal difilter   acc dari nim untuk mhasiswa 
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Mahasiswa','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Mahasiswa','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def proposal_get_filter_ACC(request):
     user_info = user_information(request)
 
@@ -9672,7 +9675,7 @@ def proposal_get_filter_ACC(request):
     return render(request, 'bimbingan/proposal_get.html', {"proposals": proposals, "user_info": user_info})
 # Proposal  dengan filter proposal awal
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def proposal_get_filter_sempro(request):
     user_info = user_information(request)
     tabel="Seminar Proposal"
@@ -9935,7 +9938,7 @@ def proposal_get_filter_sempro(request):
 
 # Proposal Untuk filter beluma ada jadwal seminar proposal awal
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def proposal_get_filter_sempro_jadwal(request):
     user_info = user_information(request)
     tabel="Seminar Proposal"
@@ -10175,7 +10178,7 @@ def proposal_get_filter_sempro_jadwal(request):
 
 # Proposal  dengan filter Laporan Akhir
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def proposal_get_filter_semhas(request):
     user_info = user_information(request)
     tabel="Seminar Hasil"
@@ -10442,7 +10445,7 @@ def proposal_get_filter_semhas(request):
 
 # Proposal Untuk  filter belum ada jadwal seminar Laporan Akhir
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def proposal_get_filter_semhas_jadwal(request):
     user_info = user_information(request)
     tabel="Seminar Hasil"
@@ -10681,7 +10684,7 @@ def proposal_get_filter_semhas_jadwal(request):
 
 # Proposal Untuk  filter proposal revisi
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Mahasiswa','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Mahasiswa','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def proposal_get_filter_revisi(request):
     user_info = user_information(request)
 
@@ -10773,7 +10776,7 @@ def proposal_get_filter_revisi(request):
 
 # Proposal Untuk  filter proposal belum diperiksa
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Mahasiswa','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Mahasiswa','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def proposal_get_filter_belum_diperiksa(request):
     user_info = user_information(request)
 
@@ -10865,7 +10868,7 @@ def proposal_get_filter_belum_diperiksa(request):
 
 # Proposal Untuk  filter proposal sudah dinilai
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Mahasiswa','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Mahasiswa','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def proposal_get_filter_dinilai(request):
     user_info = user_information(request)
 
@@ -10965,7 +10968,7 @@ def proposal_get_filter_dinilai(request):
 
 # Proposal Untuk  filter proposal belum dinilai
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Mahasiswa','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Mahasiswa','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def proposal_get_filter_belum_dinilai(request):
     user_info = user_information(request)
 
@@ -11068,7 +11071,7 @@ def proposal_get_filter_belum_dinilai(request):
 # Mmelihat data  proposal mahasiswa yang di filter berdasarkan id proposal dalam bentuk form 
 
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Mahasiswa','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Mahasiswa','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def bimbingan_get_id_proposal(request,id):
     user_info = user_information(request)
     # print(id)
@@ -11105,12 +11108,12 @@ def bimbingan_get_id_proposal(request,id):
 # Mentabulasi list proposal mahasiswa  yang di filter berdasarkan peran dosen sebagai pembimbing
 
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def proposal_get_dosen_filter_acc(request):
     user_info = user_information(request)
     nim_list=[]
     role="Dosen Pembimbing"
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" or user_info[2].name == "Manajemen Departemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" or user_info[2].name == "Manajemen Departemen":
         
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
@@ -11213,12 +11216,12 @@ def proposal_get_dosen_filter_acc(request):
 
 # filter proposal sudah diperiksa
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def proposal_get_dosen_filter_sudah_periksa(request):
     user_info = user_information(request)
     nim_list=[]
     role="Dosen Pembimbing"
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" or user_info[2].name == "Manajemen Departemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" or user_info[2].name == "Manajemen Departemen":
         
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
@@ -11321,12 +11324,12 @@ def proposal_get_dosen_filter_sudah_periksa(request):
 
 # filter proposal revisi
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def proposal_get_dosen_filter_revisi(request):
     user_info = user_information(request)
     nim_list=[]
     role="Dosen Pembimbing"
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" or user_info[2].name == "Manajemen Departemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" or user_info[2].name == "Manajemen Departemen":
         
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
@@ -11427,12 +11430,12 @@ def proposal_get_dosen_filter_revisi(request):
 
 # filter proposal sudah acc
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def proposal_get_dosen_filter_sudah_acc(request):
     user_info = user_information(request)
     nim_list=[]
     role="Dosen Pembimbing"
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" or user_info[2].name == "Manajemen Departemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" or user_info[2].name == "Manajemen Departemen":
         
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
@@ -11534,12 +11537,12 @@ def proposal_get_dosen_filter_sudah_acc(request):
 # Mentabulasi list proposal mahasiswa  yang di filter berdasarkan peran dosen sebagai pembimbing
 
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def proposal_get_dosen(request):
     user_info = user_information(request)
     nim_list=[]
     role="Dosen Pembimbing"
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" or user_info[2].name == "Manajemen Departemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" or user_info[2].name == "Manajemen Departemen":
         
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
@@ -11624,12 +11627,12 @@ def proposal_get_dosen(request):
 # Proposal :Read 
 # Mentabulasi list proposal mahasiswa  yang di filter berdasarkan proposal yang sudah dinilai
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def proposal_get_dosen_sudah_dinilai(request):
     user_info = user_information(request)
     nim_list=[]
     role="Dosen Pembimbing"
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" or user_info[2].name == "Manajemen Departemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" or user_info[2].name == "Manajemen Departemen":
         
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
@@ -11771,12 +11774,12 @@ def proposal_get_dosen_sudah_dinilai(request):
 
 # Mentabulasi list proposal mahasiswa  yang di filter berdasarkan proposal yang sudah dinilai
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def proposal_get_dosen_lengkap_penilaian(request):
     user_info = user_information(request)
     nim_list=[]
     role="Dosen Pembimbing"
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" or user_info[2].name == "Manajemen Departemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" or user_info[2].name == "Manajemen Departemen":
         
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
@@ -11918,12 +11921,12 @@ def proposal_get_dosen_lengkap_penilaian(request):
 # Proposal :Read 
 # Mentabulasi list proposal mahasiswa  yang di filter berdasarkan proposal yang belum dinilai
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def proposal_get_dosen_belum_dinilai(request):
     user_info = user_information(request)
     nim_list=[]
     role="Dosen Pembimbing"
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" or user_info[2].name == "Manajemen Departemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" or user_info[2].name == "Manajemen Departemen":
         
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
@@ -12065,12 +12068,12 @@ def proposal_get_dosen_belum_dinilai(request):
 # Proposal :Read 
 # Mentabulasi list proposal mahasiswa  yang di filter berdasarkan proposal yang sudah  dinilai sebagian
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def proposal_get_dosen_sudah_dinilai_sebagian(request):
     user_info = user_information(request)
     nim_list=[]
     role="Dosen Pembimbing"
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" or user_info[2].name == "Manajemen Departemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" or user_info[2].name == "Manajemen Departemen":
         
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
@@ -12212,12 +12215,12 @@ def proposal_get_dosen_sudah_dinilai_sebagian(request):
 # Proposal :Read 
 # Mentabulasi list proposal mahasiswa  yang di filter berdasarkan peran dosen sebagai penguji seminar proposal
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def proposal_get_sempro(request):
     user_info = user_information(request)
     nim_list=[]
     role="Dosen Seminar Proposal"
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" or user_info[2].name == "Manajemen Departemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" or user_info[2].name == "Manajemen Departemen":
         
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Proposal 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Proposal 2")
         # print(ambil_pembimbing)
@@ -12328,13 +12331,13 @@ def proposal_get_sempro(request):
     return render(request, 'bimbingan/proposal_get.html', {"proposals": proposals,"role":role, "user_info": user_info})
 # Mentabulasi list proposal mahasiswa  yang di filter berdasarkan penilaian yang sudah dinilai
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 
 def proposal_get_sempro_sudah_nilai(request):
     user_info = user_information(request)
     nim_list=[]
     role="Dosen Seminar Proposal"
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" or user_info[2].name == "Manajemen Departemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" or user_info[2].name == "Manajemen Departemen":
         
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Proposal 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Proposal 2")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
         # print(ambil_pembimbing)
@@ -12467,12 +12470,12 @@ def proposal_get_sempro_sudah_nilai(request):
 # Proposal :Read 
 # Mentabulasi list proposal mahasiswa  yang di filter berdasarkan peran dosen sebagai penguji seminar hasil 
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])   
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])   
 def proposal_get_semhas(request):
     user_info = user_information(request)
     role="Dosen Seminar Hasil"
     nim_list=[]
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" or user_info[2].name == "Manajemen Departemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" or user_info[2].name == "Manajemen Departemen":
         
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Hasil 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Hasil 2")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
@@ -12589,12 +12592,12 @@ def proposal_get_semhas(request):
 # Proposal :Read 
 # Mentabulasi list proposal mahasiswa  yang di filter berdasarkan peran dosen sebagai penguji seminar hasil dansudah dinilai
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])   
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])   
 def proposal_get_semhas_sudah_dinilai(request):
     user_info = user_information(request)
     role="Dosen Seminar Hasil"
     nim_list=[]
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" or user_info[2].name == "Manajemen Departemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" or user_info[2].name == "Manajemen Departemen":
         
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Hasil 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Hasil 2")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
@@ -12731,7 +12734,7 @@ def proposal_get_semhas_sudah_dinilai(request):
 # Proposal : Read
 # Membaca data proposal berbentuk form berdasarkan id proposal
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])   
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])   
 def proposal_read(request, id):
     user_info = user_information(request)
     proposal_data = proposal.objects.filter(pk=id)
@@ -12855,7 +12858,7 @@ def proposal_delete(request, id):
 # userinfo : Read 
 # Memberikan Informasi dasar user untuk profil pengguna
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Mahasiswa','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Mahasiswa','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def user_information(request):
 
 
@@ -12927,7 +12930,7 @@ def user_information(request):
     return Nomor, photo, role,notiifikasi_data,count_notif,{"formnotif":formnotif}
 # Menghapus Notifikasi 
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Mahasiswa','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Mahasiswa','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def notifikasi_delete(request,id):
     delete_data = notifikasi.objects.get(pk=id)
     messages.error(request,"Data Notifikasi Telah Berhasil Dihapus! ")
@@ -12936,10 +12939,10 @@ def notifikasi_delete(request,id):
 # sampe sini 
 # Tampilan Awal masing masing role 
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Mahasiswa','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Mahasiswa','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def home(request):
     user_info = user_information(request)
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" or user_info[2].name == "Manajemen Departemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" or user_info[2].name == "Manajemen Departemen":
         bimbingans = bimbingan.objects.filter(id_role_dosen__nip=user_info[0]).filter(
             id_role_dosen__role="Pembimbing 1") | bimbingan.objects.filter(id_role_dosen__nip=user_info[0]).filter(
             id_role_dosen__role="Pembimbing 2")
@@ -12963,7 +12966,7 @@ def home(request):
         #     if dosen and dosen.author == request.user:
         #         dosen.delete()
 
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" :
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" :
         try:
             # print(kompartemendosen.objects.filter(nip=dosen.objects.filter(pk=user_info[0])[0]))
             evaluasitopiks = evaluasitopik.objects.filter(
@@ -12983,7 +12986,7 @@ def home(request):
 
     nim_list=[]
     # role="Dosen Pembimbing"
-    if user_info[2].name == "Dosen" or user_info[2].name == "Kompartemen" or user_info[2].name == "Manajemen Departemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" or user_info[2].name == "Manajemen Departemen":
         
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
@@ -13350,7 +13353,7 @@ def jadwal_delete(request,id):
 # Jadwal Seminar : Read 
 # Mengambil data Jadwal Seminar
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Mahasiswa','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Mahasiswa','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def jadwal_get(request):
     user_info = user_information(request)
     jadwal_data=jadwal_seminar.objects.all()
@@ -13359,7 +13362,7 @@ def jadwal_get(request):
 # Jadwal Seminar : Read 
 # Mengambil data Jadwal Seminar hari ini
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Mahasiswa','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Mahasiswa','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def jadwal_get_today(request):
     user_info = user_information(request)
     jadwal_data=jadwal_seminar.objects.filter(tanggal_seminar__gte=datetime.datetime.now().date())
@@ -13371,10 +13374,10 @@ def jadwal_get_today(request):
 # Jadwal Seminar : Read 
 # Menampilkan list jadwal seminar dengan filter nomor induk
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Mahasiswa','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Mahasiswa','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def jadwal_mhs_dosen_get(request):
     user_info = user_information(request)
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         jadwal_data=jadwal_seminar.objects.filter(dosen_pembimbing_1__nip=user_info[0])|jadwal_seminar.objects.filter(dosen_pembimbing_2__nip=user_info[0])|jadwal_seminar.objects.filter(dosen_penguji_1__nip=user_info[0])|jadwal_seminar.objects.filter(dosen_penguji_2__nip=user_info[0])
     elif user_info[2].name == "Mahasiswa":
         jadwal_data=jadwal_seminar.objects.filter(mahasiswa__nim=user_info[0])
@@ -13385,10 +13388,10 @@ def jadwal_mhs_dosen_get(request):
 
 # jadwal mahasiswa keseluruhan
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Mahasiswa','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Mahasiswa','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def jadwal_mhs_dosen_get_all(request):
     user_info = user_information(request)
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         jadwal_data=jadwal_seminar.objects.filter(dosen_pembimbing_1__nip=user_info[0])|jadwal_seminar.objects.filter(dosen_pembimbing_2__nip=user_info[0])|jadwal_seminar.objects.filter(dosen_penguji_1__nip=user_info[0])|jadwal_seminar.objects.filter(dosen_penguji_2__nip=user_info[0])
     else:
         jadwal_data=jadwal_seminar.objects.all()
@@ -13396,12 +13399,12 @@ def jadwal_mhs_dosen_get_all(request):
 
 # penilaian dospem
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def jadwal_dosen_bimbingan_tanpa_filter(request):
     user_info = user_information(request)
     role="Dosen Pembimbing"
     nim_list=[]
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
             nim_list.append(item.id_role_dosen)
@@ -13575,12 +13578,12 @@ def jadwal_dosen_bimbingan_tanpa_filter(request):
 
 # penilaian dospem filter hanya penilaian seminar
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def jadwal_dosen_bimbingan_tanpa_filter_2(request):
     user_info = user_information(request)
     role="Dosen Pembimbing"
     nim_list=[]
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
             nim_list.append(item.id_role_dosen)
@@ -13835,13 +13838,13 @@ def tabulasi_penilaian_no_filter(request):
 
 # tabel penilaian mahasiswa dosen aktif
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def tabulasi_penilaian(request):
     user_info = user_information(request)
     # role=""
     nim_list=[]
     role_dosen_list=[]
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
             role_dosen_list.append(item.id_role_dosen)
@@ -13872,7 +13875,7 @@ def tabulasi_penilaian(request):
         else:
             jumlah_penilaian_pembimbing=1
             
-        if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+        if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
             ambil_pembimbing=roledosen.objects.filter(nim=item.nim).filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nim=item.nim).filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
             mahasiswa_data[jumlah].status_dosen_pembimbing=str(ambil_pembimbing.first().role)
         else:
@@ -13929,13 +13932,13 @@ def tabulasi_penilaian(request):
 
 # tbel penilaian dosen aktif filter belum nilai bimbingan
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def tabulasi_penilaian_belum_lengkap_bimbingan(request):
     user_info = user_information(request)
     # role=""
     nim_list=[]
     role_dosen_list=[]
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
             role_dosen_list.append(item.id_role_dosen)
@@ -13966,7 +13969,7 @@ def tabulasi_penilaian_belum_lengkap_bimbingan(request):
         else:
             jumlah_penilaian_pembimbing=1
             
-        if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+        if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
             ambil_pembimbing=roledosen.objects.filter(nim=item.nim).filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nim=item.nim).filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
             mahasiswa_data[jumlah].status_dosen_pembimbing=str(ambil_pembimbing.first().role)
         else:
@@ -14001,7 +14004,7 @@ def tabulasi_penilaian_belum_lengkap_bimbingan(request):
         else:
             jumlah_penilaian_pembimbing=1
             
-        if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+        if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
             ambil_pembimbing=roledosen.objects.filter(nim=item.nim).filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nim=item.nim).filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
             mahasiswa_data[jumlah].status_dosen_pembimbing=str(ambil_pembimbing.first().role)
         else:
@@ -14058,13 +14061,13 @@ def tabulasi_penilaian_belum_lengkap_bimbingan(request):
 
 # tbel penilaian dosen aktif filter sudah nilai bimbingan
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def tabulasi_penilaian_sudah_lengkap_bimbingan(request):
     user_info = user_information(request)
     # role=""
     nim_list=[]
     role_dosen_list=[]
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
             role_dosen_list.append(item.id_role_dosen)
@@ -14095,7 +14098,7 @@ def tabulasi_penilaian_sudah_lengkap_bimbingan(request):
         else:
             jumlah_penilaian_pembimbing=1
             
-        if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+        if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
             ambil_pembimbing=roledosen.objects.filter(nim=item.nim).filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nim=item.nim).filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
             mahasiswa_data[jumlah].status_dosen_pembimbing=str(ambil_pembimbing.first().role)
         else:
@@ -14130,7 +14133,7 @@ def tabulasi_penilaian_sudah_lengkap_bimbingan(request):
         else:
             jumlah_penilaian_pembimbing=1
             
-        if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+        if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
             ambil_pembimbing=roledosen.objects.filter(nim=item.nim).filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nim=item.nim).filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
             mahasiswa_data[jumlah].status_dosen_pembimbing=str(ambil_pembimbing.first().role)
         else:
@@ -14187,13 +14190,13 @@ def tabulasi_penilaian_sudah_lengkap_bimbingan(request):
 
 # tbel penilaian dosen aktif filter belum penilaian sempro
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def tabulasi_penilaian_belum_lengkap_sempro(request):
     user_info = user_information(request)
     # role=""
     nim_list=[]
     role_dosen_list=[]
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
             role_dosen_list.append(item.id_role_dosen)
@@ -14224,7 +14227,7 @@ def tabulasi_penilaian_belum_lengkap_sempro(request):
         else:
             jumlah_penilaian_pembimbing=1
             
-        if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+        if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
             ambil_pembimbing=roledosen.objects.filter(nim=item.nim).filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nim=item.nim).filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
             mahasiswa_data[jumlah].status_dosen_pembimbing=str(ambil_pembimbing.first().role)
         else:
@@ -14261,7 +14264,7 @@ def tabulasi_penilaian_belum_lengkap_sempro(request):
         else:
             jumlah_penilaian_pembimbing=1
             
-        if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+        if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
             ambil_pembimbing=roledosen.objects.filter(nim=item.nim).filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nim=item.nim).filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
             mahasiswa_data[jumlah].status_dosen_pembimbing=str(ambil_pembimbing.first().role)
         else:
@@ -14318,13 +14321,13 @@ def tabulasi_penilaian_belum_lengkap_sempro(request):
 
 # tbel penilaian dosen aktif filter sudah penilaian sempro
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def tabulasi_penilaian_sudah_lengkap_sempro(request):
     user_info = user_information(request)
     # role=""
     nim_list=[]
     role_dosen_list=[]
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
             role_dosen_list.append(item.id_role_dosen)
@@ -14355,7 +14358,7 @@ def tabulasi_penilaian_sudah_lengkap_sempro(request):
         else:
             jumlah_penilaian_pembimbing=1
             
-        if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+        if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
             ambil_pembimbing=roledosen.objects.filter(nim=item.nim).filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nim=item.nim).filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
             mahasiswa_data[jumlah].status_dosen_pembimbing=str(ambil_pembimbing.first().role)
         else:
@@ -14392,7 +14395,7 @@ def tabulasi_penilaian_sudah_lengkap_sempro(request):
         else:
             jumlah_penilaian_pembimbing=1
             
-        if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+        if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
             ambil_pembimbing=roledosen.objects.filter(nim=item.nim).filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nim=item.nim).filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
             mahasiswa_data[jumlah].status_dosen_pembimbing=str(ambil_pembimbing.first().role)
         else:
@@ -14449,13 +14452,13 @@ def tabulasi_penilaian_sudah_lengkap_sempro(request):
 
 # tbel penilaian dosen aktif filter belum penilaian semhas
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def tabulasi_penilaian_belum_lengkap_semhas(request):
     user_info = user_information(request)
     # role=""
     nim_list=[]
     role_dosen_list=[]
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
             role_dosen_list.append(item.id_role_dosen)
@@ -14486,7 +14489,7 @@ def tabulasi_penilaian_belum_lengkap_semhas(request):
         else:
             jumlah_penilaian_pembimbing=1
             
-        if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+        if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
             ambil_pembimbing=roledosen.objects.filter(nim=item.nim).filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nim=item.nim).filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
             mahasiswa_data[jumlah].status_dosen_pembimbing=str(ambil_pembimbing.first().role)
         else:
@@ -14523,7 +14526,7 @@ def tabulasi_penilaian_belum_lengkap_semhas(request):
         else:
             jumlah_penilaian_pembimbing=1
             
-        if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+        if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
             ambil_pembimbing=roledosen.objects.filter(nim=item.nim).filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nim=item.nim).filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
             mahasiswa_data[jumlah].status_dosen_pembimbing=str(ambil_pembimbing.first().role)
         else:
@@ -14580,13 +14583,13 @@ def tabulasi_penilaian_belum_lengkap_semhas(request):
 
 # tbel penilaian dosen aktif filter sudah penilaian semhas
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def tabulasi_penilaian_sudah_lengkap_semhas(request):
     user_info = user_information(request)
     # role=""
     nim_list=[]
     role_dosen_list=[]
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
             role_dosen_list.append(item.id_role_dosen)
@@ -14617,7 +14620,7 @@ def tabulasi_penilaian_sudah_lengkap_semhas(request):
         else:
             jumlah_penilaian_pembimbing=1
             
-        if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+        if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
             ambil_pembimbing=roledosen.objects.filter(nim=item.nim).filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nim=item.nim).filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
             mahasiswa_data[jumlah].status_dosen_pembimbing=str(ambil_pembimbing.first().role)
         else:
@@ -14654,7 +14657,7 @@ def tabulasi_penilaian_sudah_lengkap_semhas(request):
         else:
             jumlah_penilaian_pembimbing=1
             
-        if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+        if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
             ambil_pembimbing=roledosen.objects.filter(nim=item.nim).filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nim=item.nim).filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
             mahasiswa_data[jumlah].status_dosen_pembimbing=str(ambil_pembimbing.first().role)
         else:
@@ -14884,12 +14887,12 @@ def jadwal_dosen_bimbingan_no_filter_nim(request,nim):
     return render(request, 'dosen/jadwal_penilaian.html', {"jadwals": jadwal_data, "user_info": user_info,"role":role})
 # tbel penilaian dosen pembimbing dengan mengikutkan dosen filter active dengan nim
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def jadwal_dosen_bimbingan_filter_nim(request,nim):
     user_info = user_information(request)
     role="Dosen Pembimbing"
     nim_list=[]
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
             nim_list.append(item.id_role_dosen)
@@ -15063,12 +15066,12 @@ def jadwal_dosen_bimbingan_filter_nim(request,nim):
 
 # tabelpenilaian dosen pembimmbing tanpa filter penilaian bimbingan
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def jadwal_dosen_bimbingan(request):
     user_info = user_information(request)
     role="Dosen Pembimbing"
     nim_list=[]
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
             nim_list.append(item.id_role_dosen)
@@ -15264,12 +15267,12 @@ def jadwal_dosen_bimbingan(request):
 
 # tbel penilaian dosen  bimbingan tanpa filter penilaian bimbingan   
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def jadwal_dosen_bimbingan_2(request):
     user_info = user_information(request)
     role="Dosen Pembimbing"
     nim_list=[]
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
             nim_list.append(item.id_role_dosen)
@@ -15465,12 +15468,12 @@ def jadwal_dosen_bimbingan_2(request):
 
 # tbel penilaian dosen  bimbingan filter belum penilaian bimbingan   
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def jadwal_dosen_bimbingan_belum_dinilai(request):
     user_info = user_information(request)
     role="Dosen Pembimbing"
     nim_list=[]
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
             nim_list.append(item.id_role_dosen)
@@ -15749,12 +15752,12 @@ def jadwal_dosen_bimbingan_belum_dinilai(request):
     return render(request, 'dosen/jadwal_penilaian.html', {"jadwals": jadwal_data, "user_info": user_info,"role":role})
 # tbel penilaian dosen  bimbingan filter belum penilaian bimbingan   
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def jadwal_dosen_bimbingan_belum_dinilai_2(request):
     user_info = user_information(request)
     role="Dosen Pembimbing"
     nim_list=[]
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
             nim_list.append(item.id_role_dosen)
@@ -16033,12 +16036,12 @@ def jadwal_dosen_bimbingan_belum_dinilai_2(request):
     return render(request, 'dosen/jadwal_penilaian.html', {"jadwals": jadwal_data, "user_info": user_info,"role":role})
 # tbel penilaian dosen  bimbingan filter sudah penilaian bimbingan   
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def jadwal_dosen_bimbingan_sudah_dinilai(request):
     user_info = user_information(request)
     role="Dosen Pembimbing"
     nim_list=[]
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
             nim_list.append(item.id_role_dosen)
@@ -16293,12 +16296,12 @@ def jadwal_dosen_bimbingan_sudah_dinilai(request):
 
 # tbel penilaian dosen  bimbingan filter sudah penilaian bimbingan   
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def jadwal_dosen_bimbingan_sudah_dinilai_2(request):
     user_info = user_information(request)
     role="Dosen Pembimbing"
     nim_list=[]
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
             nim_list.append(item.id_role_dosen)
@@ -16553,12 +16556,12 @@ def jadwal_dosen_bimbingan_sudah_dinilai_2(request):
 
 # tbel penilaian dosen  bimbingan filter sebagian penilaian bimbingan     
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def jadwal_dosen_bimbingan_sebagian_dinilai(request):
     user_info = user_information(request)
     role="Dosen Pembimbing"
     nim_list=[]
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Pembimbing 2")
         for item in ambil_pembimbing:
             nim_list.append(item.id_role_dosen)
@@ -16815,12 +16818,12 @@ def jadwal_dosen_bimbingan_sebagian_dinilai(request):
 
 # tbel penilaian dosen  penguji sempro filter  tanpa filter penilaian sempro
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def jadwal_dosen_sempro_tanpa_filter(request):
     role="Dosen Seminar Proposal"
     user_info = user_information(request)
     nim_list=[]
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(role="Penguji Seminar Proposal 1")|roledosen.objects.filter(nip=user_info[0]).filter(role="Penguji Seminar Proposal 2")
         for item in ambil_pembimbing:
             nim_list.append(item.id_role_dosen)
@@ -16869,12 +16872,12 @@ def jadwal_dosen_sempro_tanpa_filter(request):
 
 # tbel penilaian dosen  penguji sempro tanpa filter penilaian sempro
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def jadwal_dosen_sempro(request):
     role="Dosen Seminar Proposal"
     user_info = user_information(request)
     nim_list=[]
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Proposal 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Proposal 2")
         for item in ambil_pembimbing:
             nim_list.append(item.id_role_dosen)
@@ -16922,12 +16925,12 @@ def jadwal_dosen_sempro(request):
     return render(request, 'dosen/jadwal_penilaian.html', {"jadwals": jadwal_data, "user_info": user_info,"role":role})
 # tbel penilaian dosen  penguji sempro filter include dosen finished belum penilaian sempro
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def jadwal_dosen_sempro_belum_dinilai_tanpa_filter(request):
     role="Dosen Seminar Proposal"
     user_info = user_information(request)
     nim_list=[]
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(role="Penguji Seminar Proposal 1")|roledosen.objects.filter(nip=user_info[0]).filter(role="Penguji Seminar Proposal 2")
         for item in ambil_pembimbing:
             nim_list.append(item.id_role_dosen)
@@ -16993,12 +16996,12 @@ def jadwal_dosen_sempro_belum_dinilai_tanpa_filter(request):
     return render(request, 'dosen/jadwal_penilaian.html', {"jadwals": jadwal_data, "user_info": user_info,"role":role})
 # tbel penilaian dosen  penguji sempro filter belum penilaian sempro
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def jadwal_dosen_sempro_belum_dinilai(request):
     role="Dosen Seminar Proposal"
     user_info = user_information(request)
     nim_list=[]
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Proposal 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Proposal 2")
         for item in ambil_pembimbing:
             nim_list.append(item.id_role_dosen)
@@ -17066,12 +17069,12 @@ def jadwal_dosen_sempro_belum_dinilai(request):
 
 # tbel penilaian dosen  penguji sempro filter include dosen finished sudah penilaian sempro
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def jadwal_dosen_sempro_sudah_dinilai_tanpa_filter(request):
     role="Dosen Seminar Proposal"
     user_info = user_information(request)
     nim_list=[]
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(role="Penguji Seminar Proposal 1")|roledosen.objects.filter(nip=user_info[0]).filter(role="Penguji Seminar Proposal 2")
         for item in ambil_pembimbing:
             nim_list.append(item.id_role_dosen)
@@ -17138,12 +17141,12 @@ def jadwal_dosen_sempro_sudah_dinilai_tanpa_filter(request):
 
 # tbel penilaian dosen  penguji sempro filter sudah penilaian semhas
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def jadwal_dosen_sempro_sudah_dinilai(request):
     role="Dosen Seminar Proposal"
     user_info = user_information(request)
     nim_list=[]
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Proposal 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Proposal 2")
         for item in ambil_pembimbing:
             nim_list.append(item.id_role_dosen)
@@ -17210,12 +17213,12 @@ def jadwal_dosen_sempro_sudah_dinilai(request):
 
 #  tbel penilaian dosen keseluruhan penguji semhas keseluruhan
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def jadwal_dosen_semhas_tanpa_filter(request):
     role="Dosen Seminar Hasil"
     user_info = user_information(request)
     nim_list=[]
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(role="Penguji Seminar Hasil 1")|roledosen.objects.filter(nip=user_info[0]).filter(role="Penguji Seminar Hasil 2")
         for item in ambil_pembimbing:
             nim_list.append(item.id_role_dosen)
@@ -17262,12 +17265,12 @@ def jadwal_dosen_semhas_tanpa_filter(request):
 
 # tbel penilaian dosen  penguji semhas keseluruhan
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def jadwal_dosen_semhas(request):
     role="Dosen Seminar Hasil"
     user_info = user_information(request)
     nim_list=[]
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Hasil 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Hasil 2")
         for item in ambil_pembimbing:
             nim_list.append(item.id_role_dosen)
@@ -17314,12 +17317,12 @@ def jadwal_dosen_semhas(request):
 
 # tbel penilaian dosen  penguji semhas tanpa filter dosen aktif sudah penilaian semhas
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def jadwal_dosen_semhas_belum_dinilai_tanpa_filter(request):
     role="Dosen Seminar Hasil"
     user_info = user_information(request)
     nim_list=[]
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(role="Penguji Seminar Hasil 1")|roledosen.objects.filter(nip=user_info[0]).filter(role="Penguji Seminar Hasil 2")
         for item in ambil_pembimbing:
             nim_list.append(item.id_role_dosen)
@@ -17384,12 +17387,12 @@ def jadwal_dosen_semhas_belum_dinilai_tanpa_filter(request):
 
 # tbel penilaian dosen  penguji semhas filter belum penilaian semhas
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def jadwal_dosen_semhas_belum_dinilai(request):
     role="Dosen Seminar Hasil"
     user_info = user_information(request)
     nim_list=[]
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Hasil 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Hasil 2")
         for item in ambil_pembimbing:
             nim_list.append(item.id_role_dosen)
@@ -17454,12 +17457,12 @@ def jadwal_dosen_semhas_belum_dinilai(request):
 
 # tbel penilaian dosen  penguji semhas tanpa filter  dosen aktif sudah penilaian semhas
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def jadwal_dosen_semhas_sudah_dinilai_tanpa_filter(request):
     role="Dosen Seminar Hasil"
     user_info = user_information(request)
     nim_list=[]
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(role="Penguji Seminar Hasil 1")|roledosen.objects.filter(nip=user_info[0]).filter(role="Penguji Seminar Hasil 2")
         for item in ambil_pembimbing:
             nim_list.append(item.id_role_dosen)
@@ -17524,12 +17527,12 @@ def jadwal_dosen_semhas_sudah_dinilai_tanpa_filter(request):
 
 # tbel penilaian dosen  penguji semhas filter sudah penilaian semhas
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def jadwal_dosen_semhas_sudah_dinilai(request):
     role="Dosen Seminar Hasil"
     user_info = user_information(request)
     nim_list=[]
-    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+    if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
         ambil_pembimbing=roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Hasil 1")|roledosen.objects.filter(nip=user_info[0]).filter(status="Active").filter(role="Penguji Seminar Hasil 2")
         for item in ambil_pembimbing:
             nim_list.append(item.id_role_dosen)
@@ -17594,20 +17597,20 @@ def jadwal_dosen_semhas_sudah_dinilai(request):
 
 
 # @login_required(login_url="/login")
-# @role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+# @role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 # def jadwal_mhs_dosen_get_sempro(request):
 #     user_info = user_information(request)
-#     if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+#     if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
 #         jadwal_data=jadwal_seminar.objects.filter(nama_tahap="Seminar Proposal").filter(dosen_penguji_1__nip=user_info[0])|jadwal_seminar.objects.filter(nama_tahap="Seminar Proposal").filter(dosen_penguji_2__nip=user_info[0])
 #     else:
 #         jadwal_data=jadwal_seminar.objects.filter(nama_tahap="Seminar Proposal")
 #     return render(request, 'dosen/jadwal_penilaian.html', {"jadwals": jadwal_data, "user_info": user_info})
 
 # @login_required(login_url="/login")
-# @role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+# @role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 # def jadwal_mhs_dosen_get_semhas(request):
 #     user_info = user_information(request)
-#     if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Kompartemen":
+#     if user_info[2].name == "Dosen" or user_info[2].name == "Manajemen Departemen" or user_info[2].name == "Ketua Kompartemen":
 #         jadwal_data=jadwal_seminar.objects.filter(nama_tahap="Seminar Hasil").filter(dosen_penguji_1__nip=user_info[0])|jadwal_seminar.objects.filter(nama_tahap="Seminar Hasil").filter(dosen_penguji_2__nip=user_info[0])
 #     else:
 #         jadwal_data=jadwal_seminar.objects.filter(nama_tahap="Seminar Hasil")
@@ -17617,7 +17620,7 @@ def jadwal_dosen_semhas_sudah_dinilai(request):
 # Progress Mahasiswa
 # Menampilkan list mahasiswa dan angkatan  dan progress
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def mahasiswa_jumlah_get(request):
     user_info = user_information(request)
     list_nim=[]
@@ -17820,7 +17823,7 @@ def mahasiswa_jumlah_get(request):
 # Progress Mahasiswa
 # Menampilkan list mahasiswa dan angkatan  dan progress
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def mahasiswa_jumlah_get_progress(request):
     user_info = user_information(request)
     list_nim=[]
@@ -18010,7 +18013,7 @@ def mahasiswa_jumlah_get_tahun(request):
 # Membuat data Progreess mahasiswa bersama progress dan marking mahasiswa berhenti mengerjakan skripsi selama 3-6 buln 
 # todo add progress 3 bulan 6 bulan peringatan
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 def mahasiswa_progress_by_bulan(request):
     user_info = user_information(request)
     list_nim=[]
@@ -18092,7 +18095,7 @@ def mahasiswa_progress_by_bulan(request):
                                                                              "user_info": user_info})
 
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])
 # progresss mahasiswa : penampilan hari terakhir bimbingan
 def mahasiswa_progress_by_bulan_dosen(request):
     user_info = user_information(request)
@@ -18269,7 +18272,7 @@ def jadwal_semester_delete(request, id):
 # todo: ngitung last bab 4 acc - daftar skripsi no bug testing
 # rentang llulus untuk dapat waktu kelulusan rata rata
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])  
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])  
 def get_data_rentang_lulus(request, id):
     user_info = user_information(request)
     data_proposal=bimbingan.objects.filter(status_bimbingan="ACC").filter(id_proposal__nama_tahap="Laporan Akhir").order_by('-tanggal_update').values("id_proposal__nim","id_proposal__nim__id_user__first_name","id_proposal__nim__semester_daftar_skripsi__tanggal_awal_semester").annotate(tanggal_max=Max('tanggal_update'))
@@ -18291,7 +18294,7 @@ def penilaian_full(request):
 
 # Penampilan list mahasiswa berdasarkan nim untuk menampilkan nilai nantinya
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])  
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])  
 # @permission_required("skripsi_app.add_dosen", raise_exception=True)
 def penilaian_list(request):
     user_info = user_information(request)
@@ -18307,7 +18310,7 @@ def penilaian_list(request):
     return render(request, 'penilaian/penilaian_list.html', {"penilaians": penilaian_mhs, "user_info": user_info})
 # Penampilan list mahasiswa berdasarkan nim untuk menampilkan nilai nantinya tapi di filter dosen pembimbing
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])  
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])  
 # @permission_required("skripsi_app.add_dosen", raise_exception=True)
 def penilaian_list_dosen(request):
     user_info = user_information(request)
@@ -18329,7 +18332,7 @@ def penilaian_list_dosen(request):
 
 # Penampilan list mahasiswa berdasarkan nim untuk menampilkan nilai nantinya tapi di filter dosen penguji sempro
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])  
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])  
 # @permission_required("skripsi_app.add_dosen", raise_exception=True)
 def penilaian_list_dosen_sempro(request):
     user_info = user_information(request)
@@ -18351,7 +18354,7 @@ def penilaian_list_dosen_sempro(request):
 
 # Penampilan list mahasiswa berdasarkan nim untuk menampilkan nilai nantinya tapi di filter dosen penguji semhas
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])  
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])  
 # @permission_required("skripsi_app.add_dosen", raise_exception=True)
 def penilaian_list_dosen_semhas(request):
     role="Seminar Hasil"
@@ -18373,7 +18376,7 @@ def penilaian_list_dosen_semhas(request):
 
 # Penampilan list penilaian sempro
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])  
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])  
 # @permission_required("skripsi_app.add_dosen", raise_exception=True)
 def penilaian_sempro(request):
     user_info = user_information(request)
@@ -18382,7 +18385,7 @@ def penilaian_sempro(request):
 
 # Penampilan list penilaian semhas
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])  
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])  
 # @permission_required("skripsi_app.add_dosen", raise_exception=True)
 def penilaian_semhas(request):
     user_info = user_information(request)
@@ -18391,7 +18394,7 @@ def penilaian_semhas(request):
 
 # Penampilan list penilaian bimbingan
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])  
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])  
 # @permission_required("skripsi_app.add_dosen", raise_exception=True)
 def penilaian_bimbingan(request):
     user_info = user_information(request)
@@ -18400,7 +18403,7 @@ def penilaian_bimbingan(request):
 
 # Penampilan list penilaian sempro berdasar nim
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])  
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])  
 # @permission_required("skripsi_app.add_dosen", raise_exception=True)
 def penilaian_sempro_nim(request,nim):
     user_info = user_information(request)
@@ -18408,7 +18411,7 @@ def penilaian_sempro_nim(request,nim):
     return render(request, 'penilaian/penilaian_full.html', {"penilaians": penilaians, "user_info": user_info})
 # Penampilan list penilaian sempro berdasar nim untuk penguji sempro
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])  
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])  
 # @permission_required("skripsi_app.add_dosen", raise_exception=True)
 def penilaian_sempro_nim_filter(request,nim):
     user_info = user_information(request)
@@ -18421,7 +18424,7 @@ def penilaian_sempro_nim_filter(request,nim):
 
 # Penampilan list penilaian sempro berdasar nim
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])  
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])  
 # @permission_required("skripsi_app.add_dosen", raise_exception=True)
 def penilaian_sempro_jadwal_seminar(request,id_jadwal_seminar):
     user_info = user_information(request)
@@ -18429,7 +18432,7 @@ def penilaian_sempro_jadwal_seminar(request,id_jadwal_seminar):
     return render(request, 'penilaian/penilaian_full.html', {"penilaians": penilaians, "user_info": user_info})
 # Penampilan list penilaian sempro berdasar nim untuk penguji sempro
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])  
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])  
 # @permission_required("skripsi_app.add_dosen", raise_exception=True)
 def penilaian_sempro_jadwal_seminar_filter(request,id_jadwal_seminar):
     user_info = user_information(request)
@@ -18442,7 +18445,7 @@ def penilaian_sempro_jadwal_seminar_filter(request,id_jadwal_seminar):
 
 # Penampilan list penilaian semhas berdasar nim
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])  
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])  
 # @permission_required("skripsi_app.add_dosen", raise_exception=True)
 def penilaian_semhas_nim(request,nim):
     user_info = user_information(request)
@@ -18451,7 +18454,7 @@ def penilaian_semhas_nim(request,nim):
 
 # Penampilan list penilaian semhas berdasar nim untuk penguji semhas
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])  
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])  
 # @permission_required("skripsi_app.add_dosen", raise_exception=True)
 def penilaian_semhas_nim_filter(request,nim):
     user_info = user_information(request)
@@ -18467,7 +18470,7 @@ def penilaian_semhas_nim_filter(request,nim):
 
 # Penampilan list penilaian semhas berdasar jadwal seminar
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])  
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])  
 # @permission_required("skripsi_app.add_dosen", raise_exception=True)
 def penilaian_semhas_jadwal_seminar(request,id_jadwal_seminar):
     user_info = user_information(request)
@@ -18476,7 +18479,7 @@ def penilaian_semhas_jadwal_seminar(request,id_jadwal_seminar):
 
 # Penampilan list penilaian semhas berdasar id jadwal seminar untuk penguji semhas
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])  
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])  
 # @permission_required("skripsi_app.add_dosen", raise_exception=True)
 def penilaian_semhas_jadwal_seminar_filter(request,id_jadwal_seminar):
     user_info = user_information(request)
@@ -18492,7 +18495,7 @@ def penilaian_semhas_jadwal_seminar_filter(request,id_jadwal_seminar):
 
 # Penampilan list penilaian bimbingan berdasar nim untuk dosen pembimbing
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen','Kompartemen','Dosen','Properta'])  
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])  
 def penilaian_bimbingan_nim(request,nim):
     user_info = user_information(request)
     penilaians=penilaian.objects.filter(id_detail_penilaian__id_role_dosen__nim__nim=nim).exclude(id_detail_penilaian__nama_tahap="Seminar Hasil").exclude(id_detail_penilaian__nama_tahap="Seminar Proposal")

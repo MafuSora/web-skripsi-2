@@ -13,12 +13,12 @@
     <span> 
 
       <h4>Filter Durasi : </h4>
-      <a class="btn btn-success text-white my-3" href="/mahasiswawaktu"> Usulan - ACC Revisi Semhas</a>
+      <a class="btn btn-success text-white my-3" href="/mahasiswawaktu"> Registrasi - ACC Revisi Semhas</a>
       {%if user_info.2.name != "Mahasiswa"%}
-      <a class="btn btn-success text-white my-3" href="{% url 'mahasiswa_waktu_get_usulan'  %}"> Usulan - Revisi Semhas ACC</a>
+      <a class="btn btn-success text-white my-3" href="{% url 'mahasiswa_waktu_get_usulan'  %}">ACC Usulan - Revisi Semhas </a>
       <a class="btn btn-success text-white my-3" href="{% url 'mahasiswa_waktu_get_evaluasi'  %}"> Evaluasi - ACC Sempro</a>
       <a class="btn btn-success text-white my-3" href="{% url 'mahasiswa_waktu_get_berkas'  %}"> ACC Revisi Sempro - ACC Revisi Semhas</a>
-      <a class="btn btn-success text-white my-3" href="{% url 'mahasiswa_waktu_get_kompartemen' %}"> Assign - Evaluasi</a>
+      <a class="btn btn-success text-white my-3" href="{% url 'mahasiswa_waktu_get_kompartemen' %}"> Assign Kompartemen - Evaluasi</a>
       {%endif%}
     </span>
   </div>

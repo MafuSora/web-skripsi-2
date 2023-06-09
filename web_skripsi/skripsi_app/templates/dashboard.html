@@ -23,7 +23,7 @@
         {% if user_info.2.name == 'Manajemen Departemen'%}
         <h1 class="h3 mb-0 text-gray-800">Dashboard Manajemen Departemen</h1>
         {% endif %}
-        {% if user_info.2.name == 'Kompartemen' %}
+        {% if user_info.2.name == "Ketua Kompartemen" %}
         <h1 class="h3 mb-0 text-gray-800">Dashboard Kompartemen</h1>
         {% endif %}
         {% if user_info.2.name == 'Dosen'  %}
@@ -89,7 +89,7 @@
           </div>
       </div>
 {% endif %}
-{% if user_info.2.name == 'Manajemen Departemen'  or user_info.2.name == 'Dosen' or user_info.2.name == 'Kompartemen'  %}
+{% if user_info.2.name == 'Manajemen Departemen'  or user_info.2.name == 'Dosen' or user_info.2.name == "Ketua Kompartemen"  %}
       <!-- Earnings (Monthly) Card Example -->
       <div class="col-xl-3 col-md-6 mb-4">
           <div class="card border-left-success shadow h-100 pt-2">
@@ -144,7 +144,7 @@
       </div>
 {% endif %}
 
-{% if  user_info.2.name == 'Kompartemen' or user_info.2.name == 'Admin' or user_info.2.name == "Properta" %}
+{% if  user_info.2.name == "Ketua Kompartemen" or user_info.2.name == 'Admin' or user_info.2.name == "Properta" %}
     <!-- Earnings (Monthly) Card Example -->
     <div class="col-xl-3 col-md-6 mb-4">
         <div class="card border-left-success shadow h-100 pt-2">
@@ -208,7 +208,7 @@
 
 {% endif %}
 
-{% if user_info.2.name == 'Manajemen Departemen' or user_info.2.name == 'Dosen' or user_info.2.name == 'Kompartemen' or user_info.2.name == 'Admin' or user_info.2.name == "Properta" %}
+{% if user_info.2.name == 'Manajemen Departemen' or user_info.2.name == 'Dosen' or user_info.2.name == "Ketua Kompartemen" or user_info.2.name == 'Admin' or user_info.2.name == "Properta" %}
       <!-- Earnings (Monthly) Card Example -->
       <div class="col-xl-3 col-md-6 mb-4">
           <div class="card border-left-success shadow h-100 pt-2">
@@ -235,7 +235,7 @@
       </div>
 {% endif %}
 
-{% if user_info.2.name == 'Manajemen Departemen' or user_info.2.name == 'Dosen' or user_info.2.name == 'Kompartemen' or user_info.2.name == 'Admin' or user_info.2.name == "Properta" %}
+{% if user_info.2.name == 'Manajemen Departemen' or user_info.2.name == 'Dosen' or user_info.2.name == "Ketua Kompartemen" or user_info.2.name == 'Admin' or user_info.2.name == "Properta" %}
       <!-- Earnings (Monthly) Card Example -->
       {% comment %} <div class="col-xl-3 col-md-6 mb-4">
           <div class="card border-left-success shadow h-100 pt-2">
@@ -338,7 +338,7 @@
         </div>
     </div> {% endcomment %}
 {% endif %}
-{% if user_info.2.name == 'Manajemen Departemen' or user_info.2.name == 'Dosen' or user_info.2.name == 'Kompartemen' or user_info.2.name == 'Admin' or user_info.2.name == "Properta" %}
+{% if user_info.2.name == 'Manajemen Departemen' or user_info.2.name == 'Dosen' or user_info.2.name == "Ketua Kompartemen" or user_info.2.name == 'Admin' or user_info.2.name == "Properta" %}
       <!-- Earnings (Monthly) Card Example -->
       <div class="col-xl-3 col-md-6 mb-4">
           <div class="card border-left-success shadow h-100 pt-2">
@@ -367,7 +367,7 @@
           </div>
       </div>
 {% endif %}
-{% if user_info.2.name == 'Manajemen Departemen' or user_info.2.name == 'Dosen' or user_info.2.name == 'Kompartemen' or user_info.2.name == 'Admin' or user_info.2.name == "Properta" %}
+{% if user_info.2.name == 'Manajemen Departemen' or user_info.2.name == 'Dosen' or user_info.2.name == "Ketua Kompartemen" or user_info.2.name == 'Admin' or user_info.2.name == "Properta" %}
       <!-- Earnings (Monthly) Card Example -->
       <div class="col-xl-3 col-md-6 mb-4">
           <div class="card border-left-success shadow h-100 pt-2">
@@ -630,7 +630,7 @@
       </div>
   </div> {% endcomment %}
 
-  {% if  user_info.2.name == 'Manajemen Departemen' or user_info.2.name == 'Kompartemen' or user_info.2.name == 'Dosen' or user_info.2.name == 'Admin' or user_info.2.name == "Properta" %}
+  {% if  user_info.2.name == 'Manajemen Departemen' or user_info.2.name == "Ketua Kompartemen" or user_info.2.name == 'Dosen' or user_info.2.name == 'Admin' or user_info.2.name == "Properta" %}
   <div class="row">
 
       <!-- Area Chart -->
@@ -658,7 +658,7 @@
                           </tr>
                         </thead>
                         <tbody hidden>
-                            {% for item in new_bimbingans_nim_tanggal %}
+                            {% comment %} {% for item in new_bimbingans_nim_tanggal %}
                             <tr>
                       
                             
@@ -668,8 +668,78 @@
                               <td>{{item.TanggalAkhir}}</td>
                               <td id="result{{forloop.counter}}" class="avg">{{item.TanggalUpdate.days}}</td>
                             </tr>
-                            {% endfor %}
+                            {% endfor %} {% endcomment %}
                         
+                            {%for item in bimbingans_nim_tanggal%}
+                            {%for item2 in mahasiswa_topik_tanggal%}
+                            {% if forloop.counter == forloop.parentloop.counter  %}
+                            <tr>
+                              {% if item.NIM_mhs %}
+                              <td>{{item.NIM_mhs}}</td>
+                              {% else %}
+                              <td>{{item.id_usulan_topik.nim.nim}}</td>
+                              {% endif %}
+                              
+                              {% if item.nama %}
+                              <td>{{item.nama}}</td>
+                              {% else %}
+                              <td>{{item.id_usulan_topik.nim.id_user.first_name}}</td>
+                              {% comment %} <td>{{item.nama}}</td> {% endcomment %}
+                              {% endif %}
+                              {% comment %} <td>{{item.NIM_mhs}}</td>
+                              <td>{{item.nama}}</td> {% endcomment %}
+                      
+                              {% comment %} {% if tahap == "Usulan" %}
+                              <td>{{item.id_role_dosen.nim.nim}}</td>
+                              <td>{{item.id_role_dosen.nim.id_user.first_name}}</td>
+                              
+                              {% elif %}
+                              <td>{{item.id_role_dosen.nim.nim}}</td>
+                              <td>{{item.id_role_dosen.nim.id_user.first_name}}</td>
+                      
+                              {% else %}
+                              <td>{{item.id_role_dosen.nim.nim}}</td>
+                              <td>{{item.id_role_dosen.nim.id_user.first_name}}</td>
+                              {% endif %} {% endcomment %}
+                              {% if tahap == "kompartemen" %}
+                              <td>{{item2.tanggal_buat}}</td>
+                              <td>{{item.tanggal_update}}</td>
+                              {% else %}
+                              <td>{{item2.tanggal_buat}}</td>
+                              <td>{{item.TanggalUpdate}}</td>
+                              {% endif %}
+                           
+                       
+                              
+                              <!-- <td></td> -->
+                              <td id="result{{forloop.counter}}" class="avg">
+                               
+                              </td>
+                              <script>
+                      
+                      
+                                {% if tahap == "kompartemen" %}
+                                var date = new Date(Number("{{item2.tanggal_buat|date:'y'}}"),Number("{{ item2.tanggal_buat|date:'m' }}"),Number("{{ item2.tanggal_buat|date:'d' }}"));
+                                var date1 = new Date("{{ item.tanggal_update|date:'y' }}","{{ item.tanggal_update|date:'m' }}","{{ item.tanggal_update|date:'d' }}");
+                                {% else %}
+                                var date = new Date(Number("{{item2.tanggal_buat|date:'y'}}"),Number("{{ item2.tanggal_buat|date:'m' }}"),Number("{{ item2.tanggal_buat|date:'d' }}"));
+                                var date1 = new Date("{{ item.TanggalUpdate|date:'y' }}","{{ item.TanggalUpdate|date:'m' }}","{{ item.TanggalUpdate|date:'d' }}");
+                                {% endif %}
+                                var result2 = document.getElementById("result{{forloop.counter}}");
+                                var day = new Date(date1.getTime() - date.getTime());
+                                // date.setTime(day);
+                                result2.innerHTML += (day/(1000*3600*24));
+                                // day.getUTCDate() - 1
+                                
+                              </script>
+                              
+                      
+                            </tr>
+                           
+                            {%endif%}
+                            
+                            {% endfor %}
+                            {% endfor %}
                          
                     
                         </tbody>
@@ -701,7 +771,7 @@
   </div>
 {% endif %}
   <!-- Content Row -->
-  {% if  user_info.2.name == 'Manajemen Departemen' or user_info.2.name == 'Kompartemen' or user_info.2.name == 'Dosen' or user_info.2.name == 'Admin' or user_info.2.name == "Properta" %}
+  {% if  user_info.2.name == 'Manajemen Departemen' or user_info.2.name == "Ketua Kompartemen" or user_info.2.name == 'Dosen' or user_info.2.name == 'Admin' or user_info.2.name == "Properta" %}
   <div class="row">
 
     <!-- Area Chart -->
@@ -735,13 +805,13 @@
               <h2 class="text-center"style="font-weight: bold; margin-bottom: 10px;">{{total_lulus}}</h2>
               <p style="font-size: 20px; color: #6c757d;">Total Mahasiswa Lulus</p>
             </div>
-            <div class="scorecard text-center" style="padding: 15px; background-color: #ffffff; border: 1px solid #e3e6f0; border-radius: 5px; margin-bottom: 15px;">
-              <h2 style=" font-weight: bold; margin-bottom: 10px;">{{max_mhs_lulus.days}} Hari</h2>
-              <p style="font-size: 20px; color: #6c757d;">Terlama Menyelesaikan Skripsi</p>
+            <div class="scorecard text-center lama" style="padding: 15px; background-color: #ffffff; border: 1px solid #e3e6f0; border-radius: 5px; margin-bottom: 15px;">
+              {% comment %} <h2 style=" font-weight: bold; margin-bottom: 10px;">{{max_mhs_lulus.days}} Hari</h2> {% endcomment %}
+              <p class="lama" style="font-size: 20px; color: #6c757d;">Terlama Menyelesaikan Skripsi</p>
             </div>
-            <div class="scorecard text-center" style="padding: 15px; background-color: #ffffff; border: 1px solid #e3e6f0; border-radius: 5px; margin-bottom: 15px;">
-              <h2 style=" font-weight: bold; margin-bottom: 10px;">{{min_mhs_lulus.days}} Hari</h2>
-              <p style="font-size: 20px; color: #6c757d;">Tercepat Menyelesaikan Skripsi</p>
+            <div class="scorecard text-center cepat" style="padding: 15px; background-color: #ffffff; border: 1px solid #e3e6f0; border-radius: 5px; margin-bottom: 15px;">
+              {% comment %} <h2 style=" font-weight: bold; margin-bottom: 10px;">{{min_mhs_lulus.days}} Hari</h2> {% endcomment %}
+              <p class="cepat" style="font-size: 20px; color: #6c757d;">Tercepat Menyelesaikan Skripsi</p>
             </div>
           </div>
         </div>
@@ -1040,13 +1110,13 @@
     //totalsum
     const reduceArray=((sum,datapoint)=>sum+datapoint);
     const totalSum=dataPoints.reduce(reduceArray);
-    console.log("test",totalSum);
+    //console.log("test",totalSum);
   
   
     //cumulative
     const cumulativeSum = (sum=>datapoint=>sum+=datapoint)(0);
     const cumulativeDatapoints=dataPoints.map(cumulativeSum);
-    console.log("test1",cumulativeDatapoints);
+    //console.log("test1",cumulativeDatapoints);
     //const percetagedataPoints=[18, 12, 6, 9, 12, 3, 9]
   
     //map array +cumulative sum
@@ -1054,7 +1124,7 @@
       const values=parseFloat(value/totalSum*100).toFixed(1);
       return values;
     });
-    console.log("test2",percentageDatapoints);
+    //console.log("test2",percentageDatapoints);
 
   const data = {
     labels: factoryProcess,
@@ -1213,6 +1283,35 @@
 </script>     
 
 <script type="text/javascript" charset="utf-8">
+    var table = $("#table-paginate-waktu");
+    var max = Number.NEGATIVE_INFINITY;
+
+    table.find("td.avg").each(function() {
+      var cellValue = parseFloat($(this).text());
+      if (!isNaN(cellValue) && cellValue > max) {
+        max = cellValue;
+      }
+    });
+    
+    var min = Number.POSITIVE_INFINITY;
+
+    table.find("td.avg").each(function() {
+    var cellValue = parseFloat($(this).text());
+    if (!isNaN(cellValue) && cellValue < min) {
+        min = cellValue;
+    }
+    });
+
+    //console.log("Minimum value:", max);
+    //console.log("Minimum value:", min);
+
+    $(document).ready(function() {
+        $(`<h2 style=" font-weight: bold; margin-bottom: 10px;">${max} Hari</h2>`).insertBefore('p.lama');
+        $(`<h2 style=" font-weight: bold; margin-bottom: 10px;">${min} Hari</h2>`).insertBefore('p.cepat');
+        
+    });
+</script>
+<script type="text/javascript" charset="utf-8">
 
 
     $(document).ready(function () {
@@ -1312,7 +1411,7 @@
       
               avg = numerator / denominator;
               avg = avg.toFixed(2)
-              console.log(avg)
+              //console.log(avg)
               $(api.column("2").footer()).html(avg+" Hari \n\n");
               $(api.column("3").footer()).html((avg/30).toFixed(2)+" Bulan\n\n" );
               $(api.column("4").footer()).html((avg/365).toFixed(2)+" Tahun");

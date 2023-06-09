@@ -268,7 +268,7 @@
                         <span class="me-2"><i class="bi bi-speedometer2"></i></span>
                         <span>Mahasiswa</span>
                     </a>
-                    <a href="/changeuser/Kompartemen" name="myrole" value="Kompartemen"class="nav-link px-3 active">
+                    <a href="/changeuser/Ketua_Kompartemen" name="myrole" value="Ketua Kompartemen"class="nav-link px-3 active">
                         <span class="me-2"><i class="bi bi-speedometer2"></i></span>
                         <span>Kompartemen</span>
                     </a>
@@ -1011,8 +1011,8 @@
 
                 {%endif%}
                 <!-- Divider -->
-                {% comment %} {%if user_info.2.name == 'Kompartemen' or user_info.2.name == 'Admin'%} {% endcomment %}
-                {%if user_info.2.name == 'Kompartemen' %}
+                {% comment %} {%if user_info.2.name == "Ketua Kompartemen" or user_info.2.name == 'Admin'%} {% endcomment %}
+                {%if user_info.2.name == "Ketua Kompartemen" %}
                 <!-- Kompartemen -->
                 <li class="my-4">
                     <hr class="dropdown-divider bg-light" />
@@ -1090,8 +1090,8 @@
                     
                 </li> -->
                 {%endif%}
-                {% comment %} {%if user_info.2.name == 'Dosen' or user_info.2.name == 'Kompartemen' or user_info.2.name == 'Admin' or user_info.2.name == 'Manajemen Departemen' %} {% endcomment %}
-                {%if user_info.2.name == 'Dosen' or user_info.2.name == 'Kompartemen' or user_info.2.name == 'Manajemen Departemen' %}
+                {% comment %} {%if user_info.2.name == 'Dosen' or user_info.2.name == "Ketua Kompartemen" or user_info.2.name == 'Admin' or user_info.2.name == 'Manajemen Departemen' %} {% endcomment %}
+                {%if user_info.2.name == 'Dosen' or user_info.2.name == "Ketua Kompartemen" or user_info.2.name == 'Manajemen Departemen' %}
                 <!-- Dosen -->
                 <li class="my-4">
                     <hr class="dropdown-divider bg-light" />

@@ -46,7 +46,7 @@
       </div>
       {%endif%}
       <br>
-      {%if user_info.2.name == "Kompartemen" %}
+      {%if user_info.2.name == "Ketua Kompartemen" %}
       <div class="container-fluid text-start px-2">
       <a class="btn btn-primary  text-white my-1" href="/usulantopik_get_filter/kompartemen">Tampilkan Usulan Topik Tanpa Filter - Kompartemen</a>
       <a class="btn btn-primary  text-white my-1" href="/usulantopik_get_filter_ACC/kompartemen">Filter Usulan Topik Filter Belum ACC - Kompartemen </a>
@@ -55,7 +55,7 @@
       {%endif%}
       <br>
 
-      {%if user_info.2.name == "Dosen" or user_info.2.name == "Manajemen Departemen" or user_info.2.name == "Kompartemen"%}
+      {%if user_info.2.name == "Dosen" or user_info.2.name == "Manajemen Departemen" or user_info.2.name == "Ketua Kompartemen"%}
       <div class="container-fluid text-start px-2">
       <a class="btn btn-primary  text-white my-1" href="/usulantopik_get_filter/dosen">Tampilkan Usulan Topik Tanpa Filter - Pembimbing</a>
       <a class="btn btn-primary  text-white my-1" href="/usulantopik_get_filter_ACC/dosen">Tabel Topik Sudah ACC - Pembimbing</a>
@@ -116,7 +116,7 @@
             <a class="btn btn-success btn-md w-100 px-1 my-1" type="button" href="{% url 'usulantopik_read' item.id_usulan_topik %}">READ</a>
             {% comment %} <a class="btn btn-warning text-white m-1" type="button"
               href="{% url 'evaluasitopik_update' item.id_usulan_topik %}">Buat Evaluasi Topik</a> {% endcomment %}
-            {%if user_info.2.name == "Mahasiswa" or user_info.2.name == "Admin" or user_info.2.name == "Dosen" or user_info.2.name == "Kompartemen" or user_info.2.name == "Manajemen Departemen"%}
+            {%if user_info.2.name == "Mahasiswa" or user_info.2.name == "Admin" or user_info.2.name == "Dosen" or user_info.2.name == "Ketua Kompartemen" or user_info.2.name == "Manajemen Departemen"%}
               {%if item.status_dosen_Kompartemen != "Belum Di Assign" %}
             <a class="btn btn-warning btn-md w-100 px-1 my-1" type="button"
               href="{% url 'evaluasitopik_get_id_usulan' item.id_usulan_topik %}">LIST EVALUASI TOPIK</a>
@@ -129,7 +129,7 @@
               data-bs-target="#staticBackdrop{{item.id_usulan_topik}}">DELETE</a>
               {%endif%}
               {%endif%}
-              {%if user_info.2.name == "Kompartemen" or user_info.2.name == "Admin"  %}
+              {%if user_info.2.name == "Ketua Kompartemen" or user_info.2.name == "Admin"  %}
               {%if item.status != "ACC" or user_info.2.name == "Admin"  %}
               {%if  item.status_dosen_Kompartemen != "Belum Di Assign" %}
 
