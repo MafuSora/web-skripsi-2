@@ -23,8 +23,8 @@ from django.conf.urls.static import static
 from django.contrib.auth.views import PasswordChangeDoneView,PasswordChangeView
 
 urlpatterns = [
-    # path('skripsi_app/', include('skripsi_app.urls')),
-    # path('', include('skripsi_app.urls')),
+    path('skripsi_app/', include('skripsi_app.urls')),
+    path('', include('skripsi_app.urls')),
     path('admin/', admin.site.urls),
     path('', include('django.contrib.auth.urls')),
     path('reset_password/',
