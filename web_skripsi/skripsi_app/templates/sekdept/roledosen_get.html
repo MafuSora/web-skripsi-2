@@ -21,7 +21,7 @@
     href="/roledosenget">Tanpa Filter
     </a>
     {%if user_info.2.name == "Manajemen Departemen" or user_info.2.name == "Admin" or user_info.2.name == "Properta"%}
-    
+      <h4>Filter Manajemen Departemen : </h4>
       <a class="btn btn-success text-white mb-2"
       href="/roledosenget/pembimbing/active">Filter Status Active Semua Dosen
       </a>
@@ -30,6 +30,7 @@
       </a>
     {% endif %}
     <br/>
+    <h4>Filter Pembimbing : </h4>
     <a class="btn btn-success text-white mb-2"
     href="/roledosenget/pembimbing/active/filter">Filter Status Active 
     </a>

@@ -4,11 +4,27 @@
 {% load static %}
 {% load crispy_forms_tags %}
 <style>
+   
     /* Gambar pada perangkat seluler */
     @media (max-width: 576px) {
     #logo-ti {
       width: 250px;
       height: auto;
+    }
+    .scroll {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+  }
+  @media (max-height: 576px) {
+    #logo-ti {
+      width: 250px;
+      height: auto;
+    }
+    .scroll {
+        max-height: 200px;
+        overflow-y: auto;
+        overflow-x: auto;
     }
   }
   
@@ -18,6 +34,11 @@
       max-width: 320px;
       height: 80px;
     }
+    .scroll {
+        max-height: 450px;
+        overflow-y: auto;
+    }
+
   }
 </style>
 <link href="{% static 'css/navbar.css' %} " rel="stylesheet" />
@@ -159,7 +180,7 @@
                         <i class="bi bi-person-fill"></i>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end">
-                        <div class="container-fluid">
+                        <div class="container-fluid scroll">
                             <div class="card text-center mx-auto" style="width: 25rem; max-width: 40rem;">
                                 <div class="card-header text-center" style="background-image:url('https://w0.peakpx.com/wallpaper/465/996/HD-wallpaper-anime-street-japan-japanese-anime-orginal-scenery-street-night.jpg') ; width: 25rem; max-width: 40rem;height: 100%;">
                                     {% if user_info.1 != "" %}
@@ -904,7 +925,7 @@
                 <li>
                     <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#layoutsekdept1">
                         <span class="me-2"><i class="bi bi-layout-split"></i></span>
-                        <span>Dosen Kompartemen</span>
+                        <span>Dosen Ketua Kompartemen</span>
                         <span class="ms-auto">
                             <span class="right-icon">
                                 <i class="bi bi-chevron-down"></i>
@@ -916,13 +937,13 @@
                             <li>
                                 <a href="/kompartemendosencreate" class="nav-link px-3">
                                     <span class="me-2"><i class="bi bi-speedometer2"></i></span>
-                                    <span>Tambah Dosen Kompartemen</span>
+                                    <span>Tambah Dosen Ketua Kompartemen</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="/kompartemendosenget" class="nav-link px-3">
                                     <span class="me-2"><i class="bi bi-speedometer2"></i></span>
-                                    <span>Tabel Dosen Kompartemen</span>
+                                    <span>Tabel Dosen Ketua Kompartemen</span>
                                 </a>
                             </li>
 
@@ -960,7 +981,7 @@
                 <li>
                     <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#layoutssekdeptassign">
                         <span class="me-2"><i class="bi bi-layout-split"></i></span>
-                        <span>Assign Topik Mahasiswa dan Dosen Kompartemen</span>
+                        <span>Assign Topik Mahasiswa dan Dosen Ketua Kompartemen</span>
                         <span class="ms-auto">
                             <span class="right-icon">
                                 <i class="bi bi-chevron-down"></i>
