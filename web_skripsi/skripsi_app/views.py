@@ -202,8 +202,8 @@ def register(request):
 def user_create(request):
     user_info = user_information(request)
     if request.method == 'POST':
-        print(request.POST)
-        print(request.FILES)
+        # print(request.POST)
+        # print(request.FILES)
         form2 = NipForm(request.POST,request.FILES)
         form = CreateUserForm(request.POST)
         # <QueryDict: {'csrfmiddlewaretoken': ['2BiEetrVP6cYf4ud73qM0OhqoxhJsrXk3SUQvvr5G5OEi7iOjN7DLrOOYza6QbCu'], 'username': ['aaa'], 'email': ['hafizhmaulana48@gmail.com'], 'first_name': ['aaa'], 'password1': ['ayaya123'], 'password2': ['ayaya123']}>
@@ -2089,7 +2089,7 @@ def dashboard(request):
             if usulantopik.objects.filter(nim__nim=user_info[0]).exists() ==True:
                 last_topik= "Sudah Membuat Topik"
             
-        print(last_topik)
+        # print(last_topik)
         # if last_topik==None:
         #     last_topik.status_topik="Belum Buat Topik"
         
@@ -2378,7 +2378,7 @@ def dosen_update(request, id):
         
         
     if request.method == 'POST' and user_info[2].name == "Admin":
-        print(request.FILES)
+        # print(request.FILES)
         form = UpdateAdminDosenForm(
             request.POST, request.FILES, instance=dosen_data)
         dosen.objects.filter(pk=dosen_data.nip).update(nip=request.POST['nip'])
@@ -3504,8 +3504,10 @@ def usulantopik_get_filter_revisi_kompartemen(request):
 
 
     for item in usulantopiks: 
-        print(item.status, item.status == "ACC")
-        if item.status == "ACC" or item.status == "Revisi" :
+        # print(item.status, item.status == "ACC")
+        if item.status == "ACC" :
+            usulantopiks=usulantopiks.exclude(id_usulan_topik=item.id_usulan_topik)
+        elif item.status == "Revisi" :
             usulantopiks=usulantopiks.exclude(id_usulan_topik=item.id_usulan_topik)
             
     jumlah = 0
@@ -3586,7 +3588,7 @@ def usulantopik_get_filter_ACC_kompartemen(request):
 
     for item in usulantopiks: 
         # print(item.status, item.status == "ACC")
-        if item.status == "ACC" :
+        if item.status != "ACC" :
             usulantopiks=usulantopiks.exclude(id_usulan_topik=item.id_usulan_topik)
             
     jumlah = 0
@@ -4477,7 +4479,17 @@ def evaluasitopik_get_id_usulan(request,id):
     user_info = user_information(request)
     # check:dosen kompartemen
     if user_info[2].name == "Dosen" or user_info[2].name == "Ketua Kompartemen" :
-        try:
+        # try:
+            if user_info[2].name == "Dosen" :
+                roledosen_cek=list(roledosen.objects.filter(nip=user_info[0]).values_list("nim",flat=True))
+                # print(roledosen_cek)
+                if evaluasitopik.objects.filter(id_usulan_topik__nim__in=roledosen_cek).filter(id_usulan_topik=id).exists() == True:
+                    try:
+                        evaluasitopiks = evaluasitopik.objects.filter(id_usulan_topik=id)
+                    except:
+                        evaluasitopiks = []
+                else:
+                    raise PermissionDenied()
             # list_dosen_kompartemen=[]
             # temp_dosen_kompartemen=list(kompartemendosen.objects.filter(nip=dosen.objects.filter(pk=user_info[0])[0].nip).values_list('id_dosen_kompartemen',flat=True))
             # list_dosen_kompartemen=list(kompartemendosen.objects.filter(nip=dosen.objects.get(nip=user_info[0]).nip).values_list('id_dosen_kompartemen',flat=True))
@@ -4486,13 +4498,13 @@ def evaluasitopik_get_id_usulan(request,id):
             #             list_dosen_kompartemen.append(temp_dosen_kompartemen[i][0])
             # print(list_dosen_kompartemen)
             
-            evaluasitopiks = evaluasitopik.objects.filter(id_usulan_topik=id)
+            
             # .filter(
             #     id_dosen_kompartemen__in=list_dosen_kompartemen)
             
             # print(evaluasitopiks)
-        except:
-            evaluasitopiks = []
+        # except:
+        #     evaluasitopiks = []
     elif user_info[2].name == "Mahasiswa":
         try:
             list_usulan_topik=[]
@@ -6883,13 +6895,13 @@ def nilai_sempro_get_seminar(request,id_jadwal_seminar):
     # data_penilaians.append(detailpenilaian.objects.filter(nama_tahap="Seminar Proposal").filter(id_role_dosen__nim=nim).filter(id_role_dosen__role='Pembimbing 1').first())
     # data_penilaians.append(detailpenilaian.objects.filter(nama_tahap="Seminar Proposal").filter(id_role_dosen__nim=nim).filter(id_role_dosen__role='Pembimbing 1').first())
     # data_penilaians.append(detailpenilaian.objects.filter(nama_tahap="Seminar Proposal").filter(id_role_dosen__nim=nim).filter(id_role_dosen__role='Pembimbing 1').first())
-    print(data_penilaians)
+    # print(data_penilaians)
     data_penilaians.append(detailpenilaian.objects.filter(id_jadwal_seminar=jadwal_seminar_data.id_jadwal_seminar).filter(id_role_dosen__nim=jadwal_seminar_data.mahasiswa.nim).filter(nama_tahap="Seminar Proposal").filter(id_role_dosen__role='Pembimbing 2').first())
-    print(data_penilaians)
+    # print(data_penilaians)
     data_penilaians.append(detailpenilaian.objects.filter(id_jadwal_seminar=jadwal_seminar_data.id_jadwal_seminar).filter(id_role_dosen__nim=jadwal_seminar_data.mahasiswa.nim).filter(nama_tahap="Seminar Proposal").filter(id_role_dosen__role='Penguji Seminar Proposal 1').first())
-    print(data_penilaians)
+    # print(data_penilaians)
     data_penilaians.append(detailpenilaian.objects.filter(id_jadwal_seminar=jadwal_seminar_data.id_jadwal_seminar).filter(id_role_dosen__nim=jadwal_seminar_data.mahasiswa.nim).filter(nama_tahap="Seminar Proposal").filter(id_role_dosen__role='Penguji Seminar Proposal 2').first())
-    print(data_penilaians)
+    # print(data_penilaians)
    
     res = []
     for val in data_penilaians:
@@ -7587,6 +7599,7 @@ def penilaian_sempro_dosen_pembimbing_1(request, id_jadwal_seminar):
     # print(list_cpmk_sempro)
     bimbingan_filter=bimbingan.objects.filter(id_proposal__nama_tahap="Proposal Awal").filter(id_proposal__nim=mahasiswa_data.nim).filter(status_bimbingan="ACC").order_by("-tanggal_update").first()
     # .filter(status_bimbingan="ACC")
+    # print(bimbingan_filter)
     try : 
         proposal_data=proposal.objects.get(pk=bimbingan_filter.id_proposal.id_proposal)
     except:
@@ -10041,7 +10054,7 @@ def proposal_get_filter_sempro_jadwal(request):
     tabel="Seminar Proposal"
     
     list_jadwal_sempro=list(jadwal_seminar.objects.filter(tahap_seminar="Seminar Proposal").values_list("mahasiswa",flat=True))
-    print(list_jadwal_sempro)
+    # print(list_jadwal_sempro)
     list_jadwal_sempro = list(filter(lambda x: x is not None and x != '', list_jadwal_sempro))
     role_dosen_filter=roledosen.objects.filter(role="Penguji Seminar Proposal 1")|roledosen.objects.filter(role="Penguji Seminar Proposal 2")
     
@@ -13009,7 +13022,7 @@ def user_information(request):
     if str(role) == "Mahasiswa":
         notiifikasi_data= notifikasi.objects.filter(nim=Nomor)
         notiifikasi_data=notiifikasi_data.exclude(nim=None)
-        print(notiifikasi_data)
+        # print(notiifikasi_data)
     else:
         notiifikasi_data= notifikasi.objects.filter(nip=Nomor)
         notiifikasi_data=notiifikasi_data.exclude(nip=None)
@@ -13273,8 +13286,8 @@ def jadwal_update(request,id):
     user_info = user_information(request)
     jadwal_data=jadwal_seminar.objects.get(pk=id)
     role_dosen_data=roledosen.objects.all()
-    print(jadwal_data.dosen_penguji_1)
-    print(jadwal_data.dosen_penguji_2)
+    # print(jadwal_data.dosen_penguji_1)
+    # print(jadwal_data.dosen_penguji_2)
     # print(jadwal_data.waktu_seminar)
     # print(jadwal_data.tanggal_seminar)
     if request.method == "POST":
@@ -18547,7 +18560,7 @@ def penilaian_sempro_jadwal_seminar_filter(request,id_jadwal_seminar):
     user_info = user_information(request)
     roledosen_cek=roledosen.objects.filter(nip=user_info[0]).filter(role="Penguji Seminar Proposal 1")|roledosen.objects.filter(nip=user_info[0]).filter(role="Penguji Seminar Proposal 2")|roledosen.objects.filter(nip=user_info[0]).filter(role="Pembimbing 1")|roledosen.objects.filter(nip=user_info[0]).filter(role="Pembimbing 2")
     list_roledosen=list(roledosen_cek.values_list("nip__nip",flat=True).distinct())
-    print(list_roledosen)
+    # print(list_roledosen)
     penilaians=penilaian.objects.filter(id_detail_penilaian__id_jadwal_seminar__id_jadwal_seminar=id_jadwal_seminar).exclude(id_detail_penilaian__nama_tahap="Seminar Hasil").exclude(id_detail_penilaian__nama_tahap="Bimbingan")
     penilaians=penilaians.filter(id_detail_penilaian__id_role_dosen__nip__nip__in=list_roledosen)
     return render(request, 'penilaian/penilaian_full.html', {"penilaians": penilaians, "user_info": user_info})
