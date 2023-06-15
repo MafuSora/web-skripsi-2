@@ -82,6 +82,7 @@
         <th>Permohonan Dosen 1</th>
         <th>Permohonan Dosen 2</th>
         <th>Judul</th>
+        <th>Status Pengajuan</th>
         <th>File</th>
         <!-- <th>preview</th> -->
         <th>Keterangan </th>
@@ -103,6 +104,7 @@
         <td>{{item.permintaan_dosen_1.id_user.first_name}}</td>
         <td>{{item.permintaan_dosen_2|cut:"1"|cut:"2"|cut:"3"|cut:"4"|cut:"5"|cut:"6"|cut:"7"|cut:"8"|cut:"9"|cut:"0"|cut:"-"}}</td>
         <td>{{item.judul_topik}}</td>
+        <td>{{item.status_pengajuan}}</td>
         {% comment %} <td>{{item.file_topik.url}}</td> {% endcomment %}
         <td id="file-skripsi"><a href="{{item.file_topik.url}}">File</a></td>
         <!-- <td><embed src="{{item.File_Topik.url}}" width="500" height="375" type="application/pdf"></td> -->
@@ -197,6 +199,7 @@
         <th>Permohonan Dosen 1</th>
         <th>Permohonan Dosen 2</th>
         <th>Judul</th>
+        <th>Status pengajuan</th>
         <th>File</th>
         <!-- <th>preview</th> -->
         <th>Keterangan Proposal</th>

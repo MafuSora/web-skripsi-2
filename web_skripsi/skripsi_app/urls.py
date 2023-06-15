@@ -370,6 +370,9 @@ urlpatterns = [
      path('penilaian_get_semhas_filter/<str:nim>',
          views.penilaian_semhas_nim_filter, name='penilaian_semhas_nim_filter'),
      
+     path('jadwal_seminar_utama/',
+         views.jadwal_seminar_utama, name='jadwal_seminar_utama'),
+     
      
      path('penilaian_get_sempro/seminar/<int:id_jadwal_seminar>',
          views.penilaian_sempro_jadwal_seminar, name='penilaian_sempro_jadwal_seminar'),

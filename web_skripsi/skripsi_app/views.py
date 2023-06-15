@@ -79,6 +79,13 @@ def update_tanggal_usulantopik(request):
         
     return render(request, 'registration/tanggal_update.html', {"form": form, "tahap": tahap, "user_info": user_info})
 
+
+def jadwal_seminar_utama(request):
+    # jadwal_data=jadwal_seminar.objects.all()                                                                                
+    jadwal_data=jadwal_seminar.objects.order_by('-tanggal_seminar')
+        
+    return render(request, 'jadwal_seminar.html', {"jadwal_data": jadwal_data})
+
 # Update waktu buat dan update eval topik
 @login_required(login_url="/login")
 # @permission_required("main.add_user", raise_exception=True)
