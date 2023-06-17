@@ -80,7 +80,7 @@
             {% elif item.status_topik == "Menunggu Dosen Kompartemen" %}
             
             {% else %}
-            {% if item.id_dosen_kompartemen.nip.nip ==user_info.0 %}
+            {% if item.id_dosen_kompartemen.nip.nip == user_info.0 %}
             <a class="btn w-100 text-black px-1 my-1" style='background-color:#FFB92E;' type="button"
             href="{% url 'evaluasitopik_update' item.id_evaluasi_topik %}">UPDATE</a>
           <br>
