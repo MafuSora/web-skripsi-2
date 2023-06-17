@@ -12851,7 +12851,7 @@ def proposal_get_semhas_sudah_dinilai(request):
 # Proposal : Read
 # Membaca data proposal berbentuk form berdasarkan id proposal
 @login_required(login_url="/login")
-@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Properta'])   
+@role_required(allowed_roles=['Admin','Manajemen Departemen',"Ketua Kompartemen",'Dosen','Mahasiswa','Properta'])   
 def proposal_read(request, id):
     user_info = user_information(request)
     proposal_data = proposal.objects.filter(pk=id)
