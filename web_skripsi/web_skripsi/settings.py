@@ -61,7 +61,7 @@ INSTALLED_APPS = [
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
-CSRF_TRUSTED_ORIGINS = ['https://skripsi-tiub.xyz','http://localhost','http://localhost:80']
+CSRF_TRUSTED_ORIGINS = ['https://skripsi-tiub.xyz','http://localhost','http://localhost:80','http://127.0.0.1:8000']
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

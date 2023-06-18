@@ -10,7 +10,7 @@
     {% comment %} <div class="d-flex justify-content-center"> {% endcomment %}
     <div>
         {% comment %} <h1 class="h2 text-center">Create User Group Relation</h1> {% endcomment %}
-        <h2>Tabel Daftar User Group Relation</h2>
+        <h2>Tabel Daftar User & Hak Akses</h2>
     </div>
     <br>
     <!-- <a class="btn btn-success my-2" href="/skripsi_app/createusergroup">Create User Group Relation</a> -->
@@ -60,6 +60,7 @@
 
                 <td>{{user.id}}</td>
                 <td>{{user.username}}</td>
+                <td>{{user.first_name}}</td>
 
                 <td>{{group.id}}</td>
                 <td>{{group.name}}</td>
