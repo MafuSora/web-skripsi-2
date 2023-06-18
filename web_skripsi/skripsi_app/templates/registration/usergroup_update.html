@@ -1,5 +1,5 @@
 {%extends 'navbar_superuser.html' %}
-{% block title %}Update Data User{% endblock %}
+{% block title %}Perubhan Hak Akses{% endblock %}
 
 {% load static %}
 {% load crispy_forms_tags%}
@@ -9,7 +9,7 @@
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
   <form method="post">
     {% comment %} <div class="d-flex justify-content-center"> {% endcomment %}
-      <h1 class="h2 text-center">Create User Group Relation</h1>
+      <h1 class="h2 text-center">Perubhan Hak Akses</h1>
     {% comment %} </div> {% endcomment %}
 
     {%csrf_token%}

@@ -1,5 +1,5 @@
 {%extends 'navbar_superuser.html' %}
-{% block title %}Tabel Data User{% endblock %}
+{% block title %}Tabel Data Hak Akses{% endblock %}
 
 {% load static %}
 {% load crispy_forms_tags%}
@@ -22,9 +22,10 @@
 
                 <th>User ID</th>
                 <th>Username</th>
+                <th>Nama</th>
 
-                <th>Group ID</th>
-                <th>Group Name</th>
+                <th>Role ID</th>
+                <th>Role Name</th>
 
                 <th>Operation</th>
             </tr>
@@ -36,6 +37,7 @@
 
                 <td>{{user.id}}</td>
                 <td>{{user.username}}</td>
+                <td>{{user.first_name}}</td>
 
                 <td></td>
                 <td></td>
@@ -80,9 +82,10 @@
 
                 <th>User ID</th>
                 <th>Username</th>
+                <th>Nama</th>
 
-                <th>Group ID</th>
-                <th>Group Name</th>
+                <th>Role ID</th>
+                <th>Nama Peran</th>
 
                 <th>Operation</th>
             </tr>
