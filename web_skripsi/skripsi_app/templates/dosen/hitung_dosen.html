@@ -1,0 +1,61 @@
+{%extends 'navbar_superuser.html' %}
+{% block title %}Tabel Evaluasi Dosenweb_skripsi/skripsi_app/templates/dosen/hitung_dosen.html{% endblock %}
+
+{% load static %}
+{% load crispy_forms_tags%}
+{% load mathfilters %}
+{% block content %}
+
+<div class="container">
+  <h2>Tabel Daftar Evaluasi Dosen</h2>
+  <br>
+  
+
+  {% comment %} evaluasitopikgetrevise/ {% endcomment %}
+  <table id="table-paginate" class="table table-striped table-bordered table-paginate" cellspacing="0" width="100%">
+    <thead>
+      <tr>
+        <th>NIP</th>
+        <th>Nama Dosen</th>
+        <th>Total Dibimbing</th>
+        <th>Total Lulus</th>
+        <th>Total Belum dan TIdak Selesai</th>
+        <th>Tingkat Keberhasilan</th>
+        
+      </tr>
+    </thead>
+    <tbody>
+      {%for item in hasil_dosen%}
+      <tr>
+
+        <td>{{item.0}}</td>
+        <td>{{item.1}}</td>
+        <td>{{item.2}}</td>
+        <td>{{item.3}}</td>
+        <td>{{item.2|sub:item.3}}</td>
+        {% with jumlah=item.3|div:item.2 %}
+        <td>{{jumlah|mul:100}}%</td>
+        {% endwith %}
+        {% comment %} <td>{{a}}</td> {% endcomment %}
+        {% comment %} <td>{{b}}</td> {% endcomment %}
+        {% comment %} <td>{{c}}</td> {% endcomment %}
+        
+       
+
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr>
+        <th>NIP</th>
+        <th>Nama Dosen</th>
+        <th>Total Pembimbing</th>
+        <th>Total Lulus</th>
+        <th>Total Belum dan TIdak Selesai</th>
+        <th>Tingkat Keberhasilan</th>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+{% endblock %}

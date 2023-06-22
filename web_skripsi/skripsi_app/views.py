@@ -33,12 +33,13 @@ from django.db.models import CharField
 # ,modelformset_factory
 
 # Function Tambahan SQL  untuk Aggregate Function 
-from django.db.models import F,Count,Max,Sum,Min
+from django.db.models import F,Count,Max,Sum,Min,Q
 # ,Prefetch
 from django.db.models.functions import Substr,Cast 
 
 # Function untuk menampilkan waktu
 import time,datetime
+from datetime import timedelta
 
 # Function untuk mengelola email
 from django.core.mail import send_mail
@@ -18649,3 +18650,277 @@ def penilaian_bimbingan_nim(request,nim):
 
 # def vote(request, id_mahasiswa):
 #     return HttpResponse("You're voting on mahasiswa %s." % id_mahasiswa)
+
+
+from django.db import connection
+# Information
+def dosen_information (request):
+
+    lulus_list = bimbingan.objects.filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)", status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim", flat=True)
+    lulus_list=[tuple(lulus_list)]
+    coba_raw="""
+    SELECT a.nip_id,c.first_name, count(*),d.jumlah_lulus
+    FROM skripsi_app_roledosen  as a 
+    JOIN skripsi_app_dosen as b 
+    ON a.nip_id=b.nip
+    JOIN auth_user as c 
+    ON b.id_user_id=c.id
+    JOIN 
+    (SELECT nip_id,first_name, count(*) as jumlah_lulus
+    FROM skripsi_app_roledosen  as roledosen_2
+    JOIN skripsi_app_dosen as dosen_2 
+    ON roledosen_2.nip_id=dosen_2.nip
+    JOIN auth_user as user_2
+    ON dosen_2.id_user_id=user_2.id
+    WHERE (role='Pembimbing 1' or role='Pembimbing 2') and nim_id IN %s
+    GROUP BY roledosen_2.id_role_dosen,user_2.first_name) 
+    as d
+    ON d.nip_id=b.nip
+    WHERE role='Pembimbing 1' or role='Pembimbing 2'
+    GROUP BY a.id_role_dosen,c.first_name,d.jumlah_lulus
+    """
+    
+    with connection.cursor() as cursor:
+        cursor.execute(coba_raw,lulus_list)
+        rows = cursor.fetchall()
+        
+    hasil_dosen=rows
+    return render(request, 'dosen/hitung_dosen.html', {"hasil_dosen": hasil_dosen})
+
+
+def mhs_information (request):
+
+    lulus_list = bimbingan.objects.filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)", status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim", flat=True)
+    lulus_list=[tuple(lulus_list)]
+    coba_raw="""
+    with rangkuman_topik_dosen as (
+        SELECT a.nip_id,c.first_name,d.kompartemen, count(*) as total_per_kompartemen
+    FROM skripsi_app_roledosen  as a 
+    JOIN skripsi_app_dosen as b 
+    ON a.nip_id=b.nip
+    JOIN auth_user as c 
+    ON b.id_user_id=c.id
+    JOIN (
+    SELECT b.nim_id as nim,d.nama_kompartemen as kompartemen
+    FROM skripsi_app_evaluasitopik  as a 
+    JOIN skripsi_app_usulantopik as b
+    ON a.id_usulan_topik_id=b.id_usulan_topik
+    JOIN skripsi_app_kompartemendosen as c
+    ON a.id_dosen_kompartemen_id=c.id_dosen_kompartemen
+    JOIN skripsi_app_kompartemen as d
+    ON c.id_kompartemen_id=d.id_kompartemen
+    WHERE status_topik='ACC'
+    GROUP BY b.nim_id,d.nama_kompartemen
+    ) as d ON d.nim=a.nim_id
+        WHERE role='Pembimbing 1' or role='Pembimbing 2'
+        GROUP BY a.id_role_dosen,c.first_name,d.kompartemen
+        
+    )
+    select rangkuman_topik_dosen.nip_id,first_name, kompartemen,total_per_kompartemen,total_komp_dosen from rangkuman_topik_dosen
+    JOIN (select nip_id,count(*) as total_komp_dosen from rangkuman_topik_dosen  GROUP BY nip_id) as total_dosen 
+    ON total_dosen.nip_id = rangkuman_topik_dosen.nip_id
+
+    """
+    # coba_raw="""
+    # SELECT b.nim_id,d.nama_kompartemen
+    # FROM skripsi_app_evaluasitopik  as a 
+    # JOIN skripsi_app_usulantopik as b
+    # ON a.id_usulan_topik_id=b.id_usulan_topik
+    # JOIN skripsi_app_kompartemendosen as c
+    # ON a.id_dosen_kompartemen_id=c.id_dosen_kompartemen
+    # JOIN skripsi_app_kompartemen as d
+    # ON c.id_kompartemen_id=d.id_kompartemen
+    # GROUP BY b.nim_id,d.nama_kompartemen
+    
+   
+  
+    # """
+    
+    with connection.cursor() as cursor:
+        cursor.execute(coba_raw,lulus_list)
+        rows = cursor.fetchall()
+        
+    hasil_dosen=rows
+    print(rows)
+    return render(request, 'dosen/hitung_mhs.html', {"hasil_dosen": hasil_dosen})
+
+
+def mhs_information_five_year (request):
+
+    lulus_list = bimbingan.objects.filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)", status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim", flat=True)
+    lulus_list=[tuple(lulus_list)]
+    five_years_ago = datetime.datetime.now() - timedelta(days=365*5)
+
+    coba_raw = """
+    with rangkuman_topik_dosen as (
+        SELECT a.nip_id,c.first_name,d.kompartemen, count(*) as total_per_kompartemen
+    FROM skripsi_app_roledosen  as a 
+    JOIN skripsi_app_dosen as b 
+    ON a.nip_id=b.nip
+    JOIN auth_user as c 
+    ON b.id_user_id=c.id
+    JOIN (
+    SELECT b.nim_id as nim,d.nama_kompartemen as kompartemen
+    FROM skripsi_app_evaluasitopik  as a 
+    JOIN skripsi_app_usulantopik as b
+    ON a.id_usulan_topik_id=b.id_usulan_topik
+    JOIN skripsi_app_kompartemendosen as c
+    ON a.id_dosen_kompartemen_id=c.id_dosen_kompartemen
+    JOIN skripsi_app_kompartemen as d
+    ON c.id_kompartemen_id=d.id_kompartemen
+    WHERE status_topik='ACC' and a.tanggal_buat>=%s
+    GROUP BY b.nim_id,d.nama_kompartemen
+    ) as d ON d.nim=a.nim_id
+        WHERE role='Pembimbing 1' or role='Pembimbing 2'
+        GROUP BY a.id_role_dosen,c.first_name,d.kompartemen
+        
+    )
+    select rangkuman_topik_dosen.nip_id,first_name, kompartemen,total_per_kompartemen,total_komp_dosen from rangkuman_topik_dosen
+    JOIN (select nip_id,count(*) as total_komp_dosen from rangkuman_topik_dosen  GROUP BY nip_id) as total_dosen 
+    ON total_dosen.nip_id = rangkuman_topik_dosen.nip_id
+
+    """
+
+    with connection.cursor() as cursor:
+        cursor.execute(coba_raw, [five_years_ago.date()])
+        rows = cursor.fetchall()
+
+    hasil_dosen = rows
+    print(rows)
+    return render(request, 'dosen/hitung_mhs.html', {"hasil_dosen": hasil_dosen})
+
+def mhs_information_one_year (request):
+
+    lulus_list = bimbingan.objects.filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)", status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim", flat=True)
+    lulus_list=[tuple(lulus_list)]
+    one_years_ago = datetime.datetime.now() - timedelta(days=365)
+
+    coba_raw = """
+    with rangkuman_topik_dosen as (
+        SELECT a.nip_id,c.first_name,d.kompartemen, count(*) as total_per_kompartemen
+    FROM skripsi_app_roledosen  as a 
+    JOIN skripsi_app_dosen as b 
+    ON a.nip_id=b.nip
+    JOIN auth_user as c 
+    ON b.id_user_id=c.id
+    JOIN (
+    SELECT b.nim_id as nim,d.nama_kompartemen as kompartemen
+    FROM skripsi_app_evaluasitopik  as a 
+    JOIN skripsi_app_usulantopik as b
+    ON a.id_usulan_topik_id=b.id_usulan_topik
+    JOIN skripsi_app_kompartemendosen as c
+    ON a.id_dosen_kompartemen_id=c.id_dosen_kompartemen
+    JOIN skripsi_app_kompartemen as d
+    ON c.id_kompartemen_id=d.id_kompartemen
+    WHERE status_topik='ACC' and a.tanggal_buat>=%s
+    GROUP BY b.nim_id,d.nama_kompartemen
+    ) as d ON d.nim=a.nim_id
+        WHERE role='Pembimbing 1' or role='Pembimbing 2'
+        GROUP BY a.id_role_dosen,c.first_name,d.kompartemen
+        
+    )
+    select rangkuman_topik_dosen.nip_id,first_name, kompartemen,total_per_kompartemen,total_komp_dosen from rangkuman_topik_dosen
+    JOIN (select nip_id,count(*) as total_komp_dosen from rangkuman_topik_dosen  GROUP BY nip_id) as total_dosen 
+    ON total_dosen.nip_id = rangkuman_topik_dosen.nip_id
+
+    """
+
+    with connection.cursor() as cursor:
+        cursor.execute(coba_raw, [one_years_ago.date()])
+        rows = cursor.fetchall()
+
+    hasil_dosen = rows
+    print(rows)
+    return render(request, 'dosen/hitung_mhs.html', {"hasil_dosen": hasil_dosen})
+
+ 
+def mhs_information_topik (request):
+
+    lulus_list = bimbingan.objects.filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)", status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim", flat=True)
+    lulus_list=[tuple(lulus_list)]
+    
+
+    coba_raw = """
+
+    SELECT d.nama_kompartemen as kompartemen, count(*) as jumlah_topik
+    FROM skripsi_app_evaluasitopik  as a 
+    JOIN skripsi_app_usulantopik as b
+    ON a.id_usulan_topik_id=b.id_usulan_topik
+    JOIN skripsi_app_kompartemendosen as c
+    ON a.id_dosen_kompartemen_id=c.id_dosen_kompartemen
+    JOIN skripsi_app_kompartemen as d
+    ON c.id_kompartemen_id=d.id_kompartemen
+    WHERE status_topik='ACC' 
+    GROUP BY b.nim_id,d.nama_kompartemen
+    
+
+    """
+
+    with connection.cursor() as cursor:
+        cursor.execute(coba_raw)
+        rows = cursor.fetchall()
+
+    hasil_dosen = rows
+    print(rows)
+    return render(request, 'dosen/hitung_topik.html', {"hasil_dosen": hasil_dosen})
+    
+
+def mhs_information_topik_one_year (request):
+
+    lulus_list = bimbingan.objects.filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)", status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim", flat=True)
+    lulus_list=[tuple(lulus_list)]
+    one_years_ago = datetime.datetime.now() - timedelta(days=365)
+
+    coba_raw = """
+
+    SELECT d.nama_kompartemen as kompartemen, count(*) as jumlah_topik
+    FROM skripsi_app_evaluasitopik  as a 
+    JOIN skripsi_app_usulantopik as b
+    ON a.id_usulan_topik_id=b.id_usulan_topik
+    JOIN skripsi_app_kompartemendosen as c
+    ON a.id_dosen_kompartemen_id=c.id_dosen_kompartemen
+    JOIN skripsi_app_kompartemen as d
+    ON c.id_kompartemen_id=d.id_kompartemen
+    WHERE status_topik='ACC' and a.tanggal_buat>=%s
+    GROUP BY b.nim_id,d.nama_kompartemen
+    
+
+    """
+
+    with connection.cursor() as cursor:
+        cursor.execute(coba_raw, [one_years_ago.date()])
+        rows = cursor.fetchall()
+
+    hasil_dosen = rows
+    print(rows)
+    return render(request, 'dosen/hitung_topik.html', {"hasil_dosen": hasil_dosen})
+
+def mhs_information_topik_five_year (request):
+
+    lulus_list = bimbingan.objects.filter(id_proposal__nama_tahap="Laporan Akhir (Revisi Seminar Hasil)", status_bimbingan="ACC").order_by('-tanggal_update').values_list("id_proposal__nim", flat=True)
+    lulus_list=[tuple(lulus_list)]
+    five_years_ago = datetime.datetime.now() - timedelta(days=365*5)
+
+    coba_raw = """
+
+    SELECT d.nama_kompartemen as kompartemen, count(*) as jumlah_topik
+    FROM skripsi_app_evaluasitopik  as a 
+    JOIN skripsi_app_usulantopik as b
+    ON a.id_usulan_topik_id=b.id_usulan_topik
+    JOIN skripsi_app_kompartemendosen as c
+    ON a.id_dosen_kompartemen_id=c.id_dosen_kompartemen
+    JOIN skripsi_app_kompartemen as d
+    ON c.id_kompartemen_id=d.id_kompartemen
+    WHERE status_topik='ACC' and a.tanggal_buat>=%s
+    GROUP BY b.nim_id,d.nama_kompartemen
+    
+
+    """
+
+    with connection.cursor() as cursor:
+        cursor.execute(coba_raw, [five_years_ago.date()])
+        rows = cursor.fetchall()
+
+    hasil_dosen = rows
+    print(rows)
+    return render(request, 'dosen/hitung_topik.html', {"hasil_dosen": hasil_dosen})

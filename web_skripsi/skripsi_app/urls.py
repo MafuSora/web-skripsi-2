@@ -533,4 +533,17 @@ urlpatterns = [
          views.CPMK_update, name='CPMK_update'),
      path('cpmk_delete/<int:id>',
          views.CPMK_delete, name='CPMK_delete'),
+     
+     path('dosen_info/',
+         views.dosen_information, name='dosen_information'),
+     path('mhs_info/',
+         views.mhs_information, name='mhs_information'),
+     path('mhs_info/1/',
+         views.mhs_information_one_year, name='mhs_information_one_year'),
+     path('mhs_info/5/',
+         views.mhs_information_five_year, name='mhs_information_five_year'),
+     
+     path('mhs_info/topik/1/',
+         views.mhs_information_topik_one_year, name='mhs_information_topik_one_year'),
+    
 ]
