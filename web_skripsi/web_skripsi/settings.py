@@ -107,16 +107,7 @@ WSGI_APPLICATION = 'web_skripsi.wsgi.application'
 # }
 
 
-# DATABASES = {
-#   'default': {
-#     'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#     'NAME': 'neondb',
-#     'USER': 'MafuSora',
-#     'PASSWORD': '1Obj4USigpTq',
-#     'HOST': 'ep-bold-lab-934123.ap-southeast-1.aws.neon.tech',
-#     'PORT': '5432',
-#   }
-# }
+
 
 # DATABASES = {
 #   'default': {
